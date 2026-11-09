@@ -58,7 +58,14 @@ function asset(k, P, Euse, cyc, ctx, tech, I) {
   const accCost = p.acc * En / 1000 * H * p.acc_cost;
   const Ufail = p.lam * p.mttr * ctx.mttr_mult[k] / 8760 * ((ctx.costa && (k === 'Li' || k === 'V')) ? 1.3 : 1) * (k === 'V' ? Math.min(2, Math.max(1, 1 + 0.1 * (T - 25))) : 1); // vanádio: +50% a 30 °C, +100% a 35 °C
   const Udelay = ctx.p_delay * p.delay * reps.length / H;
-  return { k, P, Euse, En, capex, life: L, nReps: reps.length, pv: pvTot, nominal, recur, gwp, mass, tox, acid: accCost,
+  const flows = new Array(H + 1).fill(0);
+  flows[0] = capex;
+  for (let t = 1; t <= H; t++) flows[t] += om + loss * ctx.tariff;
+  reps.forEach((t, i) => { const y = Math.min(H, Math.max(1, Math.round(t))); flows[y] += repCost[i]; });
+  pcs.forEach(t => { flows[t] += pcsCost; });
+  flows[H] -= resid;
+  const repYears = reps.map(t => Math.round(t));
+  return { k, P, Euse, En, capex, life: L, nReps: reps.length, flows, repYears, pv: pvTot, nominal, recur, gwp, mass, tox, acid: accCost,
     Ufail, Udelay, U: Math.min(1, Ufail + Udelay), mult: nominal / capex, ann: ANN };
 }
 

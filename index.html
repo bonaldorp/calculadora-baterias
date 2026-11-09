@@ -64,6 +64,31 @@ h1 { font: 800 clamp(38px, 5vw, 58px)/.92 var(--display); text-transform: upperc
 .sys { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--band-line); }
 #sysdraw svg { width: 100%; height: auto; display: block; }
 #sysnote { font-size: 13px; color: var(--band-muted); margin: 8px 0 0; max-width: 90ch; }
+.modes, .seg3 { display: inline-grid; grid-auto-flow: column; border: 1px solid var(--band-line); }
+.modes button { font: 600 12px var(--mono); letter-spacing: .04em; text-transform: uppercase; padding: 6px 12px; background: transparent; color: var(--band-muted); border: 0; cursor: pointer; }
+.modes button + button, .seg3 button + button { border-left: 1px solid var(--band-line); }
+.modes button[aria-pressed="true"] { background: var(--accent); color: #111; }
+.modetext { margin: 0 0 8px; font-size: 14px; color: var(--band-ink); min-height: 1.5em; }
+.seg3 { border-color: var(--line); margin-bottom: 12px; }
+.seg3 button { font: 500 13px var(--body); padding: 7px 12px; background: transparent; color: var(--ink); border: 0; cursor: pointer; }
+.seg3 button + button { border-left-color: var(--line); }
+.seg3 button[aria-pressed="true"] { background: var(--accent); color: #111; font-weight: 600; }
+#sysdraw .off { opacity: .22; transition: opacity .25s; }
+#sysdraw .on { transition: opacity .25s; }
+#sysdraw .flow { stroke: var(--accent) !important; stroke-width: 3 !important; stroke-dasharray: 9 7; animation: flow 1.1s linear infinite; }
+#sysdraw .flow.rev { animation-direction: reverse; }
+@keyframes flow { to { stroke-dashoffset: -32; } }
+@media (prefers-reduced-motion: reduce) { #sysdraw .flow { animation: none; } }
+.levers { display: grid; gap: 10px; }
+.lever { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 46px; gap: 12px; align-items: center; font-size: 13.5px; }
+.lever .track { position: relative; height: 12px; background: var(--line); }
+.lever .fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ink); }
+.lever .fill.up { background: var(--v); } .lever .fill.down { background: var(--pb); }
+.lever .mark { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--accent); }
+.lever b { font: 600 13px var(--mono); text-align: right; font-variant-numeric: tabular-nums; }
+.lever .sub { display: block; font-size: 12px; color: var(--muted); }
+.lever .sub.flip { color: var(--ink); font-weight: 600; }
+#curve svg { width: 100%; height: auto; display: block; }
 .copyrow { display: flex; gap: 12px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
 .btn { font: 600 13px var(--body); color: var(--band); background: var(--accent); border: 0; padding: 8px 14px; cursor: pointer; }
 .btn:hover { filter: brightness(1.08); }
@@ -140,6 +165,7 @@ footer { max-width: 1280px; margin: 0 auto; padding: 0 24px 40px; }
 footer .panel { font-size: 12.5px; color: var(--muted); }
 .busy { opacity: .55; transition: opacity .15s; }
 @media (prefers-reduced-motion: reduce) { .busy { transition: none; } }
+@media (max-width: 700px) { .lever { grid-template-columns: 1fr 46px; } .lever .track { grid-column: 1 / -1; grid-row: 2; } }
 @media (max-width: 960px) {
   .band-inner { grid-template-columns: 1fr; gap: 22px; }
   .readouts { grid-template-columns: repeat(2, 1fr); } .ro + .ro { border-left: 0; padding-left: 0; } .ro { padding-right: 8px; }
@@ -155,7 +181,7 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
       <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
       <h1>Qual bateria, para qual função e lugar</h1>
       <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 8 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
-      <p class="meta">Versão 1.6 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="meta">Versão 1.7 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
     </div>
     <div class="intro-side">
       <p class="warn"><b>Leia antes de usar.</b> Preços, taxas de falha, tempos de conserto, chances de acidente e frações de resíduo que escapam da reciclagem são hipóteses de partida, não medições: não há base pública de falhas de baterias estacionárias no Brasil. Serve para comparar opções e ver o que muda a escolha, não para dimensionar um projeto.</p>
@@ -241,7 +267,7 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
       <div class="rack" id="rack"></div>
       <div class="verdict"><div class="big-pct" id="bigPct"></div><div class="t" id="verdict"></div></div>
       <div class="readouts" id="kpis"></div>
-      <div class="sys"><div class="rack-label"><span>Como fica o sistema</span></div><div id="sysdraw"></div><p id="sysnote"></p></div>
+      <div class="sys"><div class="rack-label"><span>Como fica o sistema</span><div class="modes" role="group" aria-label="Momento do dia"><button type="button" data-mode="dia" aria-pressed="true">Dia</button><button type="button" data-mode="noite" aria-pressed="false">Noite</button><button type="button" data-mode="falha" aria-pressed="false" id="modeFalha">Falta da rede</button></div></div><p id="modeText" class="modetext"></p><div id="sysdraw"></div><p id="sysnote"></p></div>
       <div class="copyrow"><button type="button" id="copy" class="btn">Copiar resultado</button><span id="copyMsg" role="status"></span></div>
 </section>
 <main class="after">
@@ -252,11 +278,22 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
       <p class="note">Cada célula vale 5% das simulações. São 8 mil: 40 conjuntos de premissas (preços, falhas, tempo de conserto, acidentes, atraso na troca, entre metade e o dobro) × 200 conjuntos de pesos em torno dos escolhidos.</p>
     </div>
     <div class="panel">
-      <h2><span class="num">07</span>As melhores lado a lado</h2>
+      <h2><span class="num">07</span>O que muda a escolha</h2>
+      <p class="note" style="margin-top:0">A recomendação recalculada mudando uma coisa de cada vez no cenário acima. A barra mostra a chance que a combinação recomendada passa a ter (verde: sobe; laranja: cai); o traço amarelo marca a chance atual. Os itens que mais mexem vêm primeiro.</p>
+      <div id="levers" class="levers"></div>
+    </div>
+    <div class="panel">
+      <h2><span class="num">08</span>Custo acumulado em 30 anos</h2>
+      <div class="fnsel seg3" role="group" aria-label="Função"><button type="button" data-f="F1" aria-pressed="false">Ciclo diário</button><button type="button" data-f="F2" aria-pressed="true">Reserva longa</button><button type="button" data-f="F3" aria-pressed="false">No-break</button></div>
+      <div id="curve"></div>
+      <p class="note">Quanto já se gastou em cada ano: compra no ano 0, depois operação, perdas de energia e cada troca de bateria ou de eletrônica (os degraus). No ano 30 entra o valor residual. Valores sem desconto, em reais de 2026.</p>
+    </div>
+    <div class="panel">
+      <h2><span class="num">09</span>As melhores lado a lado</h2>
       <div class="tablewrap"><table id="cmp"></table></div>
     </div>
     <div class="panel">
-      <h2><span class="num">08</span>Cada tecnologia em cada função</h2>
+      <h2><span class="num">10</span>Cada tecnologia em cada função</h2>
       <div class="tablewrap"><table id="fn"></table></div>
       <p class="note">Múltiplo = custo total em 30 anos ÷ investimento: quanto da solução se paga depois da compra. Dias parados = falhas × tempo até o conserto + atraso na troca. O fundo amarelo indica o melhor valor de cada função.</p>
     </div>
@@ -328,7 +365,14 @@ function asset(k, P, Euse, cyc, ctx, tech, I) {
   const accCost = p.acc * En / 1000 * H * p.acc_cost;
   const Ufail = p.lam * p.mttr * ctx.mttr_mult[k] / 8760 * ((ctx.costa && (k === 'Li' || k === 'V')) ? 1.3 : 1) * (k === 'V' ? Math.min(2, Math.max(1, 1 + 0.1 * (T - 25))) : 1); // vanádio: +50% a 30 °C, +100% a 35 °C
   const Udelay = ctx.p_delay * p.delay * reps.length / H;
-  return { k, P, Euse, En, capex, life: L, nReps: reps.length, pv: pvTot, nominal, recur, gwp, mass, tox, acid: accCost,
+  const flows = new Array(H + 1).fill(0);
+  flows[0] = capex;
+  for (let t = 1; t <= H; t++) flows[t] += om + loss * ctx.tariff;
+  reps.forEach((t, i) => { const y = Math.min(H, Math.max(1, Math.round(t))); flows[y] += repCost[i]; });
+  pcs.forEach(t => { flows[t] += pcsCost; });
+  flows[H] -= resid;
+  const repYears = reps.map(t => Math.round(t));
+  return { k, P, Euse, En, capex, life: L, nReps: reps.length, flows, repYears, pv: pvTot, nominal, recur, gwp, mass, tox, acid: accCost,
     Ufail, Udelay, U: Math.min(1, Ufail + Udelay), mult: nominal / capex, ann: ANN };
 }
 
@@ -555,52 +599,143 @@ function run() {
   }
   $('fn').innerHTML = html + '</tbody>';
   LAST = { r, idx };
+  drawCurve();
+  $('levers').style.opacity = '.5'; clearTimeout(LEVTIMER); LEVTIMER = setTimeout(() => { computeLevers(); $('levers').style.opacity = '1'; }, 60);
   $('results').classList.remove('busy'); $('results-top').classList.remove('busy');
 }
 
+let MODE = 'dia', LASTCOMBO = null;
 function drawSystem(c) {
+  LASTCOMBO = c;
   const [f1, f2, f3, sep] = c, shared = f1 === f2 && !sep, iso = S.isolated;
   const NOME = { Li: 'Lítio', Pb: 'Chumbo', V: 'Vanádio' }, COR = { Li: 'var(--li)', Pb: 'var(--pb)', V: 'var(--v)' };
   const ink = 'var(--band-ink)', mut = 'var(--band-muted)', line = 'var(--band-muted)', acc = 'var(--accent)';
   const kwh = v => num(v) + ' kWh úteis', kw = v => num(v) + ' kW';
-  const box = (x, y, w, hh, title, sub, stroke) => `<rect x="${x}" y="${y}" width="${w}" height="${hh}" fill="none" stroke="${stroke || line}" stroke-width="1.2"/>`
+  const box = (x, y, w, hh, title, sub) => `<rect x="${x}" y="${y}" width="${w}" height="${hh}" fill="none" stroke="${line}" stroke-width="1.2"/>`
     + `<text x="${x + 12}" y="${y + 24}" font-size="15" font-weight="600" fill="${ink}">${title}</text>` + (sub ? `<text x="${x + 12}" y="${y + 44}" font-size="12.5" fill="${mut}">${sub}</text>` : '');
   const bat = (x, y, w, fn, k, e, p) => `<rect x="${x}" y="${y}" width="${w}" height="86" fill="${COR[k]}" fill-opacity="0.12" stroke="${COR[k]}" stroke-width="1.6"/>`
     + `<rect x="${x}" y="${y}" width="${w}" height="6" fill="${COR[k]}"/>`
     + `<text x="${x + 12}" y="${y + 26}" font-family="var(--mono)" font-size="11" letter-spacing="1" fill="${mut}">${fn.toUpperCase()}</text>`
     + `<text x="${x + 12}" y="${y + 56}" font-family="var(--display)" font-weight="800" font-size="30" fill="${COR[k]}">${NOME[k].toUpperCase()}</text>`
     + `<text x="${x + 12}" y="${y + 76}" font-size="12.5" fill="${ink}">${kwh(e)} · ${kw(p)}</text>`;
-  const L = (x1, y1, x2, y2, dash) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${line}" stroke-width="1.6"${dash ? ' stroke-dasharray="5 4"' : ''}/>`;
+  const L = (x1, y1, x2, y2, dash) => `<line class="ln" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${line}" stroke-width="1.6"${dash ? ' stroke-dasharray="5 4"' : ''}/>`;
+  const G = (k, inner) => `<g data-k="${k}">${inner}</g>`;
   const busY = 170; let s = '';
-  // barramento
-  s += L(40, busY, 970, busY) + `<line x1="40" y1="${busY}" x2="970" y2="${busY}" stroke="${ink}" stroke-width="3"/>`;
+  s += `<line x1="40" y1="${busY}" x2="970" y2="${busY}" stroke="${ink}" stroke-width="3"/>`;
   s += `<text x="440" y="${busY - 8}" font-family="var(--mono)" font-size="10.5" letter-spacing="1" fill="${mut}">BARRAMENTO DA MICRORREDE</text>`;
-  // fontes
   let xs = 40;
   if (!iso) {
-    s += box(40, 30, 190, 58, 'Rede da distribuidora', 'cai nas faltas') + L(135, 88, 135, 112) + L(135, 142, 135, busY);
-    s += `<rect x="95" y="112" width="80" height="30" fill="${acc}"/><text x="135" y="132" text-anchor="middle" font-size="12" font-weight="600" fill="#111">religador</text>`;
+    s += G('grid', box(40, 30, 190, 58, 'Rede da distribuidora', 'cai nas faltas') + L(135, 88, 135, 112) + L(135, 142, 135, busY));
+    s += `<g id="rel"><rect id="relBox" x="95" y="112" width="80" height="30" fill="${acc}" stroke="${acc}" stroke-width="1.6"/><text id="relTxt" x="135" y="132" text-anchor="middle" font-size="12" font-weight="600" fill="#111">religador</text></g>`;
     xs = 270;
   }
-  s += box(xs, 30, 190, 58, 'Solar', iso ? 'carrega as baterias de dia' : 'atende de dia e carrega') + L(xs + 95, 88, xs + 95, busY);
-  // cargas
-  s += box(560, 30, 180, 58, 'Cargas críticas', `${Math.round(S.alpha * 100)}% da carga`) + L(650, 88, 650, busY);
-  s += bat(760, 16, 210, '3 · No-break', f3, S.F.F3.E, S.F.F3.P) + L(740, 59, 760, 59);
-  s += box(770, 232, 200, 58, 'Demais cargas', iso ? 'só com o bloco do ciclo' : 'cortadas na falta') + L(870, busY, 870, 232, !iso);
-  if (!iso) s += `<text x="878" y="${busY + 34}" font-size="11.5" fill="${mut}">chave de corte</text>`;
-  // baterias
-  if (shared) {
-    s += bat(40, 226, 420, '1 + 2 · Ciclo diário e reserva longa (mesmo bloco)', f1, S.F.F1.E + S.F.F2.E, Math.max(S.F.F1.P, S.F.F2.P)) + L(250, busY, 250, 226);
-  } else {
-    s += bat(40, 226, 230, '1 · Ciclo diário', f1, S.F.F1.E, S.F.F1.P) + L(155, busY, 155, 226);
-    s += bat(290, 226, 230, '2 · Reserva longa', f2, S.F.F2.E, S.F.F2.P) + L(405, busY, 405, 226);
-  }
+  s += G('pv', box(xs, 30, 190, 58, 'Solar', iso ? 'carrega as baterias de dia' : 'atende de dia e carrega') + L(xs + 95, 88, xs + 95, busY));
+  s += G('crit', box(560, 30, 180, 58, 'Cargas críticas', `${Math.round(S.alpha * 100)}% da carga`) + L(650, 88, 650, busY));
+  s += G('nb', bat(760, 16, 210, '3 · No-break', f3, S.F.F3.E, S.F.F3.P) + L(740, 59, 760, 59));
+  s += G('rest', box(770, 232, 200, 58, 'Demais cargas', iso ? 'só com o bloco do ciclo' : 'cortadas na falta') + L(870, busY, 870, 232, !iso)
+    + (!iso ? `<text x="878" y="${busY + 34}" font-size="11.5" fill="${mut}">chave de corte</text>` : ''));
+  if (shared) s += G('b1', bat(40, 226, 420, '1 + 2 · Ciclo diário e reserva longa (mesmo bloco)', f1, S.F.F1.E + S.F.F2.E, Math.max(S.F.F1.P, S.F.F2.P)) + L(250, busY, 250, 226));
+  else { s += G('b1', bat(40, 226, 230, '1 · Ciclo diário', f1, S.F.F1.E, S.F.F1.P) + L(155, busY, 155, 226));
+         s += G('b2', bat(290, 226, 230, '2 · Reserva longa', f2, S.F.F2.E, S.F.F2.P) + L(405, busY, 405, 226)); }
+  s += `<text id="xmark" x="0" y="0" font-size="44" font-weight="800" fill="var(--pb)" display="none">×</text>`;
   $('sysdraw').innerHTML = `<svg viewBox="0 0 1000 330" role="img" aria-label="Esquema do sistema recomendado" font-family="var(--body)">${s}</svg>`;
-  const note = iso
-    ? (shared ? `À noite, um único bloco de ${NOME[f1].toLowerCase()} atende a comunidade e guarda a reserva. Se ele parar, ficam só o solar de dia e o no-break das cargas críticas.`
-              : `À noite, o bloco de ${NOME[f1].toLowerCase()} atende a comunidade. Se ele parar, a reserva de ${NOME[f2].toLowerCase()} segura as cargas críticas, e o no-break de ${NOME[f3].toLowerCase()} protege as mais sensíveis.`)
-    : `Na falta da rede, o religador abre e a microrrede vira ilha: as demais cargas são cortadas, ${shared ? `o bloco de ${NOME[f1].toLowerCase()} usa a parte guardada como reserva` : `a reserva de ${NOME[f2].toLowerCase()} assume`} e o no-break de ${NOME[f3].toLowerCase()} fica junto às cargas críticas. No dia a dia, ${NOME[f1].toLowerCase()} faz o ciclo com o solar.`;
-  $('sysnote').textContent = note + ' Esquema conceitual, fora de escala.';
+  $('modeFalha').textContent = iso ? 'Bloco do ciclo quebra' : 'Falta da rede';
+  applyMode();
+}
+function applyMode() {
+  if (!LASTCOMBO) return;
+  const [f1, f2, f3, sep] = LASTCOMBO, shared = f1 === f2 && !sep, iso = S.isolated;
+  const NOME = { Li: 'lítio', Pb: 'chumbo', V: 'vanádio' };
+  const m = { off: [], flow: {} };
+  // flow: 'f' = sentido da linha (fonte→barramento, barramento→bateria = carga), 'r' = inverso
+  if (MODE === 'dia') {
+    Object.assign(m.flow, { pv: 'f', b1: 'f', crit: 'r', rest: 'f' }); if (!iso) m.flow.grid = 'f';
+    if (!shared) m.flow.b2 = iso ? 'f' : null;
+  } else if (MODE === 'noite') {
+    m.off = ['pv']; Object.assign(m.flow, { b1: 'r', crit: 'r', rest: 'f' }); if (!iso) m.flow.grid = 'f';
+  } else {
+    m.off = iso ? ['pv', 'rest', 'b1'] : ['pv', 'rest', 'grid'];
+    if (iso && shared) { m.flow = { nb: 'r' }; }
+    else if (iso) { m.flow = { b2: 'r', crit: 'r' }; }
+    else { m.flow = shared ? { b1: 'r', crit: 'r' } : { b2: 'r', crit: 'r' }; }
+  }
+  document.querySelectorAll('#sysdraw g[data-k]').forEach(g => {
+    const k = g.dataset.k, off = m.off.includes(k), fl = m.flow[k];
+    g.setAttribute('class', off ? 'off' : 'on');
+    g.querySelectorAll('.ln').forEach(l => { l.classList.remove('flow', 'rev'); if (fl && !off) { l.classList.add('flow'); if (fl === 'r') l.classList.add('rev'); } });
+  });
+  const rb = document.getElementById('relBox'), rt = document.getElementById('relTxt');
+  if (rb) { const open = MODE === 'falha'; rb.setAttribute('fill', open ? 'none' : 'var(--accent)'); rt.setAttribute('fill', open ? 'var(--accent)' : '#111'); rt.textContent = open ? 'aberto' : 'religador'; }
+  const xm = document.getElementById('xmark');
+  if (xm) { if (MODE === 'falha') { xm.setAttribute('display', ''); if (iso) { xm.setAttribute('x', shared ? 424 : 236); xm.setAttribute('y', 262); } else { xm.setAttribute('x', 146); xm.setAttribute('y', 110); } } else xm.setAttribute('display', 'none'); }
+  let t;
+  if (MODE === 'dia') t = iso ? `Dia: o solar atende a comunidade e carrega ${shared ? 'o bloco' : 'os dois blocos'} de baterias.`
+    : `Dia: o solar atende a vila, a rede completa e o bloco de ${NOME[f1]} guarda o excedente; a reserva fica cheia, parada.`;
+  else if (MODE === 'noite') t = iso ? `Noite: o bloco de ${NOME[f1]} devolve o solar do dia para toda a comunidade.`
+    : `Noite: o bloco de ${NOME[f1]} devolve o solar do dia e a rede completa o resto.`;
+  else t = iso ? (shared ? `Se o único bloco quebra à noite, cai tudo: sobra só o no-break de ${NOME[f3]} nas cargas mais sensíveis. Por isso o modelo prefere dois blocos.`
+                          : `Se o bloco do ciclo quebra à noite, a reserva de ${NOME[f2]} segura as cargas críticas; as demais ficam sem luz até o conserto.`)
+    : `Falta da rede: o religador abre, as demais cargas são cortadas e ${shared ? `o bloco de ${NOME[f1]} atende as cargas críticas com a parte guardada como reserva` : `a reserva de ${NOME[f2]} assume as cargas críticas`}. O no-break fica de prontidão junto a elas.`;
+  $('modeText').textContent = t;
+  document.querySelectorAll('.modes button').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === MODE));
+}
+
+let CURF = 'F2';
+function drawCurve() {
+  const ctxE = LAST.r.ctx, tech = LAST.r.tech, f = CURF;
+  const as = KS.map(k => asset(k, S.F[f].P, S.F[f].E, S.F[f].cyc, ctxE, tech, S.rate));
+  const cum = as.map(a => { let s = 0; return a.flows.map(v => (s += v)); });
+  const mx = Math.max(...cum.flat()) * 1.05;
+  const W = 760, Hh = 320, x0 = 70, x1 = 640, y0 = 20, y1 = 280;
+  const X = t => x0 + t / 30 * (x1 - x0), Y = v => y1 - v / mx * (y1 - y0);
+  const step = Math.pow(10, Math.floor(Math.log10(mx / 4))); const nice = [1, 2, 2.5, 5, 10].map(m => m * step).find(s => mx / s <= 5) || step * 10;
+  const ticks = []; for (let v = 0; v <= mx; v += nice) ticks.push(v);
+  const COR = { Li: 'var(--li)', Pb: 'var(--pb)', V: 'var(--v)' }, NOME = { Li: 'Lítio', Pb: 'Chumbo', V: 'Vanádio' };
+  let s = ticks.map(v => `<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${x0 - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="11" font-family="var(--mono)" fill="var(--muted)">${brl(v).replace('R$ ', '')}</text>`).join('');
+  s += [0, 5, 10, 15, 20, 25, 30].map(t => `<text x="${X(t)}" y="${y1 + 18}" text-anchor="middle" font-size="11" font-family="var(--mono)" fill="var(--muted)">${t}</text>`).join('');
+  s += `<text x="${(x0 + x1) / 2}" y="${y1 + 36}" text-anchor="middle" font-size="11.5" fill="var(--muted)">anos</text>`;
+  const ends = [];
+  as.forEach((a, i) => {
+    const c = cum[i];
+    // degraus: sobe linear com o custo anual e dá o salto no ano da troca
+    let p = `M${X(0)} ${Y(c[0])}`; for (let t = 1; t <= 30; t++) p += ` L${X(t)} ${Y(c[t])}`;
+    s += `<path d="${p}" fill="none" stroke="${COR[a.k]}" stroke-width="2.6"/>`;
+    a.repYears.forEach(t => { if (t >= 1 && t <= 30) s += `<circle cx="${X(t)}" cy="${Y(c[t])}" r="3.5" fill="${COR[a.k]}"/>`; });
+    ends.push({ k: a.k, v: c[30], y: Y(c[30]) });
+  });
+  ends.sort((p, q) => p.y - q.y); for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 36) ends[i].y = ends[i - 1].y + 36;
+  ends.forEach(e => { s += `<text x="${x1 + 10}" y="${e.y}" font-size="13" font-weight="600" fill="${COR[e.k]}">${NOME[e.k]}</text><text x="${x1 + 10}" y="${e.y + 15}" font-size="12" font-family="var(--mono)" fill="var(--ink)">${brl(e.v)}</text>`; });
+  const fn = { F1: 'ciclo diário', F2: 'reserva longa', F3: 'no-break' }[f];
+  $('curve').innerHTML = `<svg viewBox="0 0 ${W} ${Hh + 20}" role="img" aria-label="Custo acumulado em 30 anos, ${fn}">${s}<text x="${x0}" y="${Hh + 14}" font-size="11.5" fill="var(--muted)">• cada ponto é uma troca de bateria (ou das pilhas, no vanádio)</text></svg>`;
+}
+
+let LEVTIMER = null;
+function computeLevers() {
+  const { r, idx } = LAST; const bestKey = JSON.stringify(r.base[idx[0]].combo);
+  const runP = st => { const rr = smaa(buildCtx(st), { nP: 40, nW: 200 });
+    const i0 = rr.base.findIndex(p => JSON.stringify(p.combo) === bestKey);
+    const top = [...rr.prob.keys()].sort((a, b) => rr.prob[b] - rr.prob[a])[0];
+    return { p: rr.prob[i0], top: rr.base[top].combo, ptop: rr.prob[top] }; };
+  const base = { p: r.prob[idx[0]] };
+  const C = () => JSON.parse(JSON.stringify(S));
+  const L = [];
+  L.push([S.agentes ? 'Sem agentes comunitários treinados' : 'Com agentes comunitários treinados', st => st.agentes = !S.agentes]);
+  L.push([S.eletrolito ? 'Sem eletrólito de vanádio nacional' : 'Com eletrólito de vanádio nacional e arrendado', st => st.eletrolito = !S.eletrolito]);
+  L.push([S.chumbo_lr ? 'Sem logística reversa do chumbo' : 'Com logística reversa do chumbo garantida', st => st.chumbo_lr = !S.chumbo_lr]);
+  L.push([S.longe ? 'Com técnico a poucas horas' : 'Com técnico longe', st => st.longe = !S.longe]);
+  L.push([S.comunidade_paga ? 'Se a distribuidora pagar as trocas' : 'Se a comunidade pagar as trocas', st => st.comunidade_paga = !S.comunidade_paga]);
+  L.push([S.T > 25 ? 'Com abrigo climatizado (25 °C)' : 'Sem climatização (abrigo a 32 °C)', st => st.T = S.T > 25 ? 25 : 32]);
+  if (S.rate > 0) L.push(['Com taxa de desconto 0% (olhar de fundo público)', st => st.rate = 0]);
+  if (S.rate < 0.12) L.push(['Com taxa de desconto 12%', st => st.rate = 0.12]);
+  const rows = L.map(([nome, fn]) => { const st = C(); fn(st); return [nome, runP(st)]; });
+  rows.sort((a, b) => Math.abs(b[1].p - base.p) - Math.abs(a[1].p - base.p));
+  $('levers').innerHTML = rows.map(([nome, v]) => {
+    const flip = JSON.stringify(v.top) !== bestKey;
+    const dir = v.p > base.p + 0.02 ? 'up' : v.p < base.p - 0.02 ? 'down' : '';
+    const sub = flip ? `<span class="sub flip">passa a ganhar: ${label(v.top).toLowerCase()} (${Math.round(v.ptop * 100)}%)</span>`
+      : `<span class="sub">a recomendação continua a mesma</span>`;
+    return `<div class="lever"><div>${nome}${sub}</div><div class="track"><div class="fill ${dir}" style="width:${(v.p * 100).toFixed(1)}%"></div><div class="mark" style="left:calc(${(base.p * 100).toFixed(1)}% - 1px)"></div></div><b>${Math.round(v.p * 100)}%</b></div>`;
+  }).join('');
 }
 
 let LAST = null;
@@ -623,6 +758,8 @@ document.addEventListener('DOMContentLoaded', () => {
   $('longe').addEventListener('click', () => { S.longe = true; toFormKeep(); });
   $('distrib').addEventListener('click', () => { S.comunidade_paga = false; toFormKeep(); });
   $('comun').addEventListener('click', () => { S.comunidade_paga = true; toFormKeep(); });
+  document.querySelectorAll('.modes button').forEach(b => b.addEventListener('click', () => { MODE = b.dataset.mode; applyMode(); }));
+  document.querySelectorAll('.seg3 button').forEach(b => b.addEventListener('click', () => { CURF = b.dataset.f; document.querySelectorAll('.seg3 button').forEach(x => x.setAttribute('aria-pressed', x === b)); drawCurve(); }));
   $('copy').addEventListener('click', async () => {
     const t = resumo();
     try { await navigator.clipboard.writeText(t); $('copyMsg').textContent = 'Copiado. Cole numa planilha ou num documento.'; }

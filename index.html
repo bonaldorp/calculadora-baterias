@@ -69,7 +69,11 @@ h1 { font: 800 clamp(38px, 5vw, 58px)/.92 var(--display); text-transform: upperc
 /* corpo */
 main { display: grid; gap: 16px; padding: 24px; max-width: 1280px; margin: 0 auto; }
 .step { margin: 0; font-size: 14px; color: var(--muted); max-width: 80ch; }
-.inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; align-items: start; }
+.inputs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; align-items: stretch; }
+@media (max-width: 860px) { .inputs { grid-template-columns: 1fr; } }
+.hints { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 16px 0 0; font-size: 12.5px; color: var(--muted); }
+.hints dt { font: 600 11px/1.6 var(--mono); text-transform: uppercase; letter-spacing: .05em; color: var(--ink); }
+.hints dd { margin: 0; }
 .to-result { justify-self: start; font: 600 13px var(--body); color: var(--ink); border: 1px solid var(--ink); padding: 8px 14px; text-decoration: none; }
 .to-result:hover { background: var(--ink); color: var(--paper); }
 .band-inner.intro { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: end; }
@@ -96,11 +100,11 @@ select:focus-visible, input:focus-visible, button:focus-visible, a:focus-visible
 .check { display: flex; gap: 9px; align-items: flex-start; font-size: 14px; margin: 7px 0; }
 .check input { margin-top: 4px; accent-color: var(--ink); width: 15px; height: 15px; }
 .check label { color: var(--ink); font-size: 14px; margin: 0; }
-.seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--ink); }
+.seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--line); }
 .seg button { font: 500 13px var(--body); padding: 7px 8px; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
-.seg button + button { border-left: 1px solid var(--ink); }
-.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
-.slider { display: grid; grid-template-columns: 1fr 96px 38px; gap: 8px; align-items: center; font-size: 13px; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #111; font-weight: 600; }
+.slider { display: grid; grid-template-columns: minmax(0, 1fr) minmax(96px, 220px) 38px; gap: 8px; align-items: center; font-size: 13px; }
 .slider label { margin: 0; color: var(--ink); font-size: 13px; }
 .slider input { width: 100%; accent-color: var(--ink); }
 .slider output { text-align: right; font: 600 13px var(--mono); font-variant-numeric: tabular-nums; }
@@ -148,7 +152,7 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
       <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
       <h1>Qual bateria, para qual função e lugar</h1>
       <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 8 mil sorteios dos pesos e das premissas incertas.</p>
-      <p class="meta">Versão 1.3 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="meta">Versão 1.4 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
     </div>
     <div class="intro-side">
       <p class="warn"><b>Leia antes de usar.</b> Preços, taxas de falha, tempos de conserto, chances de acidente e frações de resíduo que escapam da reciclagem são hipóteses de partida, não medições: não há base pública de falhas de baterias estacionárias no Brasil. Serve para comparar opções e ver o que muda a escolha, não para dimensionar um projeto.</p>
@@ -193,13 +197,14 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
         <div><label for="familias">Famílias (divide o custo)</label><input type="number" id="familias" min="0" step="1"></div>
       </div>
       <div class="check"><input type="checkbox" id="costa"><label for="costa">Litoral (maresia)</label></div>
-      <h3>Quem conserta</h3>
+    </div>
+    <div class="panel">
+      <h2><span class="num">02</span>Operação e políticas</h2>
+      <h3 style="margin-top:0">Quem conserta</h3>
       <div class="seg" role="group" aria-label="Distância do técnico especializado"><button type="button" id="perto" aria-pressed="false">Técnico a poucas horas</button><button type="button" id="longe" aria-pressed="false">Técnico longe</button></div>
       <h3>Quem paga a troca da bateria</h3>
       <div class="seg" role="group" aria-label="Quem paga a troca"><button type="button" id="distrib" aria-pressed="false">Distribuidora</button><button type="button" id="comun" aria-pressed="false">Comunidade</button></div>
-    </div>
-    <div class="panel">
-      <h2><span class="num">02</span>Políticas</h2>
+      <h3>Políticas</h3>
       <div class="check"><input type="checkbox" id="agentes"><label for="agentes">Agentes comunitários de energia treinados</label></div>
       <div class="check"><input type="checkbox" id="eletrolito"><label for="eletrolito">Eletrólito de vanádio nacional e arrendado</label></div>
       <div class="check"><input type="checkbox" id="chumbo_lr"><label for="chumbo_lr">Logística reversa do chumbo garantida</label></div>
@@ -213,6 +218,11 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
         <span>Reserva longa</span><input type="number" id="F2P" aria-label="Reserva longa, kW"><input type="number" id="F2E" aria-label="Reserva longa, kWh úteis"><input type="number" id="F2c" aria-label="Reserva longa, ciclos por ano">
         <span>No-break</span><input type="number" id="F3P" aria-label="No-break, kW"><input type="number" id="F3E" aria-label="No-break, kWh úteis"><input type="number" id="F3c" aria-label="No-break, ciclos por ano">
       </div>
+      <dl class="hints">
+        <dt>kW</dt><dd>a maior potência que a função precisa entregar.</dd>
+        <dt>kWh úteis</dt><dd>a energia que de fato sai da bateria; o modelo soma a parte que cada tecnologia não pode usar.</dd>
+        <dt>Ciclos/ano</dt><dd>~300–365 no ciclo diário; poucos na reserva e no no-break, que só trabalham nas faltas.</dd>
+      </dl>
     </div>
     <div class="panel">
       <h2><span class="num">04</span>O que pesa mais</h2>

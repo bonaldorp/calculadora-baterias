@@ -7,94 +7,153 @@
 <meta name="author" content="Teiu Energia">
 <meta name="description" content="Compara lítio, chumbo-ácido e fluxo de vanádio por função e por lugar, com custo de 30 anos, tempo parado, resíduo tóxico e risco de acidente.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
 <style>
 :root {
-  /* Ferramenta em duas colunas: escolhas à esquerda, resultado à direita; cores das tecnologias iguais às do relatório */
-  --paper: #f3f5f4; --surface: #ffffff; --ink: #18252b; --muted: #5b6b71; --line: #d7dfdd; --accent: #0f6e63;
-  --li: #3d7fd9; --pb: #e3784d; --v: #2fae86; --warn: #b5562b;
-  --display: "Archivo", "Helvetica Neue", Arial, sans-serif; --body: "IBM Plex Sans", "Segoe UI", Roboto, sans-serif;
+  /* Painel de subestação: faixa escura com o "rack" de três posições (ciclo, reserva, no-break) no topo; abaixo, escolhas à esquerda e leituras em fonte de medidor à direita */
+  --paper: #eceeea; --surface: #f8f9f6; --ink: #121c1f; --muted: #56656a; --line: #cfd6d2; --accent: #e8a317;
+  --band: #0d1a1f; --band-ink: #e9efe9; --band-muted: #93a6a8; --band-line: #24363c;
+  --li: #2f6fd6; --pb: #e0703f; --v: #1f9e78;
+  --display: "Big Shoulders Display", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --body: "Instrument Sans", "Segoe UI", Roboto, sans-serif; --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --paper: #10181b; --surface: #172227; --ink: #e6eeec; --muted: #9aaeb2; --line: #2b3a3f; --accent: #3fc0ad;
-  --li: #6aa2f0; --pb: #f09a74; --v: #52c9a2; --warn: #f0a07a; color-scheme: dark; } }
+  --paper: #0b1316; --surface: #121d21; --ink: #e4ebe7; --muted: #94a6a9; --line: #22343a; --accent: #f2b53a;
+  --band: #060d10; --band-ink: #e9efe9; --band-muted: #8aa0a2; --band-line: #1c2c31;
+  --li: #6aa2f0; --pb: #f08f63; --v: #3cc495; color-scheme: dark; } }
 :root[data-theme="dark"] {
-  --paper: #10181b; --surface: #172227; --ink: #e6eeec; --muted: #9aaeb2; --line: #2b3a3f; --accent: #3fc0ad;
-  --li: #6aa2f0; --pb: #f09a74; --v: #52c9a2; --warn: #f0a07a; color-scheme: dark; }
+  --paper: #0b1316; --surface: #121d21; --ink: #e4ebe7; --muted: #94a6a9; --line: #22343a; --accent: #f2b53a;
+  --band: #060d10; --band-ink: #e9efe9; --band-muted: #8aa0a2; --band-line: #1c2c31;
+  --li: #6aa2f0; --pb: #f08f63; --v: #3cc495; color-scheme: dark; }
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 body { background: var(--paper); color: var(--ink); font: 15px/1.5 var(--body); }
-header { padding: 24px 24px 8px; max-width: 1280px; margin: 0 auto; }
-h1 { font: 700 26px/1.2 var(--display); margin: 0 0 6px; text-wrap: balance; }
-h2 { font: 600 17px/1.3 var(--display); margin: 0 0 10px; text-wrap: balance; }
-h3 { font: 600 14px/1.3 var(--display); margin: 14px 0 6px; text-transform: none; color: var(--muted); }
-.lede { color: var(--muted); max-width: 70ch; margin: 0; }
-main { display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 20px; padding: 16px 24px 40px; max-width: 1280px; margin: 0 auto; align-items: start; }
-@media (max-width: 860px) { main { grid-template-columns: 1fr; padding: 12px 16px 32px; } header { padding: 20px 16px 4px; } }
-.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
-.stack { display: grid; gap: 16px; }
-label { display: block; font-size: 13px; color: var(--muted); }
-select, input[type=number] { width: 100%; font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
-input[type=number] { font-variant-numeric: tabular-nums; }
-select:focus-visible, input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.grid3 { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 6px; align-items: center; font-size: 13px; }
-.grid3 .h { color: var(--muted); font-size: 12px; }
+a { color: inherit; text-underline-offset: 3px; }
+
+/* faixa do topo */
+.band { background: var(--band); color: var(--band-ink); border-bottom: 3px solid var(--accent); }
+.band-inner { max-width: 1280px; margin: 0 auto; padding: 28px 24px 26px; display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.3fr); gap: 36px; align-items: start; }
+.eyebrow { font: 600 12px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin: 0 0 12px; }
+h1 { font: 800 clamp(38px, 5vw, 58px)/.92 var(--display); text-transform: uppercase; letter-spacing: .01em; margin: 0 0 14px; text-wrap: balance; }
+.lede { color: var(--band-muted); margin: 0 0 14px; max-width: 52ch; font-size: 14.5px; }
+.meta { font: 400 12px/1.5 var(--mono); color: var(--band-muted); margin: 0; }
+.meta a { color: var(--band-ink); }
+.warn { margin: 16px 0 0; font-size: 13px; color: var(--band-ink); border: 1px solid var(--band-line); border-left: 3px solid var(--accent); padding: 10px 12px; max-width: 58ch; }
+.warn b { color: var(--accent); font-weight: 600; }
+
+/* o rack */
+.rack-label { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.rack-label span { font: 600 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--band-muted); }
+.rack { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.slot { border: 1px solid var(--band-line); background: linear-gradient(180deg, rgba(255,255,255,.03), transparent); padding: 12px 14px 14px; position: relative; min-height: 132px; }
+.slot::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 5px; background: var(--c, var(--band-line)); }
+.slot .pos { font: 600 11px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--band-muted); margin-top: 6px; }
+.slot .tec { font: 800 40px/1 var(--display); text-transform: uppercase; color: var(--c); margin: 10px 0 6px; }
+.slot .obs { font-size: 12.5px; color: var(--band-muted); }
+.slot.joined-left { border-right-style: dashed; } .slot.joined-right { border-left-style: dashed; }
+.verdict { margin-top: 14px; display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: center; }
+.big-pct { font: 800 64px/.9 var(--display); color: var(--accent); font-variant-numeric: tabular-nums; }
+.verdict .t { font-size: 14px; color: var(--band-ink); }
+.verdict .t small { display: block; color: var(--band-muted); font-size: 12.5px; margin-top: 3px; }
+.readouts { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; margin-top: 16px; border-top: 1px solid var(--band-line); }
+.ro { padding: 10px 10px 0 0; }
+.ro + .ro { padding-left: 12px; border-left: 1px solid var(--band-line); }
+.ro .n { font: 600 18px/1.2 var(--mono); font-variant-numeric: tabular-nums; color: var(--band-ink); white-space: nowrap; }
+.ro .l { font-size: 11.5px; color: var(--band-muted); line-height: 1.35; margin-top: 3px; }
+.copyrow { display: flex; gap: 12px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
+.btn { font: 600 13px var(--body); color: var(--band); background: var(--accent); border: 0; padding: 8px 14px; cursor: pointer; }
+.btn:hover { filter: brightness(1.08); }
+#copyMsg { font-size: 12.5px; color: var(--band-muted); }
+
+/* corpo */
+main { display: grid; grid-template-columns: minmax(300px, 400px) 1fr; gap: 24px; padding: 24px; max-width: 1280px; margin: 0 auto; align-items: start; }
+.stack { display: grid; gap: 14px; }
+main > *, .band-inner > *, .stack > * { min-width: 0; }
+.panel { background: var(--surface); border: 1px solid var(--line); padding: 16px 18px; }
+h2 { font: 800 22px/1 var(--display); text-transform: uppercase; letter-spacing: .02em; margin: 0 0 12px; display: flex; align-items: baseline; gap: 10px; }
+h2 .num { font: 600 11px/1 var(--mono); color: var(--accent); background: var(--band); padding: 4px 6px; letter-spacing: .06em; }
+h3 { font: 600 11.5px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 16px 0 8px; }
+label { display: block; font-size: 12.5px; color: var(--muted); margin-bottom: 3px; }
+select, input[type=number] { width: 100%; font: 15px var(--body); color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 0; padding: 7px 9px; }
+input[type=number] { font-family: var(--mono); font-size: 14px; font-variant-numeric: tabular-nums; }
+select:focus-visible, input:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.grid3 input[type=number] { padding: 6px 6px; font-size: 13.5px; -moz-appearance: textfield; }
+.grid3 input::-webkit-outer-spin-button, .grid3 input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.grid3 { display: grid; grid-template-columns: 1.1fr 1fr 1.1fr 1fr; gap: 6px; align-items: center; font-size: 13px; }
+.grid3 .h { color: var(--muted); font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: .06em; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.check { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: var(--ink); margin: 6px 0; }
-.check input { margin-top: 4px; accent-color: var(--accent); }
-.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
-.seg button { font: inherit; font-size: 13px; padding: 5px 10px; border: 0; background: var(--paper); color: var(--ink); cursor: pointer; }
-.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
-.slider { display: grid; grid-template-columns: 1fr 120px 40px; gap: 8px; align-items: center; font-size: 13px; }
-.slider input { width: 100%; accent-color: var(--accent); }
-.slider output { text-align: right; font-variant-numeric: tabular-nums; }
-.verdict { border-left: 4px solid var(--accent); padding: 4px 0 4px 14px; }
-.verdict .big { font: 700 21px/1.3 var(--display); text-wrap: balance; }
-.verdict .sub { color: var(--muted); margin-top: 4px; }
-.bars { display: grid; gap: 8px; }
-.bar { display: grid; grid-template-columns: minmax(0, 1fr) 54px; gap: 8px; align-items: center; font-size: 13.5px; }
-.bar .track { height: 10px; background: var(--paper); border-radius: 5px; overflow: hidden; margin-top: 4px; }
-.bar .fill { height: 100%; background: var(--accent); border-radius: 5px; }
-.bar b { text-align: right; font-variant-numeric: tabular-nums; }
-.chips { display: inline-flex; gap: 4px; margin-right: 6px; vertical-align: middle; }
-.chip { font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 10px; color: #fff; }
-.chip.Li { background: var(--li); } .chip.Pb { background: var(--pb); } .chip.V { background: var(--v); }
-.tablewrap { overflow-x: auto; }
-table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
-th, td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
-th:first-child, td:first-child { text-align: left; white-space: normal; }
-th { color: var(--muted); font-weight: 500; font-size: 12px; }
-td.best { font-weight: 600; color: var(--accent); }
+.check { display: flex; gap: 9px; align-items: flex-start; font-size: 14px; margin: 7px 0; }
+.check input { margin-top: 4px; accent-color: var(--ink); width: 15px; height: 15px; }
+.check label { color: var(--ink); font-size: 14px; margin: 0; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--ink); }
+.seg button { font: 500 13px var(--body); padding: 7px 8px; border: 0; background: transparent; color: var(--ink); cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--ink); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.slider { display: grid; grid-template-columns: 1fr 96px 38px; gap: 8px; align-items: center; font-size: 13px; }
+.slider label { margin: 0; color: var(--ink); font-size: 13px; }
+.slider input { width: 100%; accent-color: var(--ink); }
+.slider output { text-align: right; font: 600 13px var(--mono); font-variant-numeric: tabular-nums; }
 .note { font-size: 12.5px; color: var(--muted); max-width: 80ch; }
-.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
-.kpi { background: var(--paper); border-radius: 8px; padding: 10px 12px; }
-.kpi .n { font: 700 20px/1.2 var(--display); font-variant-numeric: tabular-nums; }
-.kpi .l { font-size: 12px; color: var(--muted); }
-.meta { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
-.meta a { color: var(--accent); }
-.warn { margin: 12px 0 0; max-width: 90ch; font-size: 13.5px; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--warn); border-radius: 8px; padding: 10px 14px; }
-.btn { font: 600 13.5px var(--body); color: #fff; background: var(--accent); border: 0; border-radius: 6px; padding: 7px 14px; cursor: pointer; }
-.btn:hover { filter: brightness(1.08); }
+
+/* medidor em células, como o nível de uma bateria */
+.meters { display: grid; gap: 14px; }
+.meter .top { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; font-size: 13.5px; }
+.meter .top b { font: 600 15px var(--mono); font-variant-numeric: tabular-nums; }
+.cells { display: grid; grid-template-columns: repeat(20, 1fr); gap: 3px; margin-top: 6px; height: 14px; }
+.cells i { background: var(--line); }
+.cells i.on { background: var(--ink); }
+.meter.first .cells i.on { background: var(--accent); }
+.tri { display: inline-flex; gap: 3px; margin-right: 8px; vertical-align: -2px; }
+.tri i { width: 10px; height: 14px; display: inline-block; }
+.tri i.Li { background: var(--li); } .tri i.Pb { background: var(--pb); } .tri i.V { background: var(--v); }
+.chip { font: 600 11px var(--mono); padding: 1px 5px; color: #fff; }
+.chip.Li { background: var(--li); } .chip.Pb { background: var(--pb); } .chip.V { background: var(--v); }
+
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+td { font-family: var(--mono); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+th, td { padding: 7px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; white-space: normal; font-family: var(--body); font-size: 13px; }
+th { color: var(--muted); font: 600 11px var(--mono); text-transform: uppercase; letter-spacing: .04em; vertical-align: bottom; }
+td.best { font-weight: 600; background: rgba(232, 163, 23, .2); }
+tr.fhead td { padding-top: 14px; font: 800 15px var(--display); text-transform: uppercase; letter-spacing: .03em; border-bottom: 2px solid var(--ink); }
+caption { caption-side: bottom; text-align: left; padding-top: 10px; }
+footer { max-width: 1280px; margin: 0 auto; padding: 0 24px 40px; }
+footer .panel { font-size: 12.5px; color: var(--muted); }
 .busy { opacity: .55; transition: opacity .15s; }
-@media (prefers-reduced-motion: reduce) { .meta { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
-.meta a { color: var(--accent); }
-.warn { margin: 12px 0 0; max-width: 90ch; font-size: 13.5px; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--warn); border-radius: 8px; padding: 10px 14px; }
-.btn { font: 600 13.5px var(--body); color: #fff; background: var(--accent); border: 0; border-radius: 6px; padding: 7px 14px; cursor: pointer; }
-.btn:hover { filter: brightness(1.08); }
-.busy { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .busy { transition: none; } }
+@media (max-width: 960px) {
+  .band-inner { grid-template-columns: 1fr; gap: 22px; }
+  .readouts { grid-template-columns: repeat(2, 1fr); } .ro + .ro { border-left: 0; padding-left: 0; } .ro { padding-right: 8px; }
+  main { grid-template-columns: 1fr; padding: 16px; } .band-inner { padding: 22px 16px; } footer { padding: 0 16px 32px; }
+}
+@media (max-width: 520px) { .rack { grid-template-columns: 1fr; } .slot { min-height: 0; } .slot .tec { font-size: 32px; } }
 </style>
 </head>
 <body>
-<header>
-  <h1>Qual bateria, para qual função e lugar</h1>
-  <p class="lede">Compara lítio (LFP), chumbo-ácido e fluxo de vanádio em três funções: ciclo diário, reserva longa e no-break. Conta 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de milhares de sorteios dos pesos e das premissas incertas.</p>
-  <p class="meta">Teiu Energia · versão 1.0 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a></p>
-  <p class="warn"><b>Leia antes de usar.</b> Preços, taxas de falha, tempos de conserto, chances de acidente e frações de resíduo que escapam da reciclagem são hipóteses de partida, não medições: não há base pública de falhas de baterias estacionárias no Brasil. A ferramenta serve para comparar opções e ver o que muda a escolha, não para dimensionar um projeto.</p>
-</header>
+<div class="band">
+  <div class="band-inner">
+    <div>
+      <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
+      <h1>Qual bateria, para qual função e lugar</h1>
+      <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 8 mil sorteios dos pesos e das premissas incertas.</p>
+      <p class="meta">Versão 1.1 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="warn"><b>Leia antes de usar.</b> Preços, taxas de falha, tempos de conserto, chances de acidente e frações de resíduo que escapam da reciclagem são hipóteses de partida, não medições: não há base pública de falhas de baterias estacionárias no Brasil. Serve para comparar opções e ver o que muda a escolha, não para dimensionar um projeto.</p>
+    </div>
+    <div id="results-top" aria-live="polite">
+      <div class="rack-label"><span>Combinação recomendada</span><span id="lugarNome"></span></div>
+      <div class="rack" id="rack"></div>
+      <div class="verdict"><div class="big-pct" id="bigPct"></div><div class="t" id="verdict"></div></div>
+      <div class="readouts" id="kpis"></div>
+      <div class="copyrow"><button type="button" id="copy" class="btn">Copiar resultado</button><span id="copyMsg" role="status"></span></div>
+    </div>
+  </div>
+</div>
 <main>
   <section class="stack" aria-label="Escolhas">
     <div class="panel">
+      <h2><span class="num">01</span>O lugar</h2>
       <label for="preset">Comece por um lugar parecido</label>
       <select id="preset">
         <option value="quilombo_isolado">Comunidade quilombola isolada (sem rede)</option>
@@ -102,10 +161,7 @@ td.best { font-weight: 600; color: var(--accent); }
         <option value="turistica">Vila turística conectada (Taipus de Fora)</option>
         <option value="hospital">Hospital regional conectado</option>
       </select>
-    </div>
-    <div class="panel">
-      <h2>O lugar</h2>
-      <div class="check"><input type="checkbox" id="isolated"><label for="isolated" style="color:var(--ink);font-size:14px">Sem rede (sistema isolado)</label></div>
+      <div class="check" style="margin-top:12px"><input type="checkbox" id="isolated"><label for="isolated">Sem rede (sistema isolado)</label></div>
       <div class="row2" id="gridFields">
         <div><label for="horas">Horas sem luz por ano</label><input type="number" id="horas" min="0" step="1"></div>
         <div><label for="carga">Carga crítica média (kW)</label><input type="number" id="carga" min="0" step="1"></div>
@@ -116,60 +172,58 @@ td.best { font-weight: 600; color: var(--accent); }
       </div>
       <div class="row2" style="margin-top:10px">
         <div><label for="temp">Temperatura do abrigo (°C)</label><input type="number" id="temp" min="20" max="40" step="1"></div>
-        <div><label for="familias">Famílias (para dividir o custo)</label><input type="number" id="familias" min="0" step="1"></div>
+        <div><label for="familias">Famílias (divide o custo)</label><input type="number" id="familias" min="0" step="1"></div>
       </div>
-      <div class="check"><input type="checkbox" id="costa"><label for="costa" style="color:var(--ink);font-size:14px">Litoral (maresia)</label></div>
+      <div class="check"><input type="checkbox" id="costa"><label for="costa">Litoral (maresia)</label></div>
       <h3>Quem conserta</h3>
       <div class="seg" role="group" aria-label="Distância do técnico especializado"><button type="button" id="perto" aria-pressed="false">Técnico a poucas horas</button><button type="button" id="longe" aria-pressed="false">Técnico longe</button></div>
       <h3>Quem paga a troca da bateria</h3>
       <div class="seg" role="group" aria-label="Quem paga a troca"><button type="button" id="distrib" aria-pressed="false">Distribuidora</button><button type="button" id="comun" aria-pressed="false">Comunidade</button></div>
-      <h3>Políticas</h3>
-      <div class="check"><input type="checkbox" id="agentes"><label for="agentes" style="color:var(--ink);font-size:14px">Agentes comunitários de energia treinados</label></div>
-      <div class="check"><input type="checkbox" id="eletrolito"><label for="eletrolito" style="color:var(--ink);font-size:14px">Eletrólito de vanádio nacional e arrendado</label></div>
-      <div class="check"><input type="checkbox" id="chumbo_lr"><label for="chumbo_lr" style="color:var(--ink);font-size:14px">Logística reversa do chumbo garantida</label></div>
-      <div class="slider" style="margin-top:10px"><label for="rate">Taxa de desconto real</label><input type="range" id="rate" min="0" max="12" step="1"><output id="rateOut" for="rate"></output></div>
     </div>
     <div class="panel">
-      <h2>O tamanho de cada função</h2>
+      <h2><span class="num">02</span>Políticas</h2>
+      <div class="check"><input type="checkbox" id="agentes"><label for="agentes">Agentes comunitários de energia treinados</label></div>
+      <div class="check"><input type="checkbox" id="eletrolito"><label for="eletrolito">Eletrólito de vanádio nacional e arrendado</label></div>
+      <div class="check"><input type="checkbox" id="chumbo_lr"><label for="chumbo_lr">Logística reversa do chumbo garantida</label></div>
+      <div class="slider" style="margin-top:12px"><label for="rate">Taxa de desconto real</label><input type="range" id="rate" min="0" max="12" step="1"><output id="rateOut" for="rate"></output></div>
+    </div>
+    <div class="panel">
+      <h2><span class="num">03</span>Tamanho de cada função</h2>
       <div class="grid3">
-        <span class="h">Função</span><span class="h">kW</span><span class="h">kWh úteis</span><span class="h">ciclos/ano</span>
+        <span class="h">Função</span><span class="h">kW</span><span class="h">kWh úteis</span><span class="h">Ciclos/ano</span>
         <span>Ciclo diário</span><input type="number" id="F1P" aria-label="Ciclo diário, kW"><input type="number" id="F1E" aria-label="Ciclo diário, kWh úteis"><input type="number" id="F1c" aria-label="Ciclo diário, ciclos por ano">
         <span>Reserva longa</span><input type="number" id="F2P" aria-label="Reserva longa, kW"><input type="number" id="F2E" aria-label="Reserva longa, kWh úteis"><input type="number" id="F2c" aria-label="Reserva longa, ciclos por ano">
         <span>No-break</span><input type="number" id="F3P" aria-label="No-break, kW"><input type="number" id="F3E" aria-label="No-break, kWh úteis"><input type="number" id="F3c" aria-label="No-break, ciclos por ano">
       </div>
     </div>
     <div class="panel">
-      <h2>O que pesa mais aqui</h2>
-      <div class="stack" style="gap:8px" id="weights"></div>
-      <p class="note" style="margin:8px 0 0">Os pesos são normalizados para somar 100%. Numa comunidade quilombola, eles devem sair da consulta prévia.</p>
+      <h2><span class="num">04</span>O que pesa mais</h2>
+      <div class="stack" style="gap:9px" id="weights"></div>
+      <p class="note" style="margin:10px 0 0">Os pesos são normalizados para somar 100%. Numa comunidade quilombola, eles devem sair da consulta prévia.</p>
     </div>
   </section>
   <section class="stack" aria-label="Resultado" id="results">
     <div class="panel">
-      <div class="verdict"><div class="big" id="verdict"></div><div class="sub" id="verdictSub"></div></div>
-      <div class="kpis" id="kpis" style="margin-top:14px"></div>
-      <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button type="button" id="copy" class="btn">Copiar resultado</button><span id="copyMsg" class="note" role="status"></span></div>
+      <h2><span class="num">05</span>Chance de ser a melhor</h2>
+      <div class="meters" id="bars"></div>
+      <p class="note">Cada célula vale 5%. São 40 sorteios de premissas (preços, falhas, tempo de conserto, acidentes, atraso na troca, entre metade e o dobro) × 200 sorteios de pesos em torno dos escolhidos.</p>
     </div>
     <div class="panel">
-      <h2>Chance de cada combinação ser a melhor</h2>
-      <div class="bars" id="bars"></div>
-      <p class="note">8 mil sorteios: 40 de premissas (preços, falhas, tempo de conserto, acidentes, atraso na troca, entre metade e o dobro) × 200 de pesos em torno dos escolhidos.</p>
-    </div>
-    <div class="panel">
-      <h2>As melhores combinações lado a lado</h2>
+      <h2><span class="num">06</span>As melhores lado a lado</h2>
       <div class="tablewrap"><table id="cmp"></table></div>
     </div>
     <div class="panel">
-      <h2>Cada tecnologia em cada função</h2>
+      <h2><span class="num">07</span>Cada tecnologia em cada função</h2>
       <div class="tablewrap"><table id="fn"></table></div>
-      <p class="note">Múltiplo = custo total em 30 anos ÷ investimento: quanto da solução se paga depois da compra. Dias parados = falhas × tempo até o conserto + atraso na troca.</p>
-    </div>
-    <div class="panel note">
-      Método: Teiu Energia, "Case Maraú: armazenamento híbrido para resiliência energética" (2026), seção "Modelo de decisão". Fontes de contexto: Rede Energia &amp; Comunidades (IEMA, 2026) e CONAQ (2026).<br><br>
-      As taxas de falha, os tempos de conserto, as chances de acidente e as frações de resíduo que escapam da reciclagem são hipóteses: não há base pública de falhas de baterias estacionárias no Brasil. Preços em reais de 2026. O método completo está no relatório "Case Maraú: armazenamento híbrido para resiliência energética".
+      <p class="note">Múltiplo = custo total em 30 anos ÷ investimento: quanto da solução se paga depois da compra. Dias parados = falhas × tempo até o conserto + atraso na troca. O fundo amarelo indica o melhor valor de cada função.</p>
     </div>
   </section>
 </main>
+<footer>
+  <div class="panel">
+    Método: Teiu Energia, "Case Maraú: armazenamento híbrido para resiliência energética" (2026), seção "Modelo de decisão". Fontes de contexto: Rede Energia &amp; Comunidades (IEMA, 2026) e CONAQ (2026). Preços em reais de 2026.
+  </div>
+</footer>
 <script>
 // Modelo por funções + ciclo de vida + risco + multicritério (port do mcda.py)
 const H = 30, PCS_LIFE = 15, EF_GRID = 0.04;
@@ -393,42 +447,54 @@ function fromForm() {
   schedule();
 }
 let timer = null;
-function schedule() { $('results').classList.add('busy'); clearTimeout(timer); timer = setTimeout(run, 120); }
+function schedule() { $('results').classList.add('busy'); $('results-top').classList.add('busy'); clearTimeout(timer); timer = setTimeout(run, 120); }
 function run() {
   const ctx = buildCtx(S); const r = smaa(ctx, { nP: 40, nW: 200 });
   const idx = [...r.prob.keys()].sort((a, b) => r.prob[b] - r.prob[a] || r.score[a] - r.score[b]);
-  const best = r.base[idx[0]];
-  $('verdict').innerHTML = label(best.combo);
-  $('verdictSub').textContent = `Melhor em ${Math.round(r.prob[idx[0]] * 100)}% dos sorteios` + (r.prob[idx[1]] > 0.15 ? `; a segunda opção, ${label(r.base[idx[1]].combo).toLowerCase()}, em ${Math.round(r.prob[idx[1]] * 100)}%.` : '.');
-  const fam = S.familias > 0 ? ` · ${brl(best.recorrente / S.familias / 12).replace(' mil', ' mil')}` : '';
-  const perFam = S.familias > 0 ? 'R$ ' + num(best.recorrente / S.familias / 12) + ' por família/mês' : 'custo recorrente';
+  const best = r.base[idx[0]]; const [f1, f2, f3, sep] = best.combo;
+  const NOME = { Li: 'Lítio', Pb: 'Chumbo', V: 'Vanádio' }, COR = { Li: 'var(--li)', Pb: 'var(--pb)', V: 'var(--v)' };
+  const shared = f1 === f2 && !sep;
+  const slot = (pos, k, obs, cls) => `<div class="slot ${cls || ''}" style="--c:${COR[k]}"><div class="pos">${pos}</div><div class="tec">${NOME[k]}</div><div class="obs">${obs}</div></div>`;
+  $('rack').innerHTML = slot('1 · Ciclo diário', f1, shared ? 'mesmo bloco da reserva' : (f1 === f2 ? 'bloco próprio' : 'bloco próprio'), shared ? 'joined-left' : '')
+    + slot('2 · Reserva longa', f2, shared ? 'mesmo bloco do ciclo' : (f1 === f2 ? 'segundo bloco, independente' : 'bloco próprio'), shared ? 'joined-right' : '')
+    + slot('3 · No-break', f3, 'junto às cargas críticas');
+  $('lugarNome').textContent = '';
+  $('bigPct').textContent = Math.round(r.prob[idx[0]] * 100) + '%';
+  const second = r.prob[idx[1]] > 0.1 ? `<small>Segunda opção, em ${Math.round(r.prob[idx[1]] * 100)}%: ${label(r.base[idx[1]].combo).toLowerCase()}.</small>` : `<small>Nenhuma outra combinação passa de 10%.</small>`;
+  $('verdict').innerHTML = `dos sorteios apontam esta combinação.${second}`;
+  const perFam = S.familias > 0 ? `R$ ${num(best.recorrente / S.familias / 12)} por família/mês` : 'trocas e O&M';
   $('kpis').innerHTML = [
-    [brl(best.capex), 'investimento'], [brl(best.custo), 'custo em 30 anos (valor presente)'],
+    [brl(best.capex), 'investimento'], [brl(best.custo), 'custo em 30 anos, valor presente'],
     [num(best.mult, 1) + '×', 'custo total ÷ investimento'], [brl(best.recorrente) + '/ano', perFam],
     [num(best.ens, 0) + ' kWh', 'energia crítica perdida por ano'],
-  ].map(([n, l]) => `<div class="kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
-  $('bars').innerHTML = idx.slice(0, 6).filter((i, j) => j < 2 || r.prob[i] >= 0.01).map(i => `<div class="bar"><div>${chips(r.base[i].combo)}${label(r.base[i].combo)}<div class="track"><div class="fill" style="width:${(r.prob[i] * 100).toFixed(1)}%"></div></div></div><b>${Math.round(r.prob[i] * 100)}%</b></div>`).join('');
+  ].map(([n, l]) => `<div class="ro"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+  const tri = c => `<span class="tri" aria-hidden="true"><i class="${c[0]}"></i><i class="${c[1]}"></i><i class="${c[2]}"></i></span>`;
+  $('bars').innerHTML = idx.slice(0, 6).filter((i, j) => j < 2 || r.prob[i] >= 0.01).map((i, j) => {
+    const on = Math.round(r.prob[i] * 20);
+    return `<div class="meter ${j === 0 ? 'first' : ''}"><div class="top"><span>${tri(r.base[i].combo)}${label(r.base[i].combo)}</span><b>${Math.round(r.prob[i] * 100)}%</b></div><div class="cells" aria-hidden="true">${Array.from({ length: 20 }, (_, q) => `<i class="${q < on ? 'on' : ''}"></i>`).join('')}</div></div>`;
+  }).join('');
   const top = idx.slice(0, 4).map(i => r.base[i]);
   const rowsC = [['Investimento', p => brl(p.capex), p => p.capex], ['Custo em 30 anos (valor presente)', p => brl(p.custo), p => p.custo], ['Custo total ÷ investimento', p => num(p.mult, 1) + '×', p => p.mult],
     ['Custo recorrente por ano', p => brl(p.recorrente), p => p.recorrente], ['Energia crítica perdida (kWh/ano)', p => num(p.ens, 0), p => p.ens],
     ['Carbono em 30 anos (t CO₂e)', p => num(p.co2, 0), p => p.co2], ['Resíduo tóxico em risco (kg equiv. chumbo)', p => num(p.tox, 0), p => p.tox],
     ['Perda esperada por acidente (30 anos)', p => brl(p.acid), p => p.acid]];
-  $('cmp').innerHTML = `<thead><tr><th>Indicador</th>${top.map(p => `<th>${chips(p.combo)}</th>`).join('')}</tr></thead><tbody>` +
+  $('cmp').innerHTML = `<thead><tr><th>Indicador</th>${top.map((p, j) => `<th>${tri(p.combo)}${String.fromCharCode(65 + j)}</th>`).join('')}</tr></thead><tbody>` +
     rowsC.map(([n, f, v]) => { const m = Math.min(...top.map(v)); return `<tr><td>${n}</td>${top.map(p => `<td class="${v(p) === m ? 'best' : ''}">${f(p)}</td>`).join('')}</tr>`; }).join('') +
-    `</tbody><caption class="note" style="caption-side:bottom;text-align:left;padding-top:8px">${top.map(p => chips(p.combo) + label(p.combo)).join('<br>')}<br>Em destaque, o melhor valor de cada linha. Ordem das letras: ciclo · reserva · no-break.</caption>`;
+    `</tbody><caption class="note">${top.map((p, j) => `<b>${String.fromCharCode(65 + j)}</b> ${label(p.combo)}`).join('<br>')}<br>Cores na ordem ciclo · reserva · no-break. O fundo amarelo indica o melhor valor de cada linha.</caption>`;
   const ctxE = r.ctx, tech = r.tech, fn = { F1: 'Ciclo diário', F2: 'Reserva longa', F3: 'No-break' };
-  let html = '<thead><tr><th>Função e tecnologia</th><th>Investimento</th><th>30 anos (VP)</th><th>Múltiplo</th><th>Vida (anos)</th><th>Dias parados/ano</th><th>Carbono (t)</th><th>Tóxico em risco (kg)</th></tr></thead><tbody>';
+  let html = '<thead><tr><th>Tecnologia</th><th>Investimento</th><th>30 anos (VP)</th><th>Múltiplo</th><th>Vida (anos)</th><th>Dias parados/ano</th><th>Carbono (t)</th><th>Tóxico em risco (kg)</th></tr></thead><tbody>';
   for (const f of ['F1', 'F2', 'F3']) {
     const as = KS.map(k => asset(k, S.F[f].P, S.F[f].E, S.F[f].cyc, ctxE, tech, S.rate));
     const mn = key => Math.min(...as.map(a => a[key]));
-    as.forEach((a, j) => { html += `<tr><td>${j === 0 ? `<b>${fn[f]}</b> · ` : ''}<span class="chip ${a.k}">${a.k}</span> ${BASE_TECH[a.k].nome}</td>
+    html += `<tr class="fhead"><td colspan="8">${fn[f]}</td></tr>`;
+    as.forEach(a => { html += `<tr><td><span class="chip ${a.k}">${a.k}</span> ${BASE_TECH[a.k].nome}</td>
       <td class="${a.capex === mn('capex') ? 'best' : ''}">${brl(a.capex)}</td><td class="${a.pv === mn('pv') ? 'best' : ''}">${brl(a.pv)}</td>
       <td class="${a.mult === mn('mult') ? 'best' : ''}">${num(a.mult, 1)}×</td><td>${num(a.life, 1)}</td><td class="${a.U === mn('U') ? 'best' : ''}">${num(a.U * 365, a.U * 365 < 10 ? 1 : 0)}</td>
       <td class="${a.gwp === mn('gwp') ? 'best' : ''}">${num(a.gwp, 0)}</td><td class="${a.tox === mn('tox') ? 'best' : ''}">${num(a.tox, 0)}</td></tr>`; });
   }
   $('fn').innerHTML = html + '</tbody>';
   LAST = { r, idx };
-  $('results').classList.remove('busy');
+  $('results').classList.remove('busy'); $('results-top').classList.remove('busy');
 }
 let LAST = null;
 function resumo() {

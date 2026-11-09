@@ -43,7 +43,7 @@ h1 { font: 800 clamp(38px, 5vw, 58px)/.92 var(--display); text-transform: upperc
 .warn b { color: var(--accent); font-weight: 600; }
 
 /* o rack */
-.rack-label { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 10px; }
+.rack-label { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-bottom: 14px; }
 .rack-label span { font: 600 12px/1 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--band-muted); }
 .rack { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .slot { border: 1px solid var(--band-line); background: linear-gradient(180deg, rgba(255,255,255,.03), transparent); padding: 12px 14px 14px; position: relative; min-height: 132px; }
@@ -67,9 +67,19 @@ h1 { font: 800 clamp(38px, 5vw, 58px)/.92 var(--display); text-transform: upperc
 #copyMsg { font-size: 12.5px; color: var(--band-muted); }
 
 /* corpo */
-main { display: grid; grid-template-columns: minmax(300px, 400px) 1fr; gap: 24px; padding: 24px; max-width: 1280px; margin: 0 auto; align-items: start; }
+main { display: grid; gap: 16px; padding: 24px; max-width: 1280px; margin: 0 auto; }
+.step { margin: 0; font-size: 14px; color: var(--muted); max-width: 80ch; }
+.inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; align-items: start; }
+.to-result { justify-self: start; font: 600 13px var(--body); color: var(--ink); border: 1px solid var(--ink); padding: 8px 14px; text-decoration: none; }
+.to-result:hover { background: var(--ink); color: var(--paper); }
+.band-inner.intro { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: end; }
+.intro-side .warn { margin: 0; max-width: none; }
+.result-band { border-top: 3px solid var(--accent); }
+.result-inner { max-width: 1280px; margin: 0 auto; padding: 26px 24px 28px; }
+h2.on-band { color: var(--band-ink); margin: 0; }
+main.after { padding-top: 24px; }
 .stack { display: grid; gap: 14px; }
-main > *, .band-inner > *, .stack > * { min-width: 0; }
+main > *, .band-inner > *, .stack > *, .inputs > * { min-width: 0; }
 .panel { background: var(--surface); border: 1px solid var(--line); padding: 16px 18px; }
 h2 { font: 800 22px/1 var(--display); text-transform: uppercase; letter-spacing: .02em; margin: 0 0 12px; display: flex; align-items: baseline; gap: 10px; }
 h2 .num { font: 600 11px/1 var(--mono); color: var(--accent); background: var(--band); padding: 4px 6px; letter-spacing: .06em; }
@@ -126,32 +136,29 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
 @media (max-width: 960px) {
   .band-inner { grid-template-columns: 1fr; gap: 22px; }
   .readouts { grid-template-columns: repeat(2, 1fr); } .ro + .ro { border-left: 0; padding-left: 0; } .ro { padding-right: 8px; }
-  main { grid-template-columns: 1fr; padding: 16px; } .band-inner { padding: 22px 16px; } footer { padding: 0 16px 32px; }
+  main { padding: 16px; } .band-inner { padding: 22px 16px; } .band-inner.intro { grid-template-columns: 1fr; } .result-inner { padding: 22px 16px; } footer { padding: 0 16px 32px; }
 }
 @media (max-width: 520px) { .rack { grid-template-columns: 1fr; } .slot { min-height: 0; } .slot .tec { font-size: 32px; } }
 </style>
 </head>
 <body>
 <div class="band">
-  <div class="band-inner">
+  <div class="band-inner intro">
     <div>
       <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
       <h1>Qual bateria, para qual função e lugar</h1>
       <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 8 mil sorteios dos pesos e das premissas incertas.</p>
-      <p class="meta">Versão 1.2 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="meta">Versão 1.3 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+    </div>
+    <div class="intro-side">
       <p class="warn"><b>Leia antes de usar.</b> Preços, taxas de falha, tempos de conserto, chances de acidente e frações de resíduo que escapam da reciclagem são hipóteses de partida, não medições: não há base pública de falhas de baterias estacionárias no Brasil. Serve para comparar opções e ver o que muda a escolha, não para dimensionar um projeto.</p>
     </div>
-    <div id="results-top" aria-live="polite">
-      <div class="rack-label"><span>Combinação recomendada</span><span id="lugarNome"></span></div>
-      <div class="rack" id="rack"></div>
-      <div class="verdict"><div class="big-pct" id="bigPct"></div><div class="t" id="verdict"></div></div>
-      <div class="readouts" id="kpis"></div>
-      <div class="copyrow"><button type="button" id="copy" class="btn">Copiar resultado</button><span id="copyMsg" role="status"></span></div>
     </div>
   </div>
 </div>
 <main>
-  <section class="stack" aria-label="Escolhas">
+  <p class="step">Ajuste o lugar, as políticas, o tamanho de cada função e os pesos. A recomendação aparece logo abaixo e se atualiza a cada mudança.</p>
+  <section class="inputs" aria-label="Escolhas">
     <div class="panel">
       <h2><span class="num">01</span>O lugar</h2>
       <label for="preset">Comece por um lugar parecido</label>
@@ -213,18 +220,29 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
       <p class="note" style="margin:10px 0 0">Os pesos são normalizados para somar 100%. Numa comunidade quilombola, eles devem sair da consulta prévia.</p>
     </div>
   </section>
-  <section class="stack" aria-label="Resultado" id="results">
+  <a class="to-result" href="#resultado">Ver a recomendação ↓</a>
+</main>
+<section class="band result-band" id="resultado" aria-label="Recomendação">
+    <div id="results-top" class="result-inner" aria-live="polite">
+      <div class="rack-label"><h2 class="on-band"><span class="num">05</span>Combinação recomendada</h2><span id="lugarNome"></span></div>
+      <div class="rack" id="rack"></div>
+      <div class="verdict"><div class="big-pct" id="bigPct"></div><div class="t" id="verdict"></div></div>
+      <div class="readouts" id="kpis"></div>
+      <div class="copyrow"><button type="button" id="copy" class="btn">Copiar resultado</button><span id="copyMsg" role="status"></span></div>
+</section>
+<main class="after">
+  <section class="stack details" aria-label="Detalhes do resultado" id="results">
     <div class="panel">
-      <h2><span class="num">05</span>Chance de ser a melhor</h2>
+      <h2><span class="num">06</span>Chance de ser a melhor</h2>
       <div class="meters" id="bars"></div>
       <p class="note">Cada célula vale 5%. São 40 sorteios de premissas (preços, falhas, tempo de conserto, acidentes, atraso na troca, entre metade e o dobro) × 200 sorteios de pesos em torno dos escolhidos.</p>
     </div>
     <div class="panel">
-      <h2><span class="num">06</span>As melhores lado a lado</h2>
+      <h2><span class="num">07</span>As melhores lado a lado</h2>
       <div class="tablewrap"><table id="cmp"></table></div>
     </div>
     <div class="panel">
-      <h2><span class="num">07</span>Cada tecnologia em cada função</h2>
+      <h2><span class="num">08</span>Cada tecnologia em cada função</h2>
       <div class="tablewrap"><table id="fn"></table></div>
       <p class="note">Múltiplo = custo total em 30 anos ÷ investimento: quanto da solução se paga depois da compra. Dias parados = falhas × tempo até o conserto + atraso na troca. O fundo amarelo indica o melhor valor de cada função.</p>
     </div>

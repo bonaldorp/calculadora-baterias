@@ -49,4 +49,4 @@ Fontes de contexto:
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.pt-br). O uso e a adaptação são livres, desde que a Teiu Energia seja citada.
 
-Versão 1.2, novembro de 2026.
+Versão 1.3, novembro de 2026.

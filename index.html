@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Qual bateria, para qual função e lugar</title>
+<meta name="author" content="Teiu Energia">
+<meta name="description" content="Compara lítio, chumbo-ácido e fluxo de vanádio por função e por lugar, com custo de 30 anos, tempo parado, resíduo tóxico e risco de acidente.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root {
+  /* Ferramenta em duas colunas: escolhas à esquerda, resultado à direita; cores das tecnologias iguais às do relatório */
+  --paper: #f3f5f4; --surface: #ffffff; --ink: #18252b; --muted: #5b6b71; --line: #d7dfdd; --accent: #0f6e63;
+  --li: #3d7fd9; --pb: #e3784d; --v: #2fae86; --warn: #b5562b;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif; --body: "IBM Plex Sans", "Segoe UI", Roboto, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #10181b; --surface: #172227; --ink: #e6eeec; --muted: #9aaeb2; --line: #2b3a3f; --accent: #3fc0ad;
+  --li: #6aa2f0; --pb: #f09a74; --v: #52c9a2; --warn: #f0a07a; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #10181b; --surface: #172227; --ink: #e6eeec; --muted: #9aaeb2; --line: #2b3a3f; --accent: #3fc0ad;
+  --li: #6aa2f0; --pb: #f09a74; --v: #52c9a2; --warn: #f0a07a; color-scheme: dark; }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--paper); color: var(--ink); font: 15px/1.5 var(--body); }
+header { padding: 24px 24px 8px; max-width: 1280px; margin: 0 auto; }
+h1 { font: 700 26px/1.2 var(--display); margin: 0 0 6px; text-wrap: balance; }
+h2 { font: 600 17px/1.3 var(--display); margin: 0 0 10px; text-wrap: balance; }
+h3 { font: 600 14px/1.3 var(--display); margin: 14px 0 6px; text-transform: none; color: var(--muted); }
+.lede { color: var(--muted); max-width: 70ch; margin: 0; }
+main { display: grid; grid-template-columns: minmax(300px, 380px) 1fr; gap: 20px; padding: 16px 24px 40px; max-width: 1280px; margin: 0 auto; align-items: start; }
+@media (max-width: 860px) { main { grid-template-columns: 1fr; padding: 12px 16px 32px; } header { padding: 20px 16px 4px; } }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; }
+.stack { display: grid; gap: 16px; }
+label { display: block; font-size: 13px; color: var(--muted); }
+select, input[type=number] { width: 100%; font: inherit; color: var(--ink); background: var(--paper); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; }
+input[type=number] { font-variant-numeric: tabular-nums; }
+select:focus-visible, input:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.grid3 { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 6px; align-items: center; font-size: 13px; }
+.grid3 .h { color: var(--muted); font-size: 12px; }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; color: var(--ink); margin: 6px 0; }
+.check input { margin-top: 4px; accent-color: var(--accent); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+.seg button { font: inherit; font-size: 13px; padding: 5px 10px; border: 0; background: var(--paper); color: var(--ink); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+.slider { display: grid; grid-template-columns: 1fr 120px 40px; gap: 8px; align-items: center; font-size: 13px; }
+.slider input { width: 100%; accent-color: var(--accent); }
+.slider output { text-align: right; font-variant-numeric: tabular-nums; }
+.verdict { border-left: 4px solid var(--accent); padding: 4px 0 4px 14px; }
+.verdict .big { font: 700 21px/1.3 var(--display); text-wrap: balance; }
+.verdict .sub { color: var(--muted); margin-top: 4px; }
+.bars { display: grid; gap: 8px; }
+.bar { display: grid; grid-template-columns: minmax(0, 1fr) 54px; gap: 8px; align-items: center; font-size: 13.5px; }
+.bar .track { height: 10px; background: var(--paper); border-radius: 5px; overflow: hidden; margin-top: 4px; }
+.bar .fill { height: 100%; background: var(--accent); border-radius: 5px; }
+.bar b { text-align: right; font-variant-numeric: tabular-nums; }
+.chips { display: inline-flex; gap: 4px; margin-right: 6px; vertical-align: middle; }
+.chip { font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 10px; color: #fff; }
+.chip.Li { background: var(--li); } .chip.Pb { background: var(--pb); } .chip.V { background: var(--v); }
+.tablewrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+th, td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; white-space: normal; }
+th { color: var(--muted); font-weight: 500; font-size: 12px; }
+td.best { font-weight: 600; color: var(--accent); }
+.note { font-size: 12.5px; color: var(--muted); max-width: 80ch; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.kpi { background: var(--paper); border-radius: 8px; padding: 10px 12px; }
+.kpi .n { font: 700 20px/1.2 var(--display); font-variant-numeric: tabular-nums; }
+.kpi .l { font-size: 12px; color: var(--muted); }
+.meta { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+.meta a { color: var(--accent); }
+.warn { margin: 12px 0 0; max-width: 90ch; font-size: 13.5px; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--warn); border-radius: 8px; padding: 10px 14px; }
+.btn { font: 600 13.5px var(--body); color: #fff; background: var(--accent); border: 0; border-radius: 6px; padding: 7px 14px; cursor: pointer; }
+.btn:hover { filter: brightness(1.08); }
+.busy { opacity: .55; transition: opacity .15s; }
+@media (prefers-reduced-motion: reduce) { .meta { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
+.meta a { color: var(--accent); }
+.warn { margin: 12px 0 0; max-width: 90ch; font-size: 13.5px; background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--warn); border-radius: 8px; padding: 10px 14px; }
+.btn { font: 600 13.5px var(--body); color: #fff; background: var(--accent); border: 0; border-radius: 6px; padding: 7px 14px; cursor: pointer; }
+.btn:hover { filter: brightness(1.08); }
+.busy { transition: none; } }
+</style>
+</head>
+<body>
+<header>
+  <h1>Qual bateria, para qual função e lugar</h1>
+  <p class="lede">Compara lítio (LFP), chumbo-ácido e fluxo de vanádio em três funções: ciclo diário, reserva longa e no-break. Conta 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de milhares de sorteios dos pesos e das premissas incertas.</p>
+  <p class="meta">Teiu Energia · versão 1.0 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a></p>
+  <p class="warn"><b>Leia antes de usar.</b> Preços, taxas de falha, tempos de conserto, chances de acidente e frações de resíduo que escapam da reciclagem são hipóteses de partida, não medições: não há base pública de falhas de baterias estacionárias no Brasil. A ferramenta serve para comparar opções e ver o que muda a escolha, não para dimensionar um projeto.</p>
+</header>
+<main>
+  <section class="stack" aria-label="Escolhas">
+    <div class="panel">
+      <label for="preset">Comece por um lugar parecido</label>
+      <select id="preset">
+        <option value="quilombo_isolado">Comunidade quilombola isolada (sem rede)</option>
+        <option value="quilombo_linha">Comunidade quilombola em ponta de linha</option>
+        <option value="turistica">Vila turística conectada (Taipus de Fora)</option>
+        <option value="hospital">Hospital regional conectado</option>
+      </select>
+    </div>
+    <div class="panel">
+      <h2>O lugar</h2>
+      <div class="check"><input type="checkbox" id="isolated"><label for="isolated" style="color:var(--ink);font-size:14px">Sem rede (sistema isolado)</label></div>
+      <div class="row2" id="gridFields">
+        <div><label for="horas">Horas sem luz por ano</label><input type="number" id="horas" min="0" step="1"></div>
+        <div><label for="carga">Carga crítica média (kW)</label><input type="number" id="carga" min="0" step="1"></div>
+      </div>
+      <div class="row2" id="isoFields">
+        <div><label for="noite">Energia da noite (kWh/dia)</label><input type="number" id="noite" min="0" step="1"></div>
+        <div><label for="alpha">Parte crítica da carga (%)</label><input type="number" id="alpha" min="0" max="100" step="5"></div>
+      </div>
+      <div class="row2" style="margin-top:10px">
+        <div><label for="temp">Temperatura do abrigo (°C)</label><input type="number" id="temp" min="20" max="40" step="1"></div>
+        <div><label for="familias">Famílias (para dividir o custo)</label><input type="number" id="familias" min="0" step="1"></div>
+      </div>
+      <div class="check"><input type="checkbox" id="costa"><label for="costa" style="color:var(--ink);font-size:14px">Litoral (maresia)</label></div>
+      <h3>Quem conserta</h3>
+      <div class="seg" role="group" aria-label="Distância do técnico especializado"><button type="button" id="perto" aria-pressed="false">Técnico a poucas horas</button><button type="button" id="longe" aria-pressed="false">Técnico longe</button></div>
+      <h3>Quem paga a troca da bateria</h3>
+      <div class="seg" role="group" aria-label="Quem paga a troca"><button type="button" id="distrib" aria-pressed="false">Distribuidora</button><button type="button" id="comun" aria-pressed="false">Comunidade</button></div>
+      <h3>Políticas</h3>
+      <div class="check"><input type="checkbox" id="agentes"><label for="agentes" style="color:var(--ink);font-size:14px">Agentes comunitários de energia treinados</label></div>
+      <div class="check"><input type="checkbox" id="eletrolito"><label for="eletrolito" style="color:var(--ink);font-size:14px">Eletrólito de vanádio nacional e arrendado</label></div>
+      <div class="check"><input type="checkbox" id="chumbo_lr"><label for="chumbo_lr" style="color:var(--ink);font-size:14px">Logística reversa do chumbo garantida</label></div>
+      <div class="slider" style="margin-top:10px"><label for="rate">Taxa de desconto real</label><input type="range" id="rate" min="0" max="12" step="1"><output id="rateOut" for="rate"></output></div>
+    </div>
+    <div class="panel">
+      <h2>O tamanho de cada função</h2>
+      <div class="grid3">
+        <span class="h">Função</span><span class="h">kW</span><span class="h">kWh úteis</span><span class="h">ciclos/ano</span>
+        <span>Ciclo diário</span><input type="number" id="F1P" aria-label="Ciclo diário, kW"><input type="number" id="F1E" aria-label="Ciclo diário, kWh úteis"><input type="number" id="F1c" aria-label="Ciclo diário, ciclos por ano">
+        <span>Reserva longa</span><input type="number" id="F2P" aria-label="Reserva longa, kW"><input type="number" id="F2E" aria-label="Reserva longa, kWh úteis"><input type="number" id="F2c" aria-label="Reserva longa, ciclos por ano">
+        <span>No-break</span><input type="number" id="F3P" aria-label="No-break, kW"><input type="number" id="F3E" aria-label="No-break, kWh úteis"><input type="number" id="F3c" aria-label="No-break, ciclos por ano">
+      </div>
+    </div>
+    <div class="panel">
+      <h2>O que pesa mais aqui</h2>
+      <div class="stack" style="gap:8px" id="weights"></div>
+      <p class="note" style="margin:8px 0 0">Os pesos são normalizados para somar 100%. Numa comunidade quilombola, eles devem sair da consulta prévia.</p>
+    </div>
+  </section>
+  <section class="stack" aria-label="Resultado" id="results">
+    <div class="panel">
+      <div class="verdict"><div class="big" id="verdict"></div><div class="sub" id="verdictSub"></div></div>
+      <div class="kpis" id="kpis" style="margin-top:14px"></div>
+      <div style="margin-top:12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button type="button" id="copy" class="btn">Copiar resultado</button><span id="copyMsg" class="note" role="status"></span></div>
+    </div>
+    <div class="panel">
+      <h2>Chance de cada combinação ser a melhor</h2>
+      <div class="bars" id="bars"></div>
+      <p class="note">8 mil sorteios: 40 de premissas (preços, falhas, tempo de conserto, acidentes, atraso na troca, entre metade e o dobro) × 200 de pesos em torno dos escolhidos.</p>
+    </div>
+    <div class="panel">
+      <h2>As melhores combinações lado a lado</h2>
+      <div class="tablewrap"><table id="cmp"></table></div>
+    </div>
+    <div class="panel">
+      <h2>Cada tecnologia em cada função</h2>
+      <div class="tablewrap"><table id="fn"></table></div>
+      <p class="note">Múltiplo = custo total em 30 anos ÷ investimento: quanto da solução se paga depois da compra. Dias parados = falhas × tempo até o conserto + atraso na troca.</p>
+    </div>
+    <div class="panel note">
+      Método: Teiu Energia, "Case Maraú: armazenamento híbrido para resiliência energética" (2026), seção "Modelo de decisão". Fontes de contexto: Rede Energia &amp; Comunidades (IEMA, 2026) e CONAQ (2026).<br><br>
+      As taxas de falha, os tempos de conserto, as chances de acidente e as frações de resíduo que escapam da reciclagem são hipóteses: não há base pública de falhas de baterias estacionárias no Brasil. Preços em reais de 2026. O método completo está no relatório "Case Maraú: armazenamento híbrido para resiliência energética".
+    </div>
+  </section>
+</main>
+<script>
+// Modelo por funções + ciclo de vida + risco + multicritério (port do mcda.py)
+const H = 30, PCS_LIFE = 15, EF_GRID = 0.04;
+const BASE_TECH = {
+  Li: { nome: 'Lítio (LFP)', cE: 1100, cP: 500, rte: .90, dod: .90, cyc: 6000, cal: 15, om: .015, rep: .75, gwp: 50, aux: .003, lam: 1.0, mttr: 48, acc: 1e-4, acc_cost: 3e6, haz_kg: 0.7, haz_w: 0.2, delay: 0.75 },
+  Pb: { nome: 'Chumbo-ácido', cE: 850, cP: 500, rte: .80, dod: .50, cyc: 2500, cal: 12, om: .010, rep: 1.0, gwp: 40.5, aux: .001, lam: 0.3, mttr: 24, acc: 5e-5, acc_cost: 3e5, haz_kg: 20.0, haz_w: 1.0, delay: 0.25 },
+  V:  { nome: 'Fluxo de vanádio', cE: 1700, cP: 3200, rte: .70, dod: .90, cyc: 1e9, cal: 25, om: .020, rep: 0.0, gwp: 184, aux: .004, lam: 2.0, mttr: 96, acc: 5e-4, acc_cost: 5e5, haz_kg: 54.0, haz_w: 0.3, delay: 1.0, stack_share: 0.4, stack_years: [12, 24], electrolyte_share: 0.6, electrolyte_resid: 0.5 },
+};
+const CRIT = ['custo', 'recorrente', 'ens', 'co2', 'tox', 'acid'];
+const KS = ['Li', 'Pb', 'V'];
+
+function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+function techFor(ctx) {
+  const t = clone(BASE_TECH);
+  if (ctx.eletrolito) { t.V.cE = 1100; t.V.electrolyte_resid = 0.9; t.V.gwp = 61; }
+  return t;
+}
+function effCtx(ctx) {
+  const c = clone(ctx);
+  if (c.agentes) { for (const k of KS) c.mttr_mult[k] = Math.min(c.mttr_mult[k], 1.5); c.p_delay = Math.min(c.p_delay, 0.15); }
+  if (c.chumbo_lr) c.leak.Pb = 0.05;
+  return c;
+}
+
+function life(p, k, cyc, T) {
+  if (k === 'V') return p.cal;
+  const f = k === 'Pb' ? Math.pow(2, -(T - 25) / 10) : (T > 25 ? 0.8 : 1.0);
+  return Math.min(p.cal * f, p.cyc * (k === 'Pb' ? f : 1) / Math.max(cyc, 1e-9));
+}
+
+function asset(k, P, Euse, cyc, ctx, tech, I) {
+  const p = tech[k], T = ctx.T, pv = t => Math.pow(1 + I, -t);
+  let ANN = 0; for (let t = 1; t <= H; t++) ANN += pv(t);
+  const En = Euse / p.dod, capE = p.cE * En, capP = p.cP * P, capex = capE + capP;
+  const L = life(p, k, cyc, T);
+  let reps = [], repCost = [], pcs = [], resid;
+  if (k === 'V') {
+    reps = p.stack_years.slice(); repCost = reps.map(() => p.stack_share * capP);
+    resid = p.electrolyte_resid * p.electrolyte_share * capE;
+  } else {
+    let t = L; while (t < H - 0.5) { reps.push(t); t += L; }
+    repCost = reps.map(() => p.rep * capE); pcs = [PCS_LIFE];
+    const last = reps.length ? reps[reps.length - 1] : 0, rem = Math.max(0, (last + L - H) / L);
+    resid = rem * (reps.length ? p.rep * capE : capE);
+  }
+  const pcsCost = 0.5 * capP, om = p.om * capex, thr = cyc * Euse;
+  const aux = p.aux * En * 365 * (T > 25 ? 1.3 : 1.0);
+  const loss = thr * (1 / p.rte - 1) + aux;
+  const sumRep = repCost.reduce((a, b) => a + b, 0);
+  const pvTot = capex + reps.reduce((s, t, i) => s + repCost[i] * pv(t), 0) + pcs.reduce((s, t) => s + pcsCost * pv(t), 0)
+    + ANN * (om + loss * ctx.tariff) - resid * pv(H);
+  const nominal = capex + sumRep + pcsCost * pcs.length + H * (om + loss * ctx.tariff) - resid;
+  const recur = (sumRep + pcsCost * pcs.length + H * om) / H;
+  const units = k === 'V' ? 1 : 1 + reps.length;
+  const gwp = p.gwp * En * units / 1000 + EF_GRID * loss * H / 1000;
+  const mass = p.haz_kg * En * units;
+  const tox = mass * ctx.leak[k] * p.haz_w;
+  const accCost = p.acc * En / 1000 * H * p.acc_cost;
+  const Ufail = p.lam * p.mttr * ctx.mttr_mult[k] / 8760 * ((ctx.costa && (k === 'Li' || k === 'V')) ? 1.3 : 1) * ((k === 'V' && T > 25) ? 1.5 : 1);
+  const Udelay = ctx.p_delay * p.delay * reps.length / H;
+  return { k, P, Euse, En, capex, life: L, nReps: reps.length, pv: pvTot, nominal, recur, gwp, mass, tox, acid: accCost,
+    Ufail, Udelay, U: Math.min(1, Ufail + Udelay), mult: nominal / capex, ann: ANN };
+}
+
+function portfolio(ctx, f1, f2, f3, sep, tech, I) {
+  const F = ctx.F; const assets = []; let U1, U2, shared;
+  if (f1 === f2 && !sep) {
+    const P = Math.max(F.F1.P, F.F2.P), E = F.F1.E + F.F2.E;
+    const cyc = (F.F1.cyc * F.F1.E + F.F2.cyc * F.F2.E) / E;
+    const a = asset(f1, P, E, cyc, ctx, tech, I); assets.push(['F1+F2', a]); U1 = U2 = a.U; shared = true;
+  } else {
+    const a1 = asset(f1, F.F1.P, F.F1.E, F.F1.cyc, ctx, tech, I), a2 = asset(f2, F.F2.P, F.F2.E, F.F2.cyc, ctx, tech, I);
+    assets.push(['F1', a1], ['F2', a2]); U1 = a1.U; U2 = a2.U; shared = false;
+  }
+  const a3 = asset(f3, F.F3.P, F.F3.E, F.F3.cyc, ctx, tech, I); assets.push(['F3', a3]);
+  const sum = key => assets.reduce((s, [, a]) => s + a[key], 0);
+  const core = ctx.core; let ens, ensNc;
+  if (ctx.isolated) {
+    const both = shared ? U1 : U1 * U2;
+    ens = ctx.alpha * ctx.night_kwh * both * ((1 - core) + core * a3.U); ensNc = (1 - ctx.alpha) * ctx.night_kwh * U1;
+  } else { ens = ctx.E_exp * U2 * ((1 - core) + core * a3.U); ensNc = 0; }
+  const capex = sum('capex'), nominal = sum('nominal');
+  return { combo: [f1, f2, f3, sep], assets, custo: sum('pv'), recorrente: sum('recur'), ens, ensNc, co2: sum('gwp'),
+    tox: sum('tox'), acid: sum('acid'), capex, nominal, mult: nominal / capex, mass: sum('mass') };
+}
+
+function allPortfolios(ctx, tech, I) {
+  const out = [];
+  for (const f1 of KS) for (const f2 of KS) for (const f3 of ['Li', 'Pb']) {
+    out.push(portfolio(ctx, f1, f2, f3, false, tech, I));
+    if (f1 === f2) out.push(portfolio(ctx, f1, f2, f3, true, tech, I));
+  }
+  return out;
+}
+
+function scores(P, w) {
+  const mx = CRIT.map(c => Math.max(...P.map(p => p[c])) || 1);
+  return P.map(p => CRIT.reduce((s, c, i) => s + w[c] * p[c] / mx[i], 0));
+}
+
+// RNG + Dirichlet
+function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function normal(r) { let u = 0, v = 0; while (u === 0) u = r(); while (v === 0) v = r(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); }
+function gamma(r, a) {
+  if (a < 1) return gamma(r, a + 1) * Math.pow(r(), 1 / a);
+  const d = a - 1 / 3, c = 1 / Math.sqrt(9 * d);
+  for (;;) { let x, v; do { x = normal(r); v = 1 + c * x; } while (v <= 0); v = v * v * v; const u = r();
+    if (u < 1 - 0.0331 * x * x * x * x) return d * v; if (Math.log(u) < 0.5 * x * x + d * (1 - v + Math.log(v))) return d * v; }
+}
+function dirichlet(r, alpha) { const g = alpha.map(a => gamma(r, a)); const s = g.reduce((a, b) => a + b, 0); return g.map(x => x / s); }
+
+function perturb(tech, r) {
+  const t = clone(tech), U = (a, b) => a + (b - a) * r();
+  t.Li.cE *= U(.8, 1.25); t.Pb.cE *= U(.85, 1.2); t.V.cE *= U(.65, 1.1); t.V.cP *= U(.8, 1.2);
+  for (const k of KS) { t[k].lam *= U(.5, 2); t[k].mttr *= U(.5, 2); t[k].acc *= U(.3, 3); t[k].delay *= U(.5, 2); }
+  return t;
+}
+
+function smaa(ctxRaw, opts = {}) {
+  const ctx = effCtx(ctxRaw), tech = techFor(ctxRaw), I = ctxRaw.rate;
+  const nP = opts.nP ?? 40, nW = opts.nW ?? 200, conc = opts.conc ?? 15, r = rng(opts.seed ?? 7);
+  const base = allPortfolios(ctx, tech, I); const wins = new Array(base.length).fill(0);
+  const w0 = CRIT.map(c => ctxRaw.w[c]);
+  for (let i = 0; i < nP; i++) {
+    const P = allPortfolios(ctx, perturb(tech, r), I);
+    const mx = CRIT.map(c => Math.max(...P.map(p => p[c])) || 1);
+    const N = P.map(p => CRIT.map((c, j) => p[c] / mx[j]));
+    for (let j = 0; j < nW; j++) {
+      const W = dirichlet(r, w0.map(x => x * conc + 0.3));
+      let best = 0, bs = Infinity;
+      for (let q = 0; q < N.length; q++) { let s = 0; for (let c = 0; c < W.length; c++) s += W[c] * N[q][c]; if (s < bs) { bs = s; best = q; } }
+      wins[best]++;
+    }
+  }
+  const tot = wins.reduce((a, b) => a + b, 0);
+  const wObj = {}; CRIT.forEach(c => wObj[c] = ctxRaw.w[c]);
+  return { base, prob: wins.map(x => x / tot), score: scores(base, wObj), ctx, tech };
+}
+
+const NOMEK = { Li: 'lítio', Pb: 'chumbo', V: 'vanádio' };
+function label(c) {
+  const [f1, f2, f3, sep] = c;
+  if (f1 === f2 && !sep) return `${cap(NOMEK[f1])} faz ciclo e reserva · no-break de ${NOMEK[f3]}`;
+  if (f1 === f2) return `${cap(NOMEK[f1])} em dois blocos independentes · no-break de ${NOMEK[f3]}`;
+  return `Ciclo de ${NOMEK[f1]} · reserva de ${NOMEK[f2]} · no-break de ${NOMEK[f3]}`;
+}
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+const PRESETS = {
+  turistica: { nome: 'Vila turística conectada', F: { F1: { P: 300, E: 600, cyc: 300 }, F2: { P: 280, E: 2000, cyc: 5 }, F3: { P: 30, E: 240, cyc: 3 } },
+    T: 25, costa: true, longe: false, comunidade_paga: false, isolated: false, horas_falta: 36, carga_critica: 137, night_kwh_dia: 0, alpha: 0.3, core: 0.15, familias: 2000,
+    w: { custo: .30, recorrente: .05, ens: .20, co2: .10, tox: .10, acid: .25 } },
+  hospital: { nome: 'Hospital regional conectado', F: { F1: { P: 200, E: 400, cyc: 250 }, F2: { P: 150, E: 3600, cyc: 4 }, F3: { P: 100, E: 100, cyc: 12 } },
+    T: 25, costa: false, longe: false, comunidade_paga: false, isolated: false, horas_falta: 36, carga_critica: 150, night_kwh_dia: 0, alpha: 0.3, core: 0.6, familias: 0,
+    w: { custo: .20, recorrente: .05, ens: .30, co2: .05, tox: .10, acid: .30 } },
+  quilombo_linha: { nome: 'Comunidade quilombola em ponta de linha', F: { F1: { P: 25, E: 50, cyc: 300 }, F2: { P: 15, E: 290, cyc: 5 }, F3: { P: 5, E: 40, cyc: 6 } },
+    T: 30, costa: true, longe: true, comunidade_paga: true, isolated: false, horas_falta: 108, carga_critica: 6, night_kwh_dia: 0, alpha: 0.3, core: 0.4, familias: 100,
+    w: { custo: .20, recorrente: .25, ens: .25, co2: .05, tox: .15, acid: .10 } },
+  quilombo_isolado: { nome: 'Comunidade quilombola isolada (sem rede)', F: { F1: { P: 40, E: 240, cyc: 365 }, F2: { P: 15, E: 290, cyc: 10 }, F3: { P: 5, E: 40, cyc: 12 } },
+    T: 30, costa: true, longe: true, comunidade_paga: true, isolated: true, horas_falta: 0, carga_critica: 0, night_kwh_dia: 240, alpha: 0.3, core: 0.4, familias: 100,
+    w: { custo: .20, recorrente: .25, ens: .30, co2: .05, tox: .15, acid: .05 } },
+};
+
+// converte as escolhas da tela no contexto do modelo
+function buildCtx(s) {
+  return {
+    F: s.F, T: s.T, costa: s.costa, isolated: s.isolated, core: s.core, alpha: s.alpha,
+    E_exp: s.horas_falta * s.carga_critica, night_kwh: s.night_kwh_dia * 365,
+    mttr_mult: s.longe ? { Li: 5, Pb: 1.5, V: 8 } : { Li: 1, Pb: 1, V: 1.5 },
+    leak: s.longe ? { Li: .40, Pb: .30, V: .05 } : { Li: .30, Pb: .05, V: .02 },
+    p_delay: s.comunidade_paga ? 0.5 : 0.05, agentes: s.agentes, chumbo_lr: s.chumbo_lr, eletrolito: s.eletrolito,
+    rate: s.rate, tariff: 0.90, w: s.w,
+  };
+}
+
+if (typeof module !== 'undefined') module.exports = { BASE_TECH, PRESETS, buildCtx, smaa, label, asset, effCtx, techFor, KS, CRIT };
+
+const $ = id => document.getElementById(id);
+const WNOME = { custo: 'Custo em 30 anos', recorrente: 'Custo recorrente (trocas e O&M)', ens: 'Energia crítica perdida', co2: 'Carbono', tox: 'Resíduo tóxico em risco', acid: 'Risco de acidente' };
+let S = null;
+const brl = v => v >= 1e6 ? 'R$ ' + (v / 1e6).toLocaleString('pt-BR', { maximumFractionDigits: 2, minimumFractionDigits: 2 }) + ' mi' : 'R$ ' + Math.round(v / 1e3).toLocaleString('pt-BR') + ' mil';
+const num = (v, d = 0) => v.toLocaleString('pt-BR', { maximumFractionDigits: d, minimumFractionDigits: d });
+function chips(c) { const [f1, f2, f3, sep] = c; const one = (k, t) => `<span class="chip ${k}" title="${t}">${{ Li: 'Li', Pb: 'Pb', V: 'V' }[k]}</span>`;
+  return `<span class="chips">${one(f1, 'ciclo')}${one(f2, 'reserva')}${one(f3, 'no-break')}</span>`; }
+
+function load(key) {
+  const p = JSON.parse(JSON.stringify(PRESETS[key]));
+  S = Object.assign({ agentes: false, chumbo_lr: false, eletrolito: false, rate: 0.08 }, p);
+  toForm(); run();
+}
+function toForm() {
+  $('isolated').checked = S.isolated; $('horas').value = S.horas_falta; $('carga').value = S.carga_critica;
+  $('noite').value = S.night_kwh_dia; $('alpha').value = Math.round(S.alpha * 100); $('temp').value = S.T; $('familias').value = S.familias;
+  $('costa').checked = S.costa; $('agentes').checked = S.agentes; $('eletrolito').checked = S.eletrolito; $('chumbo_lr').checked = S.chumbo_lr;
+  $('rate').value = Math.round(S.rate * 100); $('rateOut').textContent = Math.round(S.rate * 100) + '%';
+  $('perto').setAttribute('aria-pressed', !S.longe); $('longe').setAttribute('aria-pressed', S.longe);
+  $('distrib').setAttribute('aria-pressed', !S.comunidade_paga); $('comun').setAttribute('aria-pressed', S.comunidade_paga);
+  for (const f of ['F1', 'F2', 'F3']) { $(f + 'P').value = S.F[f].P; $(f + 'E').value = S.F[f].E; $(f + 'c').value = S.F[f].cyc; }
+  $('gridFields').style.display = S.isolated ? 'none' : ''; $('isoFields').style.display = S.isolated ? '' : 'none';
+  const W = $('weights'); W.innerHTML = '';
+  for (const c of CRIT) {
+    const d = document.createElement('div'); d.className = 'slider';
+    d.innerHTML = `<label for="w_${c}">${WNOME[c]}</label><input type="range" id="w_${c}" min="0" max="50" step="1" value="${Math.round(S.w[c] * 100)}"><output id="wo_${c}"></output>`;
+    W.appendChild(d); d.querySelector('input').addEventListener('input', fromForm);
+  }
+  showW();
+}
+function showW() { const tot = CRIT.reduce((s, c) => s + Number($('w_' + c).value), 0) || 1; for (const c of CRIT) $('wo_' + c).textContent = Math.round(Number($('w_' + c).value) / tot * 100) + '%'; }
+function fromForm() {
+  const n = id => Math.max(0, Number($(id).value) || 0);
+  S.isolated = $('isolated').checked; S.horas_falta = n('horas'); S.carga_critica = n('carga'); S.night_kwh_dia = n('noite');
+  S.alpha = Math.min(1, n('alpha') / 100); S.T = n('temp') || 25; S.familias = n('familias'); S.costa = $('costa').checked;
+  S.agentes = $('agentes').checked; S.eletrolito = $('eletrolito').checked; S.chumbo_lr = $('chumbo_lr').checked;
+  S.rate = n('rate') / 100; $('rateOut').textContent = Math.round(S.rate * 100) + '%';
+  for (const f of ['F1', 'F2', 'F3']) S.F[f] = { P: Math.max(0.1, n(f + 'P')), E: Math.max(0.1, n(f + 'E')), cyc: Math.max(0.1, n(f + 'c')) };
+  const tot = CRIT.reduce((s, c) => s + Number($('w_' + c).value), 0) || 1;
+  for (const c of CRIT) S.w[c] = Number($('w_' + c).value) / tot;
+  showW();
+  $('gridFields').style.display = S.isolated ? 'none' : ''; $('isoFields').style.display = S.isolated ? '' : 'none';
+  schedule();
+}
+let timer = null;
+function schedule() { $('results').classList.add('busy'); clearTimeout(timer); timer = setTimeout(run, 120); }
+function run() {
+  const ctx = buildCtx(S); const r = smaa(ctx, { nP: 40, nW: 200 });
+  const idx = [...r.prob.keys()].sort((a, b) => r.prob[b] - r.prob[a] || r.score[a] - r.score[b]);
+  const best = r.base[idx[0]];
+  $('verdict').innerHTML = label(best.combo);
+  $('verdictSub').textContent = `Melhor em ${Math.round(r.prob[idx[0]] * 100)}% dos sorteios` + (r.prob[idx[1]] > 0.15 ? `; a segunda opção, ${label(r.base[idx[1]].combo).toLowerCase()}, em ${Math.round(r.prob[idx[1]] * 100)}%.` : '.');
+  const fam = S.familias > 0 ? ` · ${brl(best.recorrente / S.familias / 12).replace(' mil', ' mil')}` : '';
+  const perFam = S.familias > 0 ? 'R$ ' + num(best.recorrente / S.familias / 12) + ' por família/mês' : 'custo recorrente';
+  $('kpis').innerHTML = [
+    [brl(best.capex), 'investimento'], [brl(best.custo), 'custo em 30 anos (valor presente)'],
+    [num(best.mult, 1) + '×', 'custo total ÷ investimento'], [brl(best.recorrente) + '/ano', perFam],
+    [num(best.ens, 0) + ' kWh', 'energia crítica perdida por ano'],
+  ].map(([n, l]) => `<div class="kpi"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+  $('bars').innerHTML = idx.slice(0, 6).filter((i, j) => j < 2 || r.prob[i] >= 0.01).map(i => `<div class="bar"><div>${chips(r.base[i].combo)}${label(r.base[i].combo)}<div class="track"><div class="fill" style="width:${(r.prob[i] * 100).toFixed(1)}%"></div></div></div><b>${Math.round(r.prob[i] * 100)}%</b></div>`).join('');
+  const top = idx.slice(0, 4).map(i => r.base[i]);
+  const rowsC = [['Investimento', p => brl(p.capex), p => p.capex], ['Custo em 30 anos (valor presente)', p => brl(p.custo), p => p.custo], ['Custo total ÷ investimento', p => num(p.mult, 1) + '×', p => p.mult],
+    ['Custo recorrente por ano', p => brl(p.recorrente), p => p.recorrente], ['Energia crítica perdida (kWh/ano)', p => num(p.ens, 0), p => p.ens],
+    ['Carbono em 30 anos (t CO₂e)', p => num(p.co2, 0), p => p.co2], ['Resíduo tóxico em risco (kg equiv. chumbo)', p => num(p.tox, 0), p => p.tox],
+    ['Perda esperada por acidente (30 anos)', p => brl(p.acid), p => p.acid]];
+  $('cmp').innerHTML = `<thead><tr><th>Indicador</th>${top.map(p => `<th>${chips(p.combo)}</th>`).join('')}</tr></thead><tbody>` +
+    rowsC.map(([n, f, v]) => { const m = Math.min(...top.map(v)); return `<tr><td>${n}</td>${top.map(p => `<td class="${v(p) === m ? 'best' : ''}">${f(p)}</td>`).join('')}</tr>`; }).join('') +
+    `</tbody><caption class="note" style="caption-side:bottom;text-align:left;padding-top:8px">${top.map(p => chips(p.combo) + label(p.combo)).join('<br>')}<br>Em destaque, o melhor valor de cada linha. Ordem das letras: ciclo · reserva · no-break.</caption>`;
+  const ctxE = r.ctx, tech = r.tech, fn = { F1: 'Ciclo diário', F2: 'Reserva longa', F3: 'No-break' };
+  let html = '<thead><tr><th>Função e tecnologia</th><th>Investimento</th><th>30 anos (VP)</th><th>Múltiplo</th><th>Vida (anos)</th><th>Dias parados/ano</th><th>Carbono (t)</th><th>Tóxico em risco (kg)</th></tr></thead><tbody>';
+  for (const f of ['F1', 'F2', 'F3']) {
+    const as = KS.map(k => asset(k, S.F[f].P, S.F[f].E, S.F[f].cyc, ctxE, tech, S.rate));
+    const mn = key => Math.min(...as.map(a => a[key]));
+    as.forEach((a, j) => { html += `<tr><td>${j === 0 ? `<b>${fn[f]}</b> · ` : ''}<span class="chip ${a.k}">${a.k}</span> ${BASE_TECH[a.k].nome}</td>
+      <td class="${a.capex === mn('capex') ? 'best' : ''}">${brl(a.capex)}</td><td class="${a.pv === mn('pv') ? 'best' : ''}">${brl(a.pv)}</td>
+      <td class="${a.mult === mn('mult') ? 'best' : ''}">${num(a.mult, 1)}×</td><td>${num(a.life, 1)}</td><td class="${a.U === mn('U') ? 'best' : ''}">${num(a.U * 365, a.U * 365 < 10 ? 1 : 0)}</td>
+      <td class="${a.gwp === mn('gwp') ? 'best' : ''}">${num(a.gwp, 0)}</td><td class="${a.tox === mn('tox') ? 'best' : ''}">${num(a.tox, 0)}</td></tr>`; });
+  }
+  $('fn').innerHTML = html + '</tbody>';
+  LAST = { r, idx };
+  $('results').classList.remove('busy');
+}
+let LAST = null;
+function resumo() {
+  const { r, idx } = LAST; const pr = i => Math.round(r.prob[i] * 100) + '%';
+  const linhas = [`Qual bateria, para qual função e lugar (Teiu Energia, v1.0)`,
+    `Lugar: ${S.isolated ? 'sem rede' : 'conectado'}; técnico ${S.longe ? 'longe' : 'a poucas horas'}; troca paga por ${S.comunidade_paga ? 'comunidade' : 'distribuidora'}; abrigo a ${S.T} °C; taxa ${Math.round(S.rate * 100)}%` +
+      `${S.agentes ? '; agentes treinados' : ''}${S.eletrolito ? '; eletrólito nacional' : ''}${S.chumbo_lr ? '; logística reversa do chumbo' : ''}`,
+    `Funções (kW / kWh úteis / ciclos por ano): ciclo ${S.F.F1.P}/${S.F.F1.E}/${S.F.F1.cyc}; reserva ${S.F.F2.P}/${S.F.F2.E}/${S.F.F2.cyc}; no-break ${S.F.F3.P}/${S.F.F3.E}/${S.F.F3.cyc}`,
+    `Pesos: ` + CRIT.map(c => `${WNOME[c]} ${Math.round(S.w[c] * 100)}%`).join('; '), ''];
+  idx.slice(0, 4).forEach(i => { const p = r.base[i]; linhas.push(`${pr(i)}  ${label(p.combo)} | investimento ${brl(p.capex)} | 30 anos ${brl(p.custo)} | ${num(p.mult, 1)}× | recorrente ${brl(p.recorrente)}/ano | energia crítica perdida ${num(p.ens)} kWh/ano | carbono ${num(p.co2)} t | tóxico ${num(p.tox)} kg | acidente ${brl(p.acid)}`); });
+  linhas.push('', 'Premissas de falha, conserto, acidente e resíduo são hipóteses de partida.');
+  return linhas.join('\n');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  $('preset').addEventListener('change', e => load(e.target.value));
+  for (const id of ['isolated', 'horas', 'carga', 'noite', 'alpha', 'temp', 'familias', 'costa', 'agentes', 'eletrolito', 'chumbo_lr', 'rate', 'F1P', 'F1E', 'F1c', 'F2P', 'F2E', 'F2c', 'F3P', 'F3E', 'F3c'])
+    $(id).addEventListener('input', fromForm);
+  $('perto').addEventListener('click', () => { S.longe = false; toFormKeep(); });
+  $('longe').addEventListener('click', () => { S.longe = true; toFormKeep(); });
+  $('distrib').addEventListener('click', () => { S.comunidade_paga = false; toFormKeep(); });
+  $('comun').addEventListener('click', () => { S.comunidade_paga = true; toFormKeep(); });
+  $('copy').addEventListener('click', async () => {
+    const t = resumo();
+    try { await navigator.clipboard.writeText(t); $('copyMsg').textContent = 'Copiado. Cole numa planilha ou num documento.'; }
+    catch (e) { $('copyMsg').textContent = 'Seu navegador bloqueou a cópia. Selecione e copie a tabela abaixo.'; }
+  });
+  load('quilombo_isolado');
+});
+function toFormKeep() { $('perto').setAttribute('aria-pressed', !S.longe); $('longe').setAttribute('aria-pressed', S.longe);
+  $('distrib').setAttribute('aria-pressed', !S.comunidade_paga); $('comun').setAttribute('aria-pressed', S.comunidade_paga); schedule(); }
+
+</script>
+</body>
+</html>

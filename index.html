@@ -151,8 +151,8 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
     <div>
       <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
       <h1>Qual bateria, para qual função e lugar</h1>
-      <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 8 mil sorteios dos pesos e das premissas incertas.</p>
-      <p class="meta">Versão 1.4 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 8 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
+      <p class="meta">Versão 1.5 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
     </div>
     <div class="intro-side">
       <p class="warn"><b>Leia antes de usar.</b> Preços, taxas de falha, tempos de conserto, chances de acidente e frações de resíduo que escapam da reciclagem são hipóteses de partida, não medições: não há base pública de falhas de baterias estacionárias no Brasil. Serve para comparar opções e ver o que muda a escolha, não para dimensionar um projeto.</p>
@@ -245,7 +245,7 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
     <div class="panel">
       <h2><span class="num">06</span>Chance de ser a melhor</h2>
       <div class="meters" id="bars"></div>
-      <p class="note">Cada célula vale 5%. São 40 sorteios de premissas (preços, falhas, tempo de conserto, acidentes, atraso na troca, entre metade e o dobro) × 200 sorteios de pesos em torno dos escolhidos.</p>
+      <p class="note">Cada célula vale 5% das simulações. São 8 mil: 40 conjuntos de premissas (preços, falhas, tempo de conserto, acidentes, atraso na troca, entre metade e o dobro) × 200 conjuntos de pesos em torno dos escolhidos.</p>
     </div>
     <div class="panel">
       <h2><span class="num">07</span>As melhores lado a lado</h2>
@@ -516,8 +516,8 @@ function run() {
     + slot('3 · No-break', f3, 'junto às cargas críticas');
   $('lugarNome').textContent = '';
   $('bigPct').textContent = Math.round(r.prob[idx[0]] * 100) + '%';
-  const second = r.prob[idx[1]] > 0.1 ? `<small>Segunda opção, em ${Math.round(r.prob[idx[1]] * 100)}%: ${label(r.base[idx[1]].combo).toLowerCase()}.</small>` : `<small>Nenhuma outra combinação passa de 10%.</small>`;
-  $('verdict').innerHTML = `dos sorteios apontam esta combinação.${second}`;
+  const second = r.prob[idx[1]] > 0.1 ? `<small>Segunda opção, em ${Math.round(r.prob[idx[1]] * 100)}% das simulações: ${label(r.base[idx[1]].combo).toLowerCase()}.</small>` : `<small>Nenhuma outra combinação passa de 10%.</small>`;
+  $('verdict').innerHTML = `das simulações indicam esta combinação.${second}`;
   const perFam = S.familias > 0 ? `R$ ${num(best.recorrente / S.familias / 12)} por família/mês` : 'trocas e O&M';
   $('kpis').innerHTML = [
     [brl(best.capex), 'investimento'], [brl(best.custo), 'custo em 30 anos, valor presente'],

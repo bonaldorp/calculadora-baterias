@@ -61,7 +61,7 @@ VOLL_C = 100.0  # R$/kWh crítico (para o custo social, só para referência)
 
 def life(p, k, cyc_yr, T):
     if k == 'V': return p['cal']
-    f = 2 ** (-(T - 25) / 10) if k == 'Pb' else (0.8 if T > 25 else 1.0)   # Arrhenius no chumbo; lítio sem climatização
+    f = 2 ** (-(T - 25) / 10) if k == 'Pb' else min(1.0, 2 ** (-(T - 25) / 15.5))   # chumbo: metade a cada +10 °C; lítio: 0,8 a 30 °C
     return min(p['cal'] * f, p['cyc'] * (f if k == 'Pb' else 1) / max(cyc_yr, 1e-9))
 
 def asset(k, P, E_use, cyc_yr, ctx, tech=TECH):
@@ -93,7 +93,7 @@ def asset(k, P, E_use, cyc_yr, ctx, tech=TECH):
     acid_inc = p['acc'] * En / 1000 * H
     # indisponibilidade: falhas x reparo local (+maresia/HVAC na costa, +calor no vanádio) + atraso na reposição
     U_fail = p['lam'] * p['mttr'] * ctx['mttr_mult'][k] / 8760 * (1.3 if (ctx['costa'] and k in ('Li', 'V')) else 1) \
-             * (1.5 if (k == 'V' and T > 25) else 1)
+             * (min(2.0, max(1.0, 1 + 0.1 * (T - 25))) if k == 'V' else 1)
     U_delay = ctx['p_delay'] * p['delay'] * len(reps) / H
     return dict(k=k, P=P, E_use=E_use, En=En, capex=capex, capE=capE, capP=capP, life=L, n_reps=len(reps),
                 rep_total=sum(rep_cost) + pcs_cost * len(pcs), om=om, loss_kwh=loss, loss_cost_30=H * loss * TARIFF,

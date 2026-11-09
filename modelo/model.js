@@ -24,7 +24,7 @@ function effCtx(ctx) {
 
 function life(p, k, cyc, T) {
   if (k === 'V') return p.cal;
-  const f = k === 'Pb' ? Math.pow(2, -(T - 25) / 10) : (T > 25 ? 0.8 : 1.0);
+  const f = k === 'Pb' ? Math.pow(2, -(T - 25) / 10) : Math.min(1, Math.pow(2, -(T - 25) / 15.5)); // chumbo: metade a cada +10 °C; lítio: 0,8 a 30 °C, 0,64 a 35 °C
   return Math.min(p.cal * f, p.cyc * (k === 'Pb' ? f : 1) / Math.max(cyc, 1e-9));
 }
 
@@ -56,7 +56,7 @@ function asset(k, P, Euse, cyc, ctx, tech, I) {
   const mass = p.haz_kg * En * units;
   const tox = mass * ctx.leak[k] * p.haz_w;
   const accCost = p.acc * En / 1000 * H * p.acc_cost;
-  const Ufail = p.lam * p.mttr * ctx.mttr_mult[k] / 8760 * ((ctx.costa && (k === 'Li' || k === 'V')) ? 1.3 : 1) * ((k === 'V' && T > 25) ? 1.5 : 1);
+  const Ufail = p.lam * p.mttr * ctx.mttr_mult[k] / 8760 * ((ctx.costa && (k === 'Li' || k === 'V')) ? 1.3 : 1) * (k === 'V' ? Math.min(2, Math.max(1, 1 + 0.1 * (T - 25))) : 1); // vanádio: +50% a 30 °C, +100% a 35 °C
   const Udelay = ctx.p_delay * p.delay * reps.length / H;
   return { k, P, Euse, En, capex, life: L, nReps: reps.length, pv: pvTot, nominal, recur, gwp, mass, tox, acid: accCost,
     Ufail, Udelay, U: Math.min(1, Ufail + Udelay), mult: nominal / capex, ann: ANN };
@@ -147,17 +147,33 @@ function label(c) {
 function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
 const PRESETS = {
-  turistica: { nome: 'Vila turística conectada', F: { F1: { P: 300, E: 600, cyc: 300 }, F2: { P: 280, E: 2000, cyc: 5 }, F3: { P: 30, E: 240, cyc: 3 } },
+  turistica: { nome: 'Vila turística conectada', desc: 'Ponta de alimentador numa península turística (Taipus de Fora, Maraú): pousadas, frio do pescado e bombeamento. Técnico a poucas horas, distribuidora paga as trocas.', F: { F1: { P: 300, E: 600, cyc: 300 }, F2: { P: 280, E: 2000, cyc: 5 }, F3: { P: 30, E: 240, cyc: 3 } },
     T: 25, costa: true, longe: false, comunidade_paga: false, isolated: false, horas_falta: 36, carga_critica: 137, night_kwh_dia: 0, alpha: 0.3, core: 0.15, familias: 2000,
     w: { custo: .30, recorrente: .05, ens: .20, co2: .10, tox: .10, acid: .25 } },
-  hospital: { nome: 'Hospital regional conectado', F: { F1: { P: 200, E: 400, cyc: 250 }, F2: { P: 150, E: 3600, cyc: 4 }, F3: { P: 100, E: 100, cyc: 12 } },
+  hospital: { nome: 'Hospital regional conectado', desc: 'UTI e centro cirúrgico com equipe de manutenção própria. O risco de incêndio dentro do prédio pesa muito.', F: { F1: { P: 200, E: 400, cyc: 250 }, F2: { P: 150, E: 3600, cyc: 4 }, F3: { P: 100, E: 100, cyc: 12 } },
     T: 25, costa: false, longe: false, comunidade_paga: false, isolated: false, horas_falta: 36, carga_critica: 150, night_kwh_dia: 0, alpha: 0.3, core: 0.6, familias: 0,
     w: { custo: .20, recorrente: .05, ens: .30, co2: .05, tox: .10, acid: .30 } },
-  quilombo_linha: { nome: 'Comunidade quilombola em ponta de linha', F: { F1: { P: 25, E: 50, cyc: 300 }, F2: { P: 15, E: 290, cyc: 5 }, F3: { P: 5, E: 40, cyc: 6 } },
+  quilombo_linha: { nome: 'Comunidade quilombola em ponta de linha', desc: '~100 famílias com rede fraca e faltas de até 3–5 dias. Técnico longe, comunidade paga as trocas. Pesos devem sair da consulta prévia.', F: { F1: { P: 25, E: 50, cyc: 300 }, F2: { P: 15, E: 290, cyc: 5 }, F3: { P: 5, E: 40, cyc: 6 } },
     T: 30, costa: true, longe: true, comunidade_paga: true, isolated: false, horas_falta: 108, carga_critica: 6, night_kwh_dia: 0, alpha: 0.3, core: 0.4, familias: 100,
     w: { custo: .20, recorrente: .25, ens: .25, co2: .05, tox: .15, acid: .10 } },
-  quilombo_isolado: { nome: 'Comunidade quilombola isolada (sem rede)', F: { F1: { P: 40, E: 240, cyc: 365 }, F2: { P: 15, E: 290, cyc: 10 }, F3: { P: 5, E: 40, cyc: 12 } },
+  quilombo_isolado: { nome: 'Comunidade quilombola isolada (sem rede)', desc: '~100 famílias com solar e bateria, como Barra Velha e Peso, na Resex de Canavieiras. Técnico longe, comunidade paga as trocas.', F: { F1: { P: 40, E: 240, cyc: 365 }, F2: { P: 15, E: 290, cyc: 10 }, F3: { P: 5, E: 40, cyc: 12 } },
     T: 30, costa: true, longe: true, comunidade_paga: true, isolated: true, horas_falta: 0, carga_critica: 0, night_kwh_dia: 240, alpha: 0.3, core: 0.4, familias: 100,
+    w: { custo: .20, recorrente: .25, ens: .30, co2: .05, tox: .15, acid: .05 } },
+  pequena_cidade: { nome: 'Pequeno centro urbano', desc: 'Sede municipal de ~20 mil habitantes: hospital, água, telecom e prefeitura como carga crítica. Técnico na região, distribuidora paga as trocas, contêiner climatizado.',
+    F: { F1: { P: 1000, E: 2000, cyc: 300 }, F2: { P: 500, E: 6000, cyc: 4 }, F3: { P: 100, E: 400, cyc: 6 } },
+    T: 25, costa: false, longe: false, comunidade_paga: false, isolated: false, horas_falta: 20, carga_critica: 300, night_kwh_dia: 0, alpha: 0.3, core: 0.3, familias: 6000,
+    w: { custo: .35, recorrente: .05, ens: .20, co2: .10, tox: .10, acid: .20 } },
+  sertaneja: { nome: 'Comunidade sertaneja em ponta de linha', desc: 'Semiárido, ~60 famílias no fim de uma linha rural longa. Bomba do poço, posto e refrigeração de leite e vacinas são a carga crítica. Abrigo quente (35 °C), técnico longe, comunidade paga as trocas.',
+    F: { F1: { P: 30, E: 60, cyc: 300 }, F2: { P: 15, E: 200, cyc: 5 }, F3: { P: 5, E: 30, cyc: 6 } },
+    T: 35, costa: false, longe: true, comunidade_paga: true, isolated: false, horas_falta: 48, carga_critica: 8, night_kwh_dia: 0, alpha: 0.3, core: 0.5, familias: 60,
+    w: { custo: .20, recorrente: .25, ens: .30, co2: .05, tox: .10, acid: .10 } },
+  indigena: { nome: 'Aldeia indígena isolada (sem rede)', desc: '~40 famílias sem rede: UBS indígena, escola, rádio e bomba d\'água como carga crítica. Técnico longe, comunidade paga as trocas. Pesos devem sair da consulta livre, prévia e informada (Convenção 169 da OIT).',
+    F: { F1: { P: 20, E: 100, cyc: 365 }, F2: { P: 8, E: 150, cyc: 10 }, F3: { P: 3, E: 24, cyc: 12 } },
+    T: 30, costa: false, longe: true, comunidade_paga: true, isolated: true, horas_falta: 0, carga_critica: 0, night_kwh_dia: 100, alpha: 0.3, core: 0.4, familias: 40,
+    w: { custo: .15, recorrente: .25, ens: .25, co2: .05, tox: .20, acid: .10 } },
+  ilha: { nome: 'Comunidade de ilha ou ribeirinha (sem rede)', desc: '~50 famílias de pesca sem rede, como nas ilhas da Baía de Camamu: frio do pescado, posto e água como carga crítica. Maresia, técnico longe, comunidade paga as trocas.',
+    F: { F1: { P: 25, E: 130, cyc: 365 }, F2: { P: 10, E: 180, cyc: 10 }, F3: { P: 4, E: 30, cyc: 12 } },
+    T: 30, costa: true, longe: true, comunidade_paga: true, isolated: true, horas_falta: 0, carga_critica: 0, night_kwh_dia: 130, alpha: 0.35, core: 0.4, familias: 50,
     w: { custo: .20, recorrente: .25, ens: .30, co2: .05, tox: .15, acid: .05 } },
 };
 

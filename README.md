@@ -13,6 +13,17 @@ Para cada combinação, a ferramenta calcula:
 - **Energia crítica perdida, carbono, resíduo tóxico em risco e risco de acidente.**
 - **Chance de cada combinação ser a melhor:** milhares de sorteios dos pesos de cada lugar e das premissas incertas (método SMAA).
 
+Lugares de exemplo, todos ajustáveis:
+
+- comunidade quilombola isolada;
+- comunidade quilombola em ponta de linha;
+- aldeia indígena isolada;
+- comunidade de ilha ou ribeirinha;
+- comunidade sertaneja em ponta de linha;
+- vila turística conectada;
+- pequeno centro urbano;
+- hospital regional.
+
 **Acesse:** https://bonaldorp.github.io/calculadora-baterias/
 
 ## Leia antes de usar
@@ -38,4 +49,4 @@ Fontes de contexto:
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.pt-br). O uso e a adaptação são livres, desde que a Teiu Energia seja citada.
 
-Versão 1.1, novembro de 2026.
+Versão 1.2, novembro de 2026.

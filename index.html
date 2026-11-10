@@ -309,7 +309,7 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
       <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
       <h1>Qual bateria, para qual função e lugar</h1>
       <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 20 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
-      <p class="meta">Versão 2.0 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="meta">Versão 2.1 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
     </div>
     <div class="intro-side">
       <p class="warn"><b>Leia antes de usar.</b> Preços, taxas de falha, tempos de conserto, chances de acidente e frações de resíduo que escapam da reciclagem são hipóteses de partida, não medições: não há base pública de falhas de baterias estacionárias no Brasil. Serve para comparar opções e ver o que muda a escolha, não para dimensionar um projeto.</p>
@@ -408,19 +408,19 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
 <main class="after">
   <section class="stack details" aria-label="Detalhes do resultado" id="results">
     <div class="panel">
-      <h2><span class="num">06</span>Por que ela ganha da segunda opção</h2>
+      <h2><span class="num">06</span>Chance de ser a melhor</h2>
+      <div class="share" id="share" role="img"></div>
+      <div class="sharelegend" id="bars"></div>
+      <p id="shareMsg" class="whyfoot"></p>
+      <p class="note">São 20 mil simulações: 1.000 conjuntos de premissas (preços, falhas, tempo de conserto, acidentes, atraso na troca, entre metade e o dobro) × 20 conjuntos de pesos em torno dos escolhidos. A barra soma 100%: cada simulação aponta uma única combinação vencedora. O ± mostra quanto o número oscila se a simulação for repetida; ele não cobre o erro das próprias premissas.</p>
+    </div>
+    <div class="panel">
+      <h2><span class="num">07</span>Por que ela ganha da segunda opção</h2>
       <p id="whyLead" class="whylead"></p>
       <div class="whyhead" aria-hidden="true"><span></span><span>← a favor da 2ª</span><span>a favor da 1ª →</span></div>
       <div id="why" class="why"></div>
       <p class="note">Cada linha compara as duas combinações mais indicadas num critério, com os valores centrais das premissas. O tamanho da barra é a diferença no indicador multiplicada pelo peso que você deu a ele em "O que pesa mais": critério com peso baixo quase não mexe na nota, mesmo com diferença grande.</p>
       <p id="whyFoot" class="whyfoot"></p>
-    </div>
-    <div class="panel">
-      <h2><span class="num">07</span>Chance de ser a melhor</h2>
-      <div class="share" id="share" role="img"></div>
-      <div class="sharelegend" id="bars"></div>
-      <p id="shareMsg" class="whyfoot"></p>
-      <p class="note">São 20 mil simulações: 1.000 conjuntos de premissas (preços, falhas, tempo de conserto, acidentes, atraso na troca, entre metade e o dobro) × 20 conjuntos de pesos em torno dos escolhidos. A barra soma 100%: cada simulação aponta uma única combinação vencedora. O ± mostra quanto o número oscila se a simulação for repetida; ele não cobre o erro das próprias premissas.</p>
     </div>
     <div class="panel">
       <h2><span class="num">08</span>O que muda a escolha</h2>

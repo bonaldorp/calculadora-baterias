@@ -125,23 +125,36 @@ function perturb(tech, r) {
 
 function smaa(ctxRaw, opts = {}) {
   const ctx = effCtx(ctxRaw), tech = techFor(ctxRaw), I = ctxRaw.rate;
-  const nP = opts.nP ?? 40, nW = opts.nW ?? 200, conc = opts.conc ?? 15, r = rng(opts.seed ?? 7);
-  const base = allPortfolios(ctx, tech, I); const wins = new Array(base.length).fill(0);
+  const nP = opts.nP ?? 1000, nW = opts.nW ?? 20, conc = opts.conc ?? 15, r = rng(opts.seed ?? 7);
+  const base = allPortfolios(ctx, tech, I); const n = base.length, wins = new Array(n).fill(0);
+  const NB = 10, bw = Array.from({ length: NB }, () => new Array(n).fill(0)), bn = new Array(NB).fill(0);
+  const cw = Array.from({ length: n }, () => new Array(CRIT.length).fill(0));
+  const keep = opts.keep ? new Float32Array(nP * nW * n) : null; let k = 0;
   const w0 = CRIT.map(c => ctxRaw.w[c]);
   for (let i = 0; i < nP; i++) {
-    const P = allPortfolios(ctx, perturb(tech, r), I);
+    const P = allPortfolios(ctx, perturb(tech, r), I), b = Math.min(NB - 1, Math.floor(i * NB / nP));
     const mx = CRIT.map(c => Math.max(...P.map(p => p[c])) || 1);
     const N = P.map(p => CRIT.map((c, j) => p[c] / mx[j]));
     for (let j = 0; j < nW; j++) {
       const W = dirichlet(r, w0.map(x => x * conc + 0.3));
       let best = 0, bs = Infinity;
-      for (let q = 0; q < N.length; q++) { let s = 0; for (let c = 0; c < W.length; c++) s += W[c] * N[q][c]; if (s < bs) { bs = s; best = q; } }
-      wins[best]++;
+      for (let q = 0; q < N.length; q++) { let s = 0; for (let c = 0; c < W.length; c++) s += W[c] * N[q][c];
+        if (keep) keep[k++] = s; if (s < bs) { bs = s; best = q; } }
+      wins[best]++; bw[b][best]++; bn[b]++;
+      for (let c = 0; c < W.length; c++) cw[best][c] += W[c];
     }
   }
   const tot = wins.reduce((a, b) => a + b, 0);
+  const prob = wins.map(x => x / tot);
+  // erro do sorteio: desvio entre 10 lotes de premissas
+  const se = prob.map((p, q) => { const m = bw.map((row, b) => row[q] / (bn[b] || 1)); const mu = m.reduce((a, b) => a + b, 0) / NB;
+    return Math.sqrt(m.reduce((a, x) => a + (x - mu) ** 2, 0) / (NB - 1) / NB); });
   const wObj = {}; CRIT.forEach(c => wObj[c] = ctxRaw.w[c]);
-  return { base, prob: wins.map(x => x / tot), score: scores(base, wObj), ctx, tech };
+  // confronto direto entre duas combinações: fração em que a vence b, e fração em que ficam a menos de 5% uma da outra
+  const duel = (a, b) => { if (!keep) return null; let wa = 0, cl = 0; const m = nP * nW;
+    for (let t = 0; t < m; t++) { const x = keep[t * n + a], y = keep[t * n + b]; if (x < y) wa++; if (Math.abs(x - y) < 0.05 * Math.min(x, y)) cl++; }
+    return { win: wa / m, close: cl / m }; };
+  return { base, prob, se, duel, cw: cw.map((row, q) => row.map(x => wins[q] ? x / wins[q] : 0)), score: scores(base, wObj), ctx, tech, nP, nW };
 }
 
 const NOMEK = { Li: 'lítio', Pb: 'chumbo', V: 'vanádio' };

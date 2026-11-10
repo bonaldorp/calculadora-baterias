@@ -258,6 +258,48 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
   main { padding: 16px; } .band-inner { padding: 22px 16px; } .band-inner.intro { grid-template-columns: 1fr; } .result-inner { padding: 22px 16px; } footer { padding: 0 16px 32px; }
 }
 @media (max-width: 520px) { .rack { grid-template-columns: 1fr; } .slot { min-height: 0; } .slot .tec { font-size: 32px; } }
+
+/* 06 por que ganha · 07 chance */
+.whylead { font-size: 16px; line-height: 1.5; margin: 0 0 16px; max-width: 78ch; }
+.whylead b { font-weight: 600; }
+.whyhead, .whyrow { display: grid; grid-template-columns: minmax(150px, 1.1fr) 1.6fr; gap: 6px 18px; align-items: center; }
+.whyhead { grid-template-columns: minmax(150px, 1.1fr) .8fr .8fr; font: 600 10.5px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+.whyhead span:last-child { text-align: right; color: var(--accent); }
+.whyrow { padding: 9px 0; border-top: 1px solid var(--line); }
+.whyrow .c { font-weight: 600; font-size: 14px; }
+.whyrow .vals { display: block; font: 400 12px/1.4 var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; margin-top: 2px; }
+.whyrow .vals b { color: var(--ink); font-weight: 600; }
+.whyrow .vals .delta { color: var(--ink); }
+.whybar { position: relative; height: 20px; background: linear-gradient(90deg, transparent calc(50% - .5px), var(--muted) calc(50% - .5px), var(--muted) calc(50% + .5px), transparent calc(50% + .5px)); }
+.whybar i { position: absolute; top: 2px; bottom: 2px; width: 0; transition: width .7s cubic-bezier(.2,.8,.2,1); }
+.whybar i.pro { left: 50%; background: var(--accent); }
+.whybar i.con { right: 50%; background: var(--ink); }
+.whybar.zero::after { content: attr(data-tag); position: absolute; left: calc(50% + 8px); top: 0; font: 400 11px/20px var(--mono); color: var(--muted); white-space: nowrap; }
+.whyfoot { font-size: 13.5px; margin: 12px 0 0; max-width: 84ch; }
+.whyfoot:empty { display: none; }
+.whyfoot .fl { display: block; margin-top: 6px; }
+.whyfoot .alert { display: block; border: 1px solid var(--line); border-left: 3px solid var(--pb); padding: 9px 12px; margin-bottom: 8px; }
+.whyfoot .alert b { color: var(--pb); }
+.verdict .t small.why { color: var(--band-ink); margin-top: 8px; }
+.verdict .t small.why b { color: var(--accent); font-weight: 600; }
+.share { position: relative; display: flex; height: 44px; margin: 22px 0 0; background: var(--line); }
+.share .seg { height: 100%; width: 0; overflow: hidden; transition: width .8s cubic-bezier(.2,.8,.2,1); display: flex; align-items: center; justify-content: flex-start; box-shadow: inset -2px 0 0 var(--surface); }
+.share .seg span { font: 800 20px/1 var(--display); padding-left: 10px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.share .s0 { background: var(--accent); color: #111; } .share .s1 { background: var(--ink); color: var(--surface); }
+.share .s2 { background: var(--muted); color: var(--surface); } .share .s3 { background: color-mix(in srgb, var(--muted) 55%, var(--line)); color: var(--ink); }
+.share .rest { background: repeating-linear-gradient(135deg, var(--line) 0 5px, transparent 5px 10px); box-shadow: none; }
+.share .half { position: absolute; left: 50%; top: -16px; bottom: -5px; width: 0; border-left: 1px dashed var(--muted); pointer-events: none; }
+.share .half::before { content: "50%"; position: absolute; top: -2px; left: 5px; font: 600 10.5px/1 var(--mono); color: var(--muted); }
+.sharelegend { margin-top: 14px; }
+.sl { display: grid; grid-template-columns: 14px 1fr auto; gap: 10px; align-items: center; padding: 7px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.sl:first-child { border-top: 0; }
+.sl .sw { width: 14px; height: 14px; }
+.sl .sw.s0 { background: var(--accent); } .sl .sw.s1 { background: var(--ink); } .sl .sw.s2 { background: var(--muted); } .sl .sw.s3 { background: color-mix(in srgb, var(--muted) 55%, var(--line)); }
+.sl .sw.rest { background: repeating-linear-gradient(135deg, var(--muted) 0 3px, transparent 3px 6px); }
+.sl b { font: 600 15px/1 var(--mono); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sl b small { font-weight: 400; color: var(--muted); font-size: 12px; }
+.sl.first { font-weight: 600; }
+@media (max-width: 640px) { .whyhead, .whyrow { grid-template-columns: 1fr; } .whyhead span:first-child { display: none; } .whyhead { grid-template-columns: 1fr 1fr; } .share .seg span { font-size: 16px; padding-left: 6px; } }
 </style>
 </head>
 <body>
@@ -266,8 +308,8 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
     <div>
       <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
       <h1>Qual bateria, para qual função e lugar</h1>
-      <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 8 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
-      <p class="meta">Versão 1.9 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 20 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
+      <p class="meta">Versão 2.0 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
     </div>
     <div class="intro-side">
       <p class="warn"><b>Leia antes de usar.</b> Preços, taxas de falha, tempos de conserto, chances de acidente e frações de resíduo que escapam da reciclagem são hipóteses de partida, não medições: não há base pública de falhas de baterias estacionárias no Brasil. Serve para comparar opções e ver o que muda a escolha, não para dimensionar um projeto.</p>
@@ -366,27 +408,37 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
 <main class="after">
   <section class="stack details" aria-label="Detalhes do resultado" id="results">
     <div class="panel">
-      <h2><span class="num">06</span>Chance de ser a melhor</h2>
-      <div class="meters" id="bars"></div>
-      <p class="note">Cada célula vale 5% das simulações. São 8 mil: 40 conjuntos de premissas (preços, falhas, tempo de conserto, acidentes, atraso na troca, entre metade e o dobro) × 200 conjuntos de pesos em torno dos escolhidos.</p>
+      <h2><span class="num">06</span>Por que ela ganha da segunda opção</h2>
+      <p id="whyLead" class="whylead"></p>
+      <div class="whyhead" aria-hidden="true"><span></span><span>← a favor da 2ª</span><span>a favor da 1ª →</span></div>
+      <div id="why" class="why"></div>
+      <p class="note">Cada linha compara as duas combinações mais indicadas num critério, com os valores centrais das premissas. O tamanho da barra é a diferença no indicador multiplicada pelo peso que você deu a ele em "O que pesa mais": critério com peso baixo quase não mexe na nota, mesmo com diferença grande.</p>
+      <p id="whyFoot" class="whyfoot"></p>
     </div>
     <div class="panel">
-      <h2><span class="num">07</span>O que muda a escolha</h2>
+      <h2><span class="num">07</span>Chance de ser a melhor</h2>
+      <div class="share" id="share" role="img"></div>
+      <div class="sharelegend" id="bars"></div>
+      <p id="shareMsg" class="whyfoot"></p>
+      <p class="note">São 20 mil simulações: 1.000 conjuntos de premissas (preços, falhas, tempo de conserto, acidentes, atraso na troca, entre metade e o dobro) × 20 conjuntos de pesos em torno dos escolhidos. A barra soma 100%: cada simulação aponta uma única combinação vencedora. O ± mostra quanto o número oscila se a simulação for repetida; ele não cobre o erro das próprias premissas.</p>
+    </div>
+    <div class="panel">
+      <h2><span class="num">08</span>O que muda a escolha</h2>
       <p class="note" style="margin-top:0">A recomendação recalculada mudando uma coisa de cada vez no cenário acima. A barra mostra a chance que a combinação recomendada passa a ter (verde: sobe; laranja: cai); o traço amarelo marca a chance atual. Os itens que mais mexem vêm primeiro.</p>
       <div id="levers" class="levers"></div>
     </div>
     <div class="panel">
-      <h2><span class="num">08</span>Custo acumulado em 30 anos</h2>
+      <h2><span class="num">09</span>Custo acumulado em 30 anos</h2>
       <div class="fnsel seg3" role="group" aria-label="Função"><button type="button" data-f="F1" aria-pressed="false">Ciclo diário</button><button type="button" data-f="F2" aria-pressed="true">Reserva longa</button><button type="button" data-f="F3" aria-pressed="false">No-break</button></div>
       <div id="curve"></div>
       <p class="note">Quanto já se gastou em cada ano: compra no ano 0, depois operação, perdas de energia e cada troca de bateria ou de eletrônica (os degraus). No ano 30 entra o valor residual. Valores sem desconto, em reais de 2026.</p>
     </div>
     <div class="panel">
-      <h2><span class="num">09</span>As melhores lado a lado</h2>
+      <h2><span class="num">10</span>As melhores lado a lado</h2>
       <div class="tablewrap"><table id="cmp"></table></div>
     </div>
     <div class="panel">
-      <h2><span class="num">10</span>Cada tecnologia em cada função</h2>
+      <h2><span class="num">11</span>Cada tecnologia em cada função</h2>
       <div class="tablewrap"><table id="fn"></table></div>
       <p class="note">Múltiplo = custo total em 30 anos ÷ investimento: quanto da solução se paga depois da compra. Dias parados = falhas × tempo até o conserto + atraso na troca. O fundo amarelo indica o melhor valor de cada função.</p>
     </div>
@@ -582,23 +634,36 @@ function perturb(tech, r) {
 
 function smaa(ctxRaw, opts = {}) {
   const ctx = effCtx(ctxRaw), tech = techFor(ctxRaw), I = ctxRaw.rate;
-  const nP = opts.nP ?? 40, nW = opts.nW ?? 200, conc = opts.conc ?? 15, r = rng(opts.seed ?? 7);
-  const base = allPortfolios(ctx, tech, I); const wins = new Array(base.length).fill(0);
+  const nP = opts.nP ?? 1000, nW = opts.nW ?? 20, conc = opts.conc ?? 15, r = rng(opts.seed ?? 7);
+  const base = allPortfolios(ctx, tech, I); const n = base.length, wins = new Array(n).fill(0);
+  const NB = 10, bw = Array.from({ length: NB }, () => new Array(n).fill(0)), bn = new Array(NB).fill(0);
+  const cw = Array.from({ length: n }, () => new Array(CRIT.length).fill(0));
+  const keep = opts.keep ? new Float32Array(nP * nW * n) : null; let k = 0;
   const w0 = CRIT.map(c => ctxRaw.w[c]);
   for (let i = 0; i < nP; i++) {
-    const P = allPortfolios(ctx, perturb(tech, r), I);
+    const P = allPortfolios(ctx, perturb(tech, r), I), b = Math.min(NB - 1, Math.floor(i * NB / nP));
     const mx = CRIT.map(c => Math.max(...P.map(p => p[c])) || 1);
     const N = P.map(p => CRIT.map((c, j) => p[c] / mx[j]));
     for (let j = 0; j < nW; j++) {
       const W = dirichlet(r, w0.map(x => x * conc + 0.3));
       let best = 0, bs = Infinity;
-      for (let q = 0; q < N.length; q++) { let s = 0; for (let c = 0; c < W.length; c++) s += W[c] * N[q][c]; if (s < bs) { bs = s; best = q; } }
-      wins[best]++;
+      for (let q = 0; q < N.length; q++) { let s = 0; for (let c = 0; c < W.length; c++) s += W[c] * N[q][c];
+        if (keep) keep[k++] = s; if (s < bs) { bs = s; best = q; } }
+      wins[best]++; bw[b][best]++; bn[b]++;
+      for (let c = 0; c < W.length; c++) cw[best][c] += W[c];
     }
   }
   const tot = wins.reduce((a, b) => a + b, 0);
+  const prob = wins.map(x => x / tot);
+  // erro do sorteio: desvio entre 10 lotes de premissas
+  const se = prob.map((p, q) => { const m = bw.map((row, b) => row[q] / (bn[b] || 1)); const mu = m.reduce((a, b) => a + b, 0) / NB;
+    return Math.sqrt(m.reduce((a, x) => a + (x - mu) ** 2, 0) / (NB - 1) / NB); });
   const wObj = {}; CRIT.forEach(c => wObj[c] = ctxRaw.w[c]);
-  return { base, prob: wins.map(x => x / tot), score: scores(base, wObj), ctx, tech };
+  // confronto direto entre duas combinações: fração em que a vence b, e fração em que ficam a menos de 5% uma da outra
+  const duel = (a, b) => { if (!keep) return null; let wa = 0, cl = 0; const m = nP * nW;
+    for (let t = 0; t < m; t++) { const x = keep[t * n + a], y = keep[t * n + b]; if (x < y) wa++; if (Math.abs(x - y) < 0.05 * Math.min(x, y)) cl++; }
+    return { win: wa / m, close: cl / m }; };
+  return { base, prob, se, duel, cw: cw.map((row, q) => row.map(x => wins[q] ? x / wins[q] : 0)), score: scores(base, wObj), ctx, tech, nP, nW };
 }
 
 const NOMEK = { Li: 'lítio', Pb: 'chumbo', V: 'vanádio' };
@@ -713,7 +778,7 @@ function countTo(el, to) {
 }
 function grow(sel) { requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll(sel).forEach(el => { if (el.dataset.w) el.style.width = el.dataset.w; if (el.dataset.on) el.classList.add('on'); }))); }
 function run() {
-  const ctx = buildCtx(S); const r = smaa(ctx, { nP: 40, nW: 200 });
+  const ctx = buildCtx(S); const r = smaa(ctx, { keep: true });
   const idx = [...r.prob.keys()].sort((a, b) => r.prob[b] - r.prob[a] || r.score[a] - r.score[b]);
   const best = r.base[idx[0]]; const [f1, f2, f3, sep] = best.combo;
   const NOME = { Li: 'Lítio', Pb: 'Chumbo', V: 'Vanádio' }, COR = { Li: 'var(--li)', Pb: 'var(--pb)', V: 'var(--v)' };
@@ -728,8 +793,9 @@ function run() {
   const key = JSON.stringify(best.combo);
   if (PREVKEY !== null && PREVKEY !== key) { const rk = $('rack'); rk.classList.remove('swap'); void rk.offsetWidth; rk.classList.add('swap'); }
   PREVKEY = key;
+  const W = explain(r, idx);
   const second = r.prob[idx[1]] > 0.1 ? `<small>Segunda opção, em ${Math.round(r.prob[idx[1]] * 100)}% das simulações: ${label(r.base[idx[1]].combo).toLowerCase()}.</small>` : `<small>Nenhuma outra combinação passa de 10%.</small>`;
-  $('verdict').innerHTML = `das simulações indicam esta combinação.${second}`;
+  $('verdict').innerHTML = `das simulações indicam esta combinação.${second}${W.duel && W.duel.win < 0.5 ? `<small class="why"><b>Atenção:</b> no confronto direto, a segunda opção vence a primeira em ${Math.round((1 - W.duel.win) * 100)}% das simulações. Trate as duas como candidatas.</small>` : W.short ? `<small class="why"><b>Por quê:</b> ${W.short}</small>` : ''}`;
   const perFam = S.familias > 0 ? `R$ ${num(best.recorrente / S.familias / 12)} por família/mês` : 'trocas e O&M';
   $('kpis').innerHTML = [
     [brl(best.capex), 'investimento'], [brl(best.custo), 'custo em 30 anos, valor presente'],
@@ -737,11 +803,7 @@ function run() {
     [num(best.ens, 0) + ' kWh', 'energia crítica perdida por ano'],
   ].map(([n, l]) => `<div class="ro"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
   const tri = c => `<span class="tri" aria-hidden="true"><i class="${c[0]}"></i><i class="${c[1]}"></i><i class="${c[2]}"></i></span>`;
-  $('bars').innerHTML = idx.slice(0, 6).filter((i, j) => j < 2 || r.prob[i] >= 0.01).map((i, j) => {
-    const on = Math.round(r.prob[i] * 20);
-    return `<div class="meter ${j === 0 ? 'first' : ''}"><div class="top"><span>${tri(r.base[i].combo)}${label(r.base[i].combo)}</span><b>${Math.round(r.prob[i] * 100)}%</b></div><div class="cells" aria-hidden="true">${Array.from({ length: 20 }, (_, q) => `<i ${q < on ? 'data-on="1"' : ''} style="transition-delay:${q * 22}ms"></i>`).join('')}</div></div>`;
-  }).join('');
-  grow('#bars .cells i');
+  drawWhy(W); drawShare(r, idx, tri);
   const top = idx.slice(0, 4).map(i => r.base[i]);
   const rowsC = [['Investimento', p => brl(p.capex), p => p.capex], ['Custo em 30 anos (valor presente)', p => brl(p.custo), p => p.custo], ['Custo total ÷ investimento', p => num(p.mult, 1) + '×', p => p.mult],
     ['Custo recorrente por ano', p => brl(p.recorrente), p => p.recorrente], ['Energia crítica perdida (kWh/ano)', p => num(p.ens, 0), p => p.ens],
@@ -762,10 +824,70 @@ function run() {
       <td class="${a.gwp === mn('gwp') ? 'best' : ''}">${num(a.gwp, 0)}</td><td class="${a.tox === mn('tox') ? 'best' : ''}">${num(a.tox, 0)}</td></tr>`; });
   }
   $('fn').innerHTML = html + '</tbody>';
-  LAST = { r, idx };
+  LAST = { r, idx, W };
   drawCurve();
   $('levers').style.opacity = '.5'; clearTimeout(LEVTIMER); LEVTIMER = setTimeout(() => { computeLevers(); $('levers').style.opacity = '1'; }, 60);
   $('results').classList.remove('busy'); $('results-top').classList.remove('busy');
+}
+
+// ---- por que a primeira ganha da segunda
+const WHY_PRO = { custo: 'custa menos em 30 anos', recorrente: 'tem custo recorrente menor', ens: 'perde menos energia crítica', co2: 'emite menos carbono', tox: 'deixa menos resíduo tóxico em risco', acid: 'tem risco de acidente menor' };
+const WHY_CON = { custo: 'custa mais em 30 anos', recorrente: 'tem custo recorrente maior', ens: 'perde mais energia crítica', co2: 'emite mais carbono', tox: 'deixa mais resíduo tóxico em risco', acid: 'tem risco de acidente maior' };
+const WHY_FMT = { custo: brl, recorrente: v => brl(v) + '/ano', ens: v => num(v) + ' kWh/ano', co2: v => num(v) + ' t CO₂e', tox: v => num(v) + ' kg', acid: brl };
+function explain(r, idx) {
+  const A = r.base[idx[0]], B = r.base[idx[1]];
+  const mx = CRIT.map(c => Math.max(...r.base.map(p => p[c])) || 1);
+  const rows = CRIT.map((c, j) => ({ c, a: A[c], b: B[c], d: S.w[c] * (B[c] - A[c]) / mx[j] })).sort((x, y) => Math.abs(y.d) - Math.abs(x.d));
+  const EPS = 0.002, pro = rows.filter(x => x.d > EPS), con = rows.filter(x => x.d < -EPS).sort((x, y) => x.d - y.d);
+  const net = rows.reduce((s, x) => s + x.d, 0);
+  const vs = x => `${WHY_FMT[x.c](x.a)} contra ${WHY_FMT[x.c](x.b)}`;
+  const proTop = pro.filter((x, i) => i === 0 || (i === 1 && x.d >= 0.25 * pro[0].d));
+  const short = proTop.length ? proTop.map(x => WHY_PRO[x.c]).join(' e ') + ' do que a segunda opção.' : '';
+  let lead = proTop.length ? `Ela <b>${proTop.map(x => `${WHY_PRO[x.c]}</b> (${vs(x)})`).join(' e <b>')}.` : 'Nos valores centrais ela não fica à frente em nenhum critério.';
+  if (con.length) lead += ` Em troca, <b>${WHY_CON[con[0].c]}</b> (${vs(con[0])}).`;
+  const duel = r.duel(idx[0], idx[1]);
+  const cwA = r.cw[idx[0]], cwB = r.cw[idx[1]]; let k = 0;
+  CRIT.forEach((c, j) => { if (Math.abs(cwB[j] - cwA[j]) > Math.abs(cwB[k] - cwA[k])) k = j; });
+  const cw = r.prob[idx[1]] >= 0.05 && Math.abs(cwB[k] - cwA[k]) >= 0.02 ? { c: CRIT[k], a: cwA[k], b: cwB[k] } : null;
+  return { A, B, rows, net, lead, short, duel, cw, EPS };
+}
+function drawWhy(W) {
+  $('whyLead').innerHTML = W.lead;
+  const m = Math.max(...W.rows.map(x => Math.abs(x.d))) || 1;
+  $('why').innerHTML = W.rows.map(x => {
+    const same = Math.abs(x.a - x.b) <= 0.005 * Math.max(x.a, x.b), zero = Math.abs(x.d) <= W.EPS, w = Math.max(1.5, Math.abs(x.d) / m * 50).toFixed(1) + '%';
+    const q = x.b > 0 && x.a > 0 ? x.a / x.b : 1, X = v => num(v, v < 10 ? 1 : 0) + '×';
+    const delta = same ? '' : ` · <span class="delta">${q >= 2 ? X(q) + ' maior' : q <= 0.5 ? X(1 / q) + ' menor' : (q > 1 ? '+' : '−') + num(Math.abs(q - 1) * 100) + '%'}</span>`;
+    const tag = same ? 'igual' : 'quase não pesa na nota';
+    return `<div class="whyrow"><div><span class="c">${WNOME[x.c]}</span><span class="vals">1ª <b>${WHY_FMT[x.c](x.a)}</b> · 2ª <b>${WHY_FMT[x.c](x.b)}</b>${delta}</span></div>`
+      + `<div class="whybar ${zero ? 'zero' : ''}" data-tag="${tag}" role="img" aria-label="${zero ? tag : x.d > 0 ? 'a favor da primeira' : 'a favor da segunda'}">${zero ? '' : `<i class="${x.d > 0 ? 'pro' : 'con'}" data-w="${w}"></i>`}</div></div>`;
+  }).join('');
+  grow('#why .whybar i');
+  const f = [];
+  const lost = W.duel && W.duel.win < 0.5;
+  if (lost) f.push(`<span class="alert"><b>Atenção:</b> no confronto direto, a segunda opção vence a primeira em ${Math.round((1 - W.duel.win) * 100)}% das simulações${W.net < -W.EPS ? ', e também fica à frente na nota com os pesos exatos que você escolheu' : ''}. A primeira lidera a contagem porque combinações parecidas com a segunda dividem as simulações entre si. Trate as duas como candidatas.</span>`);
+  else if (W.net < -W.EPS) f.push('Com os pesos exatos que você escolheu e as premissas centrais, a segunda opção fica um pouco à frente na nota. A primeira lidera porque ganha mais vezes quando pesos e premissas variam dentro da faixa de incerteza.');
+  if (W.duel && !lost) f.push(`No confronto direto entre as duas, a primeira vence em <b>${Math.round(W.duel.win * 100)}%</b> das simulações.`);
+  if (W.duel) f.push(`Em ${Math.round(W.duel.close * 100)}% das simulações, as notas das duas ficam a menos de 5% uma da outra: nesses casos a escolha quase não muda o resultado.`);
+  if (W.cw) f.push(`A segunda passa na frente quando <b>${WNOME[W.cw.c].replace(/^./, m => m.toLowerCase())}</b> pesa ${W.cw.b > W.cw.a ? 'mais' : 'menos'}: peso médio de ${Math.round(W.cw.b * 100)}% nas simulações em que ela vence, contra ${Math.round(W.cw.a * 100)}% nas da primeira.`);
+  $('whyFoot').innerHTML = f.map(x => x.startsWith('<span class="alert"') ? x : `<span class="fl">${x}</span>`).join('');
+}
+function drawShare(r, idx, tri) {
+  const show = idx.filter((i, j) => j < 2 || (j < 4 && r.prob[i] >= 0.03));
+  const rest = Math.max(0, 1 - show.reduce((s, i) => s + r.prob[i], 0));
+  const pm = i => Math.max(1, Math.round(2 * r.se[i] * 100));
+  $('share').innerHTML = show.map((i, j) => `<div class="seg s${j}" data-w="${(r.prob[i] * 100).toFixed(2)}%">${r.prob[i] >= 0.08 ? `<span>${Math.round(r.prob[i] * 100)}%</span>` : ''}</div>`).join('')
+    + (rest > 0.001 ? `<div class="seg rest" data-w="${(rest * 100).toFixed(2)}%"></div>` : '') + '<div class="half"></div>';
+  $('share').setAttribute('aria-label', show.map(i => `${Math.round(r.prob[i] * 100)}% ${label(r.base[i].combo)}`).join('; '));
+  $('bars').innerHTML = show.map((i, j) => `<div class="sl ${j === 0 ? 'first' : ''}"><span class="sw s${j}"></span><span>${tri(r.base[i].combo)}${label(r.base[i].combo)}</span><b>${Math.round(r.prob[i] * 100)}% <small>± ${pm(i)}</small></b></div>`).join('')
+    + (rest >= 0.005 ? `<div class="sl"><span class="sw rest"></span><span>Outras ${r.base.length - show.length} combinações somadas</span><b>${Math.round(rest * 100)}%</b></div>` : '');
+  grow('#share .seg');
+  const a = idx[0], b = idx[1], gap = r.prob[a] - r.prob[b], d = r.duel(a, b), msg = [];
+  if (d && d.win < 0.5) msg.push(`<span class="alert"><b>Atenção:</b> no confronto direto, a segunda opção vence a primeira em ${Math.round((1 - d.win) * 100)}% das simulações. A primeira lidera a contagem porque combinações parecidas com a segunda dividem as simulações entre si. Trate as duas como candidatas e olhe a tabela lado a lado.</span>`);
+  else if (gap < 2 * (r.se[a] + r.se[b])) msg.push(`<span class="alert"><b>Empate técnico:</b> a distância entre as duas primeiras (${num(gap * 100)} pontos) é menor que a margem do sorteio. Trate as duas como candidatas.</span>`);
+  if (r.prob[a] > 0.5) msg.push('A primeira passa de 50%: ganha em mais da metade das simulações, sozinha contra todas as outras.');
+  else msg.push('Nenhuma combinação passa de 50%: a primeira é a mais indicada, mas não tem maioria.');
+  $('shareMsg').innerHTML = msg.join('');
 }
 
 let MODE = 'dia', LASTCOMBO = null, PLAY = null;
@@ -893,7 +1015,7 @@ function drawCurve() {
 let LEVTIMER = null;
 function computeLevers() {
   const { r, idx } = LAST; const bestKey = JSON.stringify(r.base[idx[0]].combo);
-  const runP = st => { const rr = smaa(buildCtx(st), { nP: 40, nW: 200 });
+  const runP = st => { const rr = smaa(buildCtx(st), { nP: 250, nW: 40 });
     const i0 = rr.base.findIndex(p => JSON.stringify(p.combo) === bestKey);
     const top = [...rr.prob.keys()].sort((a, b) => rr.prob[b] - rr.prob[a])[0];
     return { p: rr.prob[i0], top: rr.base[top].combo, ptop: rr.prob[top] }; };
@@ -912,7 +1034,7 @@ function computeLevers() {
   rows.sort((a, b) => Math.abs(b[1].p - base.p) - Math.abs(a[1].p - base.p));
   $('levers').innerHTML = rows.map(([nome, v]) => {
     const flip = JSON.stringify(v.top) !== bestKey;
-    const dir = v.p > base.p + 0.02 ? 'up' : v.p < base.p - 0.02 ? 'down' : '';
+    const dir = v.p > base.p + 0.04 ? 'up' : v.p < base.p - 0.04 ? 'down' : '';
     const sub = flip ? `<span class="sub flip">passa a ganhar: ${label(v.top).toLowerCase()} (${Math.round(v.ptop * 100)}%)</span>`
       : `<span class="sub">a recomendação continua a mesma</span>`;
     return `<div class="lever"><div>${nome}${sub}</div><div class="track"><div class="fill ${dir}" data-w="${(v.p * 100).toFixed(1)}%" style="width:0"></div><div class="mark" style="left:calc(${(base.p * 100).toFixed(1)}% - 1px)"></div></div><b>${Math.round(v.p * 100)}%</b></div>`;
@@ -923,12 +1045,13 @@ function computeLevers() {
 let LAST = null;
 function resumo() {
   const { r, idx } = LAST; const pr = i => Math.round(r.prob[i] * 100) + '%';
-  const linhas = [`Qual bateria, para qual função e lugar (Teiu Energia, v1.0)`,
+  const linhas = [`Qual bateria, para qual função e lugar (Teiu Energia)`,
     `Lugar: ${S.isolated ? 'sem rede' : 'conectado'}; técnico ${S.longe ? 'longe' : 'a poucas horas'}; troca paga por ${S.comunidade_paga ? 'comunidade' : 'distribuidora'}; abrigo a ${S.T} °C; taxa ${Math.round(S.rate * 100)}%` +
       `${S.agentes ? '; agentes treinados' : ''}${S.eletrolito ? '; eletrólito nacional' : ''}${S.chumbo_lr ? '; logística reversa do chumbo' : ''}`,
     `Funções (kW / kWh úteis / ciclos por ano): ciclo ${S.F.F1.P}/${S.F.F1.E}/${S.F.F1.cyc}; reserva ${S.F.F2.P}/${S.F.F2.E}/${S.F.F2.cyc}; no-break ${S.F.F3.P}/${S.F.F3.E}/${S.F.F3.cyc}`,
     `Pesos: ` + CRIT.map(c => `${WNOME[c]} ${Math.round(S.w[c] * 100)}%`).join('; '), ''];
   idx.slice(0, 4).forEach(i => { const p = r.base[i]; linhas.push(`${pr(i)}  ${label(p.combo)} | investimento ${brl(p.capex)} | 30 anos ${brl(p.custo)} | ${num(p.mult, 1)}× | recorrente ${brl(p.recorrente)}/ano | energia crítica perdida ${num(p.ens)} kWh/ano | carbono ${num(p.co2)} t | tóxico ${num(p.tox)} kg | acidente ${brl(p.acid)}`); });
+  if (LAST.W && LAST.W.short && !(LAST.W.duel && LAST.W.duel.win < 0.5)) linhas.push('', 'Por quê: ' + LAST.W.short);
   linhas.push('', 'Premissas de falha, conserto, acidente e resíduo são hipóteses de partida.');
   return linhas.join('\n');
 }

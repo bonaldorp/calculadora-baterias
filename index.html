@@ -695,14 +695,14 @@ function drawSystem(c) {
     + `<circle class="sun" cx="${xs + 166}" cy="${50}" r="9" fill="var(--accent)"/>`);
   s += G('crit', box(560, 30, 180, 58, 'Cargas críticas', `${Math.round(S.alpha * 100)}% da carga`) + L(650, 88, 650, busY));
   s += G('nb', bat(760, 16, 210, '3 · No-break', f3, S.F.F3.E, S.F.F3.P) + L(740, 59, 760, 59));
-  s += G('rest', box(770, 232, 200, 58, 'Demais cargas', iso ? 'só com o bloco do ciclo' : 'cortadas na falta') + L(870, busY, 870, 232, !iso)
+  s += G('rest', box(770, 232, 200, 58, 'Demais cargas', iso ? 'dependem do ciclo diário' : 'cortadas na falta') + L(870, busY, 870, 232, !iso)
     + (!iso ? `<text x="878" y="${busY + 34}" font-size="11.5" fill="${mut}">chave de corte</text>` : ''));
   if (shared) s += G('b1', bat(40, 226, 420, '1 + 2 · Ciclo diário e reserva longa (mesmo bloco)', f1, S.F.F1.E + S.F.F2.E, Math.max(S.F.F1.P, S.F.F2.P)) + L(250, busY, 250, 226));
   else { s += G('b1', bat(40, 226, 230, '1 · Ciclo diário', f1, S.F.F1.E, S.F.F1.P) + L(155, busY, 155, 226));
          s += G('b2', bat(290, 226, 230, '2 · Reserva longa', f2, S.F.F2.E, S.F.F2.P) + L(405, busY, 405, 226)); }
   s += `<text id="xmark" x="0" y="0" font-size="44" font-weight="800" fill="var(--pb)" display="none">×</text>`;
   $('sysdraw').innerHTML = `<svg viewBox="0 0 1000 330" role="img" aria-label="Esquema do sistema recomendado" font-family="var(--body)">${s}</svg>`;
-  $('modeFalha').textContent = iso ? 'Bloco do ciclo quebra' : 'Falta da rede';
+  $('modeFalha').textContent = iso ? 'Falha no ciclo diário' : 'Falta da rede';
   applyMode();
 }
 function applyMode() {
@@ -743,8 +743,8 @@ function applyMode() {
     : `Dia: o solar atende a vila, a rede completa e o bloco de ${NOME[f1]} guarda o excedente; a reserva fica cheia, parada.`;
   else if (MODE === 'noite') t = iso ? `Noite: o bloco de ${NOME[f1]} devolve o solar do dia para toda a comunidade.`
     : `Noite: o bloco de ${NOME[f1]} devolve o solar do dia e a rede completa o resto.`;
-  else t = iso ? (shared ? `Se o único bloco quebra à noite, cai tudo: sobra só o no-break de ${NOME[f3]} nas cargas mais sensíveis. Por isso o modelo prefere dois blocos.`
-                          : `Se o bloco do ciclo quebra à noite, a reserva de ${NOME[f2]} segura as cargas críticas; as demais ficam sem luz até o conserto.`)
+  else t = iso ? (shared ? `Falha no ciclo diário: com um bloco só, a falha à noite derruba tudo e sobra apenas o no-break de ${NOME[f3]} nas cargas mais sensíveis. Por isso o modelo prefere dois blocos.`
+                          : `Falha no ciclo diário: a bateria do dia a dia para à noite, a reserva de ${NOME[f2]} assume as cargas críticas e as demais ficam sem luz até o conserto.`)
     : `Falta da rede: o religador abre, as demais cargas são cortadas e ${shared ? `o bloco de ${NOME[f1]} atende as cargas críticas com a parte guardada como reserva` : `a reserva de ${NOME[f2]} assume as cargas críticas`}. O no-break fica de prontidão junto a elas.`;
   $('modeText').textContent = t;
   document.querySelectorAll('.modes button').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === MODE));

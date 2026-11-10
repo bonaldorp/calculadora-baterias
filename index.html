@@ -89,6 +89,45 @@ h1 { font: 800 clamp(38px, 5vw, 58px)/.92 var(--display); text-transform: upperc
 .lever .sub { display: block; font-size: 12px; color: var(--muted); }
 .lever .sub.flip { color: var(--ink); font-weight: 600; }
 #curve svg { width: 100%; height: auto; display: block; }
+.rack-label { flex-wrap: wrap; }
+.play { font: 600 12px var(--mono); letter-spacing: .04em; text-transform: uppercase; padding: 6px 12px; background: transparent; color: var(--accent); border: 1px solid var(--accent); cursor: pointer; margin-left: auto; }
+.play[aria-pressed="true"] { background: var(--accent); color: #111; }
+.rack-label .modes { margin-left: auto; } .rack-label .modes + .play { margin-left: 8px; }
+#sysdraw { transition: background-color .6s; background: transparent; }
+#sysdraw[data-mode="dia"] { background: rgba(232, 163, 23, .05); }
+#sysdraw[data-mode="noite"] { background: rgba(47, 111, 214, .08); }
+#sysdraw[data-mode="falha"] { background: rgba(224, 112, 63, .07); }
+#sysdraw .soc { transform-box: fill-box; transform-origin: 50% 100%; transition: transform .6s; }
+#sysdraw .soc.full { transform: scaleY(.97); } #sysdraw .soc.mid { transform: scaleY(.55); } #sysdraw .soc.empty { transform: scaleY(.04); }
+#sysdraw .soc.charge { animation: charge 3.4s ease-in-out infinite; }
+#sysdraw .soc.drain { animation: drain 3.4s ease-in-out infinite; }
+@keyframes charge { 0% { transform: scaleY(.25); } 85%, 100% { transform: scaleY(.95); } }
+@keyframes drain { 0% { transform: scaleY(.95); } 85%, 100% { transform: scaleY(.3); } }
+#sysdraw .sun { transition: opacity .5s; transform-box: fill-box; transform-origin: center; }
+#sysdraw[data-mode="dia"] .sun { animation: glow 2.4s ease-in-out infinite; }
+#sysdraw:not([data-mode="dia"]) .sun { opacity: .15; }
+@keyframes glow { 50% { transform: scale(1.25); opacity: .75; } }
+.rack.swap .slot { animation: swapin .55s cubic-bezier(.2,.8,.2,1) both; }
+.rack.swap .slot:nth-child(2) { animation-delay: .08s; } .rack.swap .slot:nth-child(3) { animation-delay: .16s; }
+@keyframes swapin { from { transform: translateY(10px) rotateX(35deg); opacity: .2; } to { transform: none; opacity: 1; } }
+.slot::before { transition: background .4s; }
+.cells i { transition: background .25s; }
+.lever .fill { transition: width .7s cubic-bezier(.2,.8,.2,1); }
+#curve .draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1.3s ease-out forwards; }
+#curve .pop { opacity: 0; animation: pop .35s ease-out forwards; transform-box: fill-box; transform-origin: center; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes pop { from { opacity: 0; transform: scale(.2); } to { opacity: 1; transform: none; } }
+.band .eyebrow, .band h1, .band .lede, .band .meta, .intro-side { animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
+.band h1 { animation-delay: .06s; } .band .lede { animation-delay: .14s; } .band .meta { animation-delay: .2s; } .intro-side { animation-delay: .26s; }
+.inputs > .panel { animation: rise .6s cubic-bezier(.2,.8,.2,1) both; }
+.inputs > .panel:nth-child(2) { animation-delay: .06s; } .inputs > .panel:nth-child(3) { animation-delay: .12s; } .inputs > .panel:nth-child(4) { animation-delay: .18s; }
+@keyframes rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+.ro .n { transition: color .4s; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  #curve .draw { stroke-dashoffset: 0; } #curve .pop { opacity: 1; }
+  #sysdraw .soc.charge { transform: scaleY(.6); } #sysdraw .soc.drain { transform: scaleY(.6); }
+}
 .copyrow { display: flex; gap: 12px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
 .btn { font: 600 13px var(--body); color: var(--band); background: var(--accent); border: 0; padding: 8px 14px; cursor: pointer; }
 .btn:hover { filter: brightness(1.08); }
@@ -181,7 +220,7 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
       <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
       <h1>Qual bateria, para qual função e lugar</h1>
       <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 8 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
-      <p class="meta">Versão 1.7 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="meta">Versão 1.8 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
     </div>
     <div class="intro-side">
       <p class="warn"><b>Leia antes de usar.</b> Preços, taxas de falha, tempos de conserto, chances de acidente e frações de resíduo que escapam da reciclagem são hipóteses de partida, não medições: não há base pública de falhas de baterias estacionárias no Brasil. Serve para comparar opções e ver o que muda a escolha, não para dimensionar um projeto.</p>
@@ -267,7 +306,7 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
       <div class="rack" id="rack"></div>
       <div class="verdict"><div class="big-pct" id="bigPct"></div><div class="t" id="verdict"></div></div>
       <div class="readouts" id="kpis"></div>
-      <div class="sys"><div class="rack-label"><span>Como fica o sistema</span><div class="modes" role="group" aria-label="Momento do dia"><button type="button" data-mode="dia" aria-pressed="true">Dia</button><button type="button" data-mode="noite" aria-pressed="false">Noite</button><button type="button" data-mode="falha" aria-pressed="false" id="modeFalha">Falta da rede</button></div></div><p id="modeText" class="modetext"></p><div id="sysdraw"></div><p id="sysnote"></p></div>
+      <div class="sys"><div class="rack-label"><span>Como fica o sistema</span><div class="modes" role="group" aria-label="Momento do dia"><button type="button" data-mode="dia" aria-pressed="true">Dia</button><button type="button" data-mode="noite" aria-pressed="false">Noite</button><button type="button" data-mode="falha" aria-pressed="false" id="modeFalha">Falta da rede</button></div><button type="button" id="play" class="play" aria-pressed="false">▶ Ver o dia passar</button></div><p id="modeText" class="modetext"></p><div id="sysdraw"></div><p id="sysnote"></p></div>
       <div class="copyrow"><button type="button" id="copy" class="btn">Copiar resultado</button><span id="copyMsg" role="status"></span></div>
 </section>
 <main class="after">
@@ -552,6 +591,16 @@ function fromForm() {
 }
 let timer = null;
 function schedule() { $('results').classList.add('busy'); $('results-top').classList.add('busy'); clearTimeout(timer); timer = setTimeout(run, 120); }
+let PREVKEY = null, PCT = 0, PCTRAF = null;
+const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+function countTo(el, to) {
+  cancelAnimationFrame(PCTRAF); const from = PCT; PCT = to;
+  if (REDUCED || from === to) { el.textContent = to + '%'; return; }
+  const t0 = performance.now(), d = 650;
+  const step = now => { const k = Math.min(1, (now - t0) / d), e = 1 - Math.pow(1 - k, 3); el.textContent = Math.round(from + (to - from) * e) + '%'; if (k < 1) PCTRAF = requestAnimationFrame(step); };
+  PCTRAF = requestAnimationFrame(step);
+}
+function grow(sel) { requestAnimationFrame(() => requestAnimationFrame(() => document.querySelectorAll(sel).forEach(el => { if (el.dataset.w) el.style.width = el.dataset.w; if (el.dataset.on) el.classList.add('on'); }))); }
 function run() {
   const ctx = buildCtx(S); const r = smaa(ctx, { nP: 40, nW: 200 });
   const idx = [...r.prob.keys()].sort((a, b) => r.prob[b] - r.prob[a] || r.score[a] - r.score[b]);
@@ -564,7 +613,10 @@ function run() {
     + slot('3 · No-break', f3, 'junto às cargas críticas');
   $('lugarNome').textContent = '';
   drawSystem(best.combo);
-  $('bigPct').textContent = Math.round(r.prob[idx[0]] * 100) + '%';
+  countTo($('bigPct'), Math.round(r.prob[idx[0]] * 100));
+  const key = JSON.stringify(best.combo);
+  if (PREVKEY !== null && PREVKEY !== key) { const rk = $('rack'); rk.classList.remove('swap'); void rk.offsetWidth; rk.classList.add('swap'); }
+  PREVKEY = key;
   const second = r.prob[idx[1]] > 0.1 ? `<small>Segunda opção, em ${Math.round(r.prob[idx[1]] * 100)}% das simulações: ${label(r.base[idx[1]].combo).toLowerCase()}.</small>` : `<small>Nenhuma outra combinação passa de 10%.</small>`;
   $('verdict').innerHTML = `das simulações indicam esta combinação.${second}`;
   const perFam = S.familias > 0 ? `R$ ${num(best.recorrente / S.familias / 12)} por família/mês` : 'trocas e O&M';
@@ -576,8 +628,9 @@ function run() {
   const tri = c => `<span class="tri" aria-hidden="true"><i class="${c[0]}"></i><i class="${c[1]}"></i><i class="${c[2]}"></i></span>`;
   $('bars').innerHTML = idx.slice(0, 6).filter((i, j) => j < 2 || r.prob[i] >= 0.01).map((i, j) => {
     const on = Math.round(r.prob[i] * 20);
-    return `<div class="meter ${j === 0 ? 'first' : ''}"><div class="top"><span>${tri(r.base[i].combo)}${label(r.base[i].combo)}</span><b>${Math.round(r.prob[i] * 100)}%</b></div><div class="cells" aria-hidden="true">${Array.from({ length: 20 }, (_, q) => `<i class="${q < on ? 'on' : ''}"></i>`).join('')}</div></div>`;
+    return `<div class="meter ${j === 0 ? 'first' : ''}"><div class="top"><span>${tri(r.base[i].combo)}${label(r.base[i].combo)}</span><b>${Math.round(r.prob[i] * 100)}%</b></div><div class="cells" aria-hidden="true">${Array.from({ length: 20 }, (_, q) => `<i ${q < on ? 'data-on="1"' : ''} style="transition-delay:${q * 22}ms"></i>`).join('')}</div></div>`;
   }).join('');
+  grow('#bars .cells i');
   const top = idx.slice(0, 4).map(i => r.base[i]);
   const rowsC = [['Investimento', p => brl(p.capex), p => p.capex], ['Custo em 30 anos (valor presente)', p => brl(p.custo), p => p.custo], ['Custo total ÷ investimento', p => num(p.mult, 1) + '×', p => p.mult],
     ['Custo recorrente por ano', p => brl(p.recorrente), p => p.recorrente], ['Energia crítica perdida (kWh/ano)', p => num(p.ens, 0), p => p.ens],
@@ -604,7 +657,14 @@ function run() {
   $('results').classList.remove('busy'); $('results-top').classList.remove('busy');
 }
 
-let MODE = 'dia', LASTCOMBO = null;
+let MODE = 'dia', LASTCOMBO = null, PLAY = null;
+function stopPlay() { if (PLAY) { clearInterval(PLAY); PLAY = null; } const b = $('play'); if (b) { b.textContent = '▶ Ver o dia passar'; b.setAttribute('aria-pressed', 'false'); } }
+function togglePlay() {
+  if (PLAY) { stopPlay(); return; }
+  const seq = ['dia', 'noite', 'falha']; let i = seq.indexOf(MODE);
+  const b = $('play'); b.textContent = '❚❚ Parar'; b.setAttribute('aria-pressed', 'true');
+  PLAY = setInterval(() => { i = (i + 1) % seq.length; MODE = seq[i]; applyMode(); }, 3600);
+}
 function drawSystem(c) {
   LASTCOMBO = c;
   const [f1, f2, f3, sep] = c, shared = f1 === f2 && !sep, iso = S.isolated;
@@ -617,7 +677,9 @@ function drawSystem(c) {
     + `<rect x="${x}" y="${y}" width="${w}" height="6" fill="${COR[k]}"/>`
     + `<text x="${x + 12}" y="${y + 26}" font-family="var(--mono)" font-size="11" letter-spacing="1" fill="${mut}">${fn.toUpperCase()}</text>`
     + `<text x="${x + 12}" y="${y + 56}" font-family="var(--display)" font-weight="800" font-size="30" fill="${COR[k]}">${NOME[k].toUpperCase()}</text>`
-    + `<text x="${x + 12}" y="${y + 76}" font-size="12.5" fill="${ink}">${kwh(e)} · ${kw(p)}</text>`;
+    + `<text x="${x + 12}" y="${y + 76}" font-size="12.5" fill="${ink}">${kwh(e)} · ${kw(p)}</text>`
+    + `<rect x="${x + w - 24}" y="${y + 16}" width="12" height="62" fill="none" stroke="${COR[k]}" stroke-opacity="0.7"/>`
+    + `<rect class="soc" x="${x + w - 22}" y="${y + 18}" width="8" height="58" fill="${COR[k]}"/>`;
   const L = (x1, y1, x2, y2, dash) => `<line class="ln" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${line}" stroke-width="1.6"${dash ? ' stroke-dasharray="5 4"' : ''}/>`;
   const G = (k, inner) => `<g data-k="${k}">${inner}</g>`;
   const busY = 170; let s = '';
@@ -629,7 +691,8 @@ function drawSystem(c) {
     s += `<g id="rel"><rect id="relBox" x="95" y="112" width="80" height="30" fill="${acc}" stroke="${acc}" stroke-width="1.6"/><text id="relTxt" x="135" y="132" text-anchor="middle" font-size="12" font-weight="600" fill="#111">religador</text></g>`;
     xs = 270;
   }
-  s += G('pv', box(xs, 30, 190, 58, 'Solar', iso ? 'carrega as baterias de dia' : 'atende de dia e carrega') + L(xs + 95, 88, xs + 95, busY));
+  s += G('pv', box(xs, 30, 190, 58, 'Solar', iso ? 'carrega as baterias de dia' : 'atende de dia e carrega') + L(xs + 95, 88, xs + 95, busY)
+    + `<circle class="sun" cx="${xs + 166}" cy="${50}" r="9" fill="var(--accent)"/>`);
   s += G('crit', box(560, 30, 180, 58, 'Cargas críticas', `${Math.round(S.alpha * 100)}% da carga`) + L(650, 88, 650, busY));
   s += G('nb', bat(760, 16, 210, '3 · No-break', f3, S.F.F3.E, S.F.F3.P) + L(740, 59, 760, 59));
   s += G('rest', box(770, 232, 200, 58, 'Demais cargas', iso ? 'só com o bloco do ciclo' : 'cortadas na falta') + L(870, busY, 870, 232, !iso)
@@ -659,6 +722,13 @@ function applyMode() {
     else if (iso) { m.flow = { b2: 'r', crit: 'r' }; }
     else { m.flow = shared ? { b1: 'r', crit: 'r' } : { b2: 'r', crit: 'r' }; }
   }
+  const soc = {};
+  if (MODE === 'dia') Object.assign(soc, { b1: 'charge', b2: iso ? 'charge' : 'full', nb: 'full' });
+  else if (MODE === 'noite') Object.assign(soc, { b1: 'drain', b2: 'full', nb: 'full' });
+  else if (iso) Object.assign(soc, shared ? { b1: 'empty', nb: 'drain' } : { b1: 'empty', b2: 'drain', nb: 'full' });
+  else Object.assign(soc, shared ? { b1: 'drain', nb: 'full' } : { b1: 'mid', b2: 'drain', nb: 'full' });
+  document.querySelectorAll('#sysdraw .soc').forEach(r => { const k = r.closest('g[data-k]').dataset.k; r.setAttribute('class', 'soc ' + (soc[k] || 'full')); });
+  const sd = $('sysdraw'); sd.dataset.mode = MODE;
   document.querySelectorAll('#sysdraw g[data-k]').forEach(g => {
     const k = g.dataset.k, off = m.off.includes(k), fl = m.flow[k];
     g.setAttribute('class', off ? 'off' : 'on');
@@ -699,8 +769,8 @@ function drawCurve() {
     const c = cum[i];
     // degraus: sobe linear com o custo anual e dá o salto no ano da troca
     let p = `M${X(0)} ${Y(c[0])}`; for (let t = 1; t <= 30; t++) p += ` L${X(t)} ${Y(c[t])}`;
-    s += `<path d="${p}" fill="none" stroke="${COR[a.k]}" stroke-width="2.6"/>`;
-    a.repYears.forEach(t => { if (t >= 1 && t <= 30) s += `<circle cx="${X(t)}" cy="${Y(c[t])}" r="3.5" fill="${COR[a.k]}"/>`; });
+    s += `<path class="draw" pathLength="1" d="${p}" fill="none" stroke="${COR[a.k]}" stroke-width="2.6" style="animation-delay:${i * 180}ms"/>`;
+    a.repYears.forEach(t => { if (t >= 1 && t <= 30) s += `<circle class="pop" cx="${X(t)}" cy="${Y(c[t])}" r="3.5" fill="${COR[a.k]}" style="animation-delay:${900 + i * 180 + t * 20}ms"/>`; });
     ends.push({ k: a.k, v: c[30], y: Y(c[30]) });
   });
   ends.sort((p, q) => p.y - q.y); for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 36) ends[i].y = ends[i - 1].y + 36;
@@ -734,8 +804,9 @@ function computeLevers() {
     const dir = v.p > base.p + 0.02 ? 'up' : v.p < base.p - 0.02 ? 'down' : '';
     const sub = flip ? `<span class="sub flip">passa a ganhar: ${label(v.top).toLowerCase()} (${Math.round(v.ptop * 100)}%)</span>`
       : `<span class="sub">a recomendação continua a mesma</span>`;
-    return `<div class="lever"><div>${nome}${sub}</div><div class="track"><div class="fill ${dir}" style="width:${(v.p * 100).toFixed(1)}%"></div><div class="mark" style="left:calc(${(base.p * 100).toFixed(1)}% - 1px)"></div></div><b>${Math.round(v.p * 100)}%</b></div>`;
+    return `<div class="lever"><div>${nome}${sub}</div><div class="track"><div class="fill ${dir}" data-w="${(v.p * 100).toFixed(1)}%" style="width:0"></div><div class="mark" style="left:calc(${(base.p * 100).toFixed(1)}% - 1px)"></div></div><b>${Math.round(v.p * 100)}%</b></div>`;
   }).join('');
+  grow('#levers .fill');
 }
 
 let LAST = null;
@@ -758,7 +829,8 @@ document.addEventListener('DOMContentLoaded', () => {
   $('longe').addEventListener('click', () => { S.longe = true; toFormKeep(); });
   $('distrib').addEventListener('click', () => { S.comunidade_paga = false; toFormKeep(); });
   $('comun').addEventListener('click', () => { S.comunidade_paga = true; toFormKeep(); });
-  document.querySelectorAll('.modes button').forEach(b => b.addEventListener('click', () => { MODE = b.dataset.mode; applyMode(); }));
+  document.querySelectorAll('.modes button').forEach(b => b.addEventListener('click', () => { stopPlay(); MODE = b.dataset.mode; applyMode(); }));
+  $('play').addEventListener('click', togglePlay);
   document.querySelectorAll('.seg3 button').forEach(b => b.addEventListener('click', () => { CURF = b.dataset.f; document.querySelectorAll('.seg3 button').forEach(x => x.setAttribute('aria-pressed', x === b)); drawCurve(); }));
   $('copy').addEventListener('click', async () => {
     const t = resumo();

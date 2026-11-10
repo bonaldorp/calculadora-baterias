@@ -461,7 +461,7 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
       <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
       <h1>Qual bateria, para qual função e lugar</h1>
       <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 20 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
-      <p class="meta">Versão 5.0 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="meta">Versão 5.1 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
     </div>
     <div class="intro-side">
       <ul class="techkey" aria-label="As três tecnologias comparadas">
@@ -625,7 +625,7 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
 </div>
 <div id="tab-emergencia" hidden>
 <main>
-  <p class="step">Uma tempestade, enchente ou seca derruba a rede por dias. Diga quem é afetado, o que precisa continuar ligado em cada bloco e por quantos dias. A conta mostra o tamanho do sistema para 1, 3, 7 e 15 dias e compara com um gerador a diesel, em custo e em carbono.</p>
+  <p class="step">Uma tempestade, enchente ou seca derruba a rede por dias. Diga quem é afetado, o que precisa continuar ligado em cada bloco e por quantos dias. A conta mostra a capacidade necessária conforme os dias sem rede e compara com um gerador a diesel, em custo e em carbono.</p>
   <section class="inputs casa-inputs" aria-label="Emergência climática">
     <div class="panel span2">
       <h2><span class="num">01</span>Quem é afetado e o que fica ligado</h2>
@@ -690,11 +690,11 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
       <div class="tablewrap"><table id="eDays"></table></div>
     </div>
     <div class="panel">
-      <h2><span class="num">06</span>Carbono: dias sem rede × CO₂ acumulado</h2>
-      <p class="note" style="margin-top:0">O diesel emite a cada hora ligado. A bateria emite na fabricação (e nas trocas ao longo de 30 anos), antes de a emergência acontecer. O eixo horizontal soma os dias sem rede ao longo de 30 anos.</p>
-      <p id="eCo2Read" class="chartread" aria-live="off"></p>
-      <div id="eCo2"></div>
-      <p class="note" id="eCo2Msg" style="margin-bottom:0"></p>
+      <h2><span class="num">06</span>Dias sem rede × capacidade necessária</h2>
+      <p class="note" style="margin-top:0" id="eCapNote"></p>
+      <p id="eCapRead" class="chartread" aria-live="off"></p>
+      <div id="eCap"></div>
+      <p class="note" id="eCapMsg" style="margin-bottom:0"></p>
     </div>
     <div class="panel">
       <h2><span class="num">07</span>Em 30 anos: bateria, diesel ou os dois</h2>
@@ -1890,8 +1890,8 @@ function emgRun() {
   $('e30').innerHTML = `<thead><tr><th>Opção</th><th>Investimento</th><th>Custo em 30 anos</th><th>CO₂ em 30 anos</th></tr></thead><tbody>`
     + opts.map(o => `<tr><td class="${o.k === ETECH ? 'sel' : ''}">${o.nome}<small>${o.obs}</small></td><td>${ok ? brs(o.cap) : '—'}</td><td>${ok ? brs(o.tot) : '—'}</td><td>${ok ? tco(o.co2(daysTot)) : '—'}</td></tr>`).join('') + '</tbody>';
   $('e30Note').textContent = `Conta para ${dd(D)} sem rede a cada ${num(R)} anos: ${num(nEv, 1)} emergências e ${num(daysTot)} dias sem rede em 30 anos. Reais de 2026, sem desconto. Bateria: mesma conta de custo e de carbono da aba "Comunidades e serviços" (trocas, manutenção e perdas; abrigo a 28 °C). Gerador: uma troca em 30 anos, manutenção de 3% ao ano e teste de 30 minutos por semana a meia carga; são hipóteses. Não entram o carbono de fabricar o gerador nem o risco de o diesel não chegar com a estrada fechada.`;
-  ELAST = { D, R, cur, sun, main, tot, lv, opts, daysTot, ok };
-  drawECurve(); drawECo2();
+  ELAST = { D, R, cur, sun, main, tot, lv, opts, daysTot, ok, ctx, tech, sunDay };
+  drawECurve(); drawECap();
   DOCK.emg = ok ? `<b>${kwh(b.En)}</b> <span>de ${tn.toLowerCase()} para ${dd(D)} · ${brs(b.capex)} · diesel: ${num(main.die.l)} L</span>` : '';
   dockUpdate(); emgSave();
 }
@@ -1924,49 +1924,53 @@ function drawECurve() {
     read.innerHTML = `<b>${tt < 48 ? tt + ' h' : num(tt / 24, 1) + ' dias'} sem rede</b><span style="color:var(--accent)">${n1} <b>${num(p1[tt] * 100)}%</b></span><span>${n2} <b>${num(p2[tt] * 100)}%</b></span>`;
   });
 }
-function drawECo2() {
-  const { D, R, opts, daysTot, ok } = ELAST, el = $('eCo2'), W = chartW(el, 1000), small = W < 560, Hh = small ? 300 : 340;
-  if (!ok) { el.innerHTML = ''; $('eCo2Msg').textContent = ''; $('eCo2Read').textContent = ''; return; }
-  const die = opts.find(o => o.k === 'D'), bat = opts.find(o => o.k === ETECH), hyb = opts.find(o => o.k === 'H');
-  // dias em que o diesel alcança a bateria
-  const slope = die.co2(1) - die.co2(0), be = slope > 0 ? (bat.co2(0) - die.co2(0)) / slope : Infinity;
-  const xm = Math.max(30, Math.ceil(Math.min(Math.max(daysTot * 1.6, isFinite(be) && be > 0 ? be * 1.25 : 0), 3650) / 10) * 10);
-  const ym = Math.max(die.co2(xm), ...KS.map(k => opts.find(o => o.k === k).co2(0)), hyb ? hyb.co2(xm) : 0) * 1.08;
-  const x0 = small ? 44 : 58, x1 = W - (small ? 12 : 24), y0 = 14, y1 = Hh - (small ? 104 : 62), fs = small ? 10.5 : 11;
+function drawECap() {
+  const { D, lv, sun, ctx, tech, ok, sunDay } = ELAST, el = $('eCap'), W = chartW(el, 1000), small = W < 560, Hh = small ? 310 : 340;
+  if (!ok) { el.innerHTML = ''; $('eCapMsg').textContent = ''; $('eCapRead').textContent = ''; $('eCapNote').textContent = ''; return; }
+  const xm = Math.max(15, Math.ceil(D)), N = xm * 2, K = eK(ETECH), tn = HT[ETECH].nome.toLowerCase(), zero = new Array(24).fill(0);
+  const ser = (prof, s) => Array.from({ length: N + 1 }, (_, i) => i ? egNeed(prof, s, i / 2) / K : 0);
+  const sE = ser(lv.e.prof, sun), sA = ser(lv.a.prof, sun), hasA = lv.a.day > lv.e.day + 1e-9, hasSun = sunDay > 0;
+  const s0 = hasSun ? ser(lv[ELEVEL].prof, zero) : null;
+  const ym = Math.max(1, ...(hasA ? sA : sE), ...(s0 || [0])) * 1.08;
+  const x0 = small ? 50 : 64, x1 = W - (small ? 12 : 24), y0 = 14, y1 = Hh - (small ? 104 : 62), fs = small ? 10.5 : 11;
   const X = d => x0 + d / xm * (x1 - x0), Y = v => y1 - v / ym * (y1 - y0);
   const nice = m => { const p = Math.pow(10, Math.floor(Math.log10(m))); const f = m / p; return (f > 5 ? 2 : f > 2 ? 1 : 0.5) * p; };
-  let s = ''; const ty = nice(ym), txs = nice(xm);
-  for (let v = 0; v <= ym; v += ty) s += `<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${x0 - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="${fs}" font-family="var(--mono)" fill="var(--muted)">${num(v, ty < 1 ? 1 : 0)}</text>`;
-  for (let d = 0; d <= xm; d += txs) s += `<text x="${X(d)}" y="${y1 + 18}" text-anchor="${d === 0 ? 'start' : 'middle'}" font-size="${fs}" font-family="var(--mono)" fill="var(--muted)">${num(d)}</text>`;
-  s += `<text x="${x0}" y="${y1 + 36}" font-size="${fs}" fill="var(--muted)">dias sem rede somados em 30 anos</text><text x="${x0 - (small ? 40 : 52)}" y="${y0 + 2}" font-size="${fs}" fill="var(--muted)">t CO₂</text>`;
-  if (daysTot <= xm) s += `<line x1="${X(daysTot)}" x2="${X(daysTot)}" y1="${y0}" y2="${y1}" stroke="var(--accent)" stroke-dasharray="3 4"/><text x="${X(daysTot) + 5}" y="${y0 + 22}" font-size="${fs}" fill="var(--ink)" stroke="var(--surface)" stroke-width="4" paint-order="stroke">${small ? '' : 'esperado aqui: '}${num(daysTot)} dias</text>`;
-  const line = (f, col, w, dash) => `<path class="draw" pathLength="1" d="M${X(0)} ${Y(f(0)).toFixed(1)} L${X(xm)} ${Y(f(xm)).toFixed(1)}" fill="none" stroke="${col}" stroke-width="${w}"${dash ? ` stroke-dasharray="${dash}"` : ''}/>`;
-  const col = { Li: 'var(--li)', Pb: 'var(--pb)', V: 'var(--v)' };
-  for (const k of KS) { const o = opts.find(q => q.k === k); s += k === ETECH ? line(o.co2, col[k], 3.2) : `<line x1="${X(0)}" x2="${X(xm)}" y1="${Y(o.co2(0))}" y2="${Y(o.co2(0))}" stroke="${col[k]}" stroke-width="1.6" opacity=".55"/>`; }
-  if (hyb) s += `<line x1="${X(0)}" x2="${X(xm)}" y1="${Y(hyb.co2(0))}" y2="${Y(hyb.co2(xm))}" stroke="var(--muted)" stroke-width="2.2" stroke-dasharray="7 5"/>`;
-  s += line(die.co2, 'var(--ink)', 3.2);
-  if (isFinite(be) && be > 0 && be <= xm) s += `<circle cx="${X(be)}" cy="${Y(bat.co2(0))}" r="5.5" fill="var(--surface)" stroke="var(--ink)" stroke-width="2.5"/>`;
-  const leg = [['var(--ink)', 'gerador a diesel', ''], [col[ETECH], 'bateria de ' + HT[ETECH].nome.toLowerCase(), '']].concat(hyb ? [['var(--muted)', 'bateria de 1 dia + gerador', '7 5']] : []).concat(small ? [] : [['var(--muted)', 'linhas finas: as outras baterias', 'thin']]);
+  let s = ''; const ty = nice(ym), big = ym >= 1e4;
+  for (let v = 0; v <= ym; v += ty) s += `<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${x0 - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="${fs}" font-family="var(--mono)" fill="var(--muted)">${big ? num(v / 1000, ty < 1000 ? 1 : 0) : num(v)}</text>`;
+  for (let d = 0; d <= xm; d += (small && xm > 10 ? 2 : 1)) s += `<text x="${X(d)}" y="${y1 + 18}" text-anchor="${d === 0 ? 'start' : 'middle'}" font-size="${fs}" font-family="var(--mono)" fill="var(--muted)">${d}</text>`;
+  s += `<text x="${x0}" y="${y1 + 36}" font-size="${fs}" fill="var(--muted)">dias sem rede</text><text x="${x0 - (small ? 46 : 58)}" y="${y0 + 2}" font-size="${fs}" fill="var(--muted)">${big ? 'MWh' : 'kWh'}</text>`;
+  [1, 3, 7, 15].filter(d => d <= xm && d !== D).forEach(d => { s += `<line x1="${X(d)}" x2="${X(d)}" y1="${y0}" y2="${y1}" stroke="var(--line)" stroke-dasharray="2 4"/>`; });
+  s += `<line x1="${X(D)}" x2="${X(D)}" y1="${y0}" y2="${y1}" stroke="var(--accent)" stroke-dasharray="3 4"/><text x="${X(D) + (D > xm * 0.8 ? -5 : 5)}" y="${y0 + 12}" text-anchor="${D > xm * 0.8 ? 'end' : 'start'}" font-size="${fs}" fill="var(--ink)" stroke="var(--surface)" stroke-width="4" paint-order="stroke">meta: ${dd(D)}</text>`;
+  const path = p => p.map((v, i) => `${i ? 'L' : 'M'}${X(i / 2).toFixed(1)} ${Y(v).toFixed(1)}`).join(' ');
+  const cE = 'var(--accent)', cA = 'var(--ink)', main = ELEVEL === 'e' ? sE : sA;
+  if (s0) s += `<path d="${path(s0)}" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6 5"/>`;
+  if (hasA) s += `<path class="draw" pathLength="1" d="${path(sA)}" fill="none" stroke="${cA}" stroke-width="${ELEVEL === 'a' ? 3.2 : 2}"/>`;
+  s += `<path class="draw" pathLength="1" d="${path(sE)}" fill="none" stroke="${cE}" stroke-width="${ELEVEL === 'e' ? 3.2 : 2}" style="animation-delay:.15s"/>`;
+  const at = (ser, d) => { const i = Math.min(N, Math.max(0, d * 2)), a = Math.floor(i), f = i - a; return ser[a] + (a < N ? (ser[a + 1] - ser[a]) * f : 0); };
+  s += `<circle cx="${X(D)}" cy="${Y(at(main, D))}" r="5.5" fill="var(--surface)" stroke="${ELEVEL === 'e' ? cE : cA}" stroke-width="2.5"/>`;
+  const leg = [[cE, 'só o essencial', '']].concat(hasA ? [[cA, 'essencial + adicional', '']] : []).concat(s0 ? [['var(--muted)', (ELEVEL === 'e' ? 'essencial' : 'essencial + adicional') + ', se não houvesse solar', '6 5']] : []);
   let lx = x0, lyy = Hh - (small ? 46 : 8);
   leg.forEach(([c, t, dsh]) => { const w = 30 + t.length * 6.6; if (lx + w > x1 + 10) { lx = x0; lyy += 18; }
-    s += dsh === 'thin' ? `<text x="${lx}" y="${lyy}" font-size="12" fill="var(--muted)">${t}</text>` : `<line x1="${lx}" x2="${lx + 18}" y1="${lyy - 4}" y2="${lyy - 4}" stroke="${c}" stroke-width="3"${dsh ? ` stroke-dasharray="${dsh}"` : ''}/><text x="${lx + 24}" y="${lyy}" font-size="12" fill="var(--ink)">${t}</text>`; lx += w + 10; });
-  s += `<g id="cHov" display="none"><line id="cHovL" y1="${y0}" y2="${y1}" stroke="var(--ink)" stroke-dasharray="3 3"/><circle r="5" fill="var(--surface)" stroke="${col[ETECH]}" stroke-width="2.5"/><circle r="5" fill="var(--surface)" stroke="var(--ink)" stroke-width="2.5"/></g>`;
-  el.innerHTML = `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="CO2 acumulado conforme os dias sem rede" font-family="var(--body)">${s}</svg>`;
-  const read = $('eCo2Read'), idle = 'Passe o mouse ou toque no gráfico para ler o CO₂ acumulado em cada ponto.'; read.textContent = idle;
-  const svg = el.querySelector('svg'), hov = svg.querySelector('#cHov'), dots = hov.querySelectorAll('circle'), ln = svg.querySelector('#cHovL'), N = 100;
+    s += `<line x1="${lx}" x2="${lx + 18}" y1="${lyy - 4}" y2="${lyy - 4}" stroke="${c}" stroke-width="3"${dsh ? ` stroke-dasharray="${dsh}"` : ''}/><text x="${lx + 24}" y="${lyy}" font-size="12" fill="var(--ink)">${t}</text>`; lx += w + 10; });
+  s += `<g id="kHov" display="none"><line id="kHovL" y1="${y0}" y2="${y1}" stroke="var(--ink)" stroke-dasharray="3 3"/><circle r="5" fill="var(--surface)" stroke="${cA}" stroke-width="2.5"/><circle r="5" fill="var(--surface)" stroke="${cE}" stroke-width="2.5"/></g>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Capacidade de bateria necessária conforme os dias sem rede" font-family="var(--body)">${s}</svg>`;
+  $('eCapNote').textContent = `Capacidade nominal de ${tn} para segurar o que está marcado no painel 01, conforme a rede fica mais dias fora. Mude uma linha de essencial para adicional, o número de residências ou o solar, e as curvas se movem.`;
+  const read = $('eCapRead'), idle = 'Passe o mouse ou toque no gráfico para ler a capacidade e o investimento em cada duração.'; read.textContent = idle;
+  const svg = el.querySelector('svg'), hov = svg.querySelector('#kHov'), dots = hov.querySelectorAll('circle'), ln = svg.querySelector('#kHovL');
+  const inv = (En, lvl) => brs(asset(ETECH, Math.max(0.1, lv[lvl].P), Math.max(0.01, En * tech[ETECH].dod * tech[ETECH].eol), 2, ctx, tech, 0.08).capex);
   hoverable(svg, W, x0, x1, N, i => {
-    if (i === null) { hov.setAttribute('display', 'none'); read.textContent = idle; return; }
-    const d = i / N * xm; hov.setAttribute('display', ''); ln.setAttribute('x1', X(d)); ln.setAttribute('x2', X(d));
-    dots[0].setAttribute('cx', X(d)); dots[0].setAttribute('cy', Y(bat.co2(d))); dots[1].setAttribute('cx', X(d)); dots[1].setAttribute('cy', Y(die.co2(d)));
-    read.innerHTML = `<b>${num(d)} dias sem rede</b><span>diesel <b>${tco(die.co2(d))}</b></span><span>bateria de ${HT[ETECH].nome.toLowerCase()} <b>${tco(bat.co2(d))}</b></span>` + (hyb ? `<span>bateria de 1 dia + gerador <b>${tco(hyb.co2(d))}</b></span>` : '');
+    if (i === null || i === 0) { hov.setAttribute('display', 'none'); read.textContent = idle; return; }
+    const d = i / 2; hov.setAttribute('display', ''); ln.setAttribute('x1', X(d)); ln.setAttribute('x2', X(d));
+    dots[0].setAttribute('cx', X(d)); dots[0].setAttribute('cy', Y(sA[i])); dots[0].setAttribute('display', hasA ? '' : 'none'); dots[1].setAttribute('cx', X(d)); dots[1].setAttribute('cy', Y(sE[i]));
+    read.innerHTML = `<b>${dd(d)} sem rede</b><span>só o essencial <b>${kwh(sE[i])}</b> (${inv(sE[i], 'e')})</span>` + (hasA ? `<span>essencial + adicional <b>${kwh(sA[i])}</b> (${inv(sA[i], 'a')})</span>` : '') + (s0 ? `<span>sem solar <b>${kwh(s0[i])}</b></span>` : '');
   });
-  const dT = die.co2(daysTot), bT = bat.co2(daysTot), tn = HT[ETECH].nome.toLowerCase();
-  let msg = `Em ${num(daysTot)} dias sem rede (${dd(D)} a cada ${num(R)} anos), o gerador emite ${tco(dT)} de CO₂ e a bateria de ${tn}, ${tco(bT)}. `;
-  if (isFinite(be) && be > daysTot) msg += `O diesel só passa a emitir mais do que essa bateria depois de ${num(be)} dias sem rede${be > 3650 ? ', mais do que cabe em 30 anos' : ''}. Uma bateria grande, parada à espera de uma emergência rara, carrega mais carbono de fabricação do que o diesel que ela evita. O carbono joga a favor da bateria quando o solar encolhe o tamanho necessário, quando ela também trabalha todo dia (ciclo diário) ou quando as faltas são frequentes.`;
-  else if (isFinite(be) && be > 0) msg += `O diesel passa a emitir mais do que a bateria a partir de ${num(be)} dias sem rede, menos do que o esperado para este lugar: aqui a bateria emite menos.`;
-  else msg += 'Só com os testes semanais, o gerador já emite mais do que a fabricação desta bateria.';
-  if (hyb) msg += ` A combinação de bateria para 1 dia com gerador no restante fica em ${tco(hyb.co2(daysTot))}.`;
-  $('eCo2Msg').textContent = msg;
+  // leitura: quanto custa cada dia a mais, e se o solar faz a curva parar de subir
+  const perDay = (main[N] - main[N - 2]), flat = perDay < 0.02 * main[2];
+  let msg = flat ? `Com este solar, a curva para de subir: ${kwh(main[N])} de ${tn} seguram ${ELEVEL === 'e' ? 'o essencial' : 'o essencial e o adicional'} por 1 dia ou por ${xm}, porque o sol repõe de dia o que a noite gasta.`
+    : `Cada dia a mais sem rede pede cerca de ${kwh(perDay)} a mais de ${tn} (${inv(perDay, ELEVEL)}).`;
+  if (hasA && !flat) msg += ` Manter também o adicional multiplica a bateria por ${num(at(sA, D) / Math.max(1e-9, at(sE, D)), 1)} na meta de ${dd(D)}.`;
+  if (s0 && !flat) msg += ` O solar atual tira ${num((1 - at(main, D) / at(s0, D)) * 100)}% da capacidade que seria necessária sem ele.`;
+  $('eCapMsg').textContent = msg;
 }
 // leva a carga essencial e a meta para a aba de comunidades
 function emgBridge() {

@@ -7,6 +7,13 @@ Camadas:
  3. O que pode dar errado: indisponibilidade (falhas x tempo de reparo com a mão de obra/peças do lugar),
     atraso na reposição, calor, maresia, acidentes (incêndio/vazamento), destino do resíduo.
  4. Multicritério com sorteio de pesos e de premissas (SMAA): probabilidade de cada combinação ser a melhor.
+
+Versão 4 (nov/2026):
+ - bateria dimensionada para entregar a energia útil no fim da vida (eol: lítio e chumbo 80%, vanádio 90%);
+ - envelhecimento com oscilação térmica diária (T ± dT);
+ - sorteios das premissas em escala logarítmica (metade e dobro com a mesma chance);
+ - critério novo: energia perdida nas demais cargas (só existe em sistema isolado);
+ - teste de método: produto ponderado (norm='wpm') ao lado da soma ponderada.
 """
 import numpy as np, json, copy
 
@@ -19,11 +26,11 @@ def pv(t): return (1 + I) ** -t
 ANN = sum(pv(t) for t in range(1, H + 1))
 
 TECH = {
- 'Li': dict(nome='Lítio (LFP)', cE=1100, cP=500, rte=.90, dod=.90, cyc=6000, cal=15, om=.015, rep=.75,
+ 'Li': dict(nome='Lítio (LFP)', cE=1100, cP=500, rte=.90, dod=.90, cyc=6000, cal=15, om=.015, rep=.75, eol=.80,
             gwp=50, aux=.003, lam=1.0, mttr=48, acc=1e-4, acc_cost=3e6, haz_kg=0.7, haz_w=0.2, delay=0.75),
- 'Pb': dict(nome='Chumbo-ácido', cE=850, cP=500, rte=.80, dod=.50, cyc=2500, cal=12, om=.010, rep=1.0,
+ 'Pb': dict(nome='Chumbo-ácido', cE=850, cP=500, rte=.80, dod=.50, cyc=2500, cal=12, om=.010, rep=1.0, eol=.80,
             gwp=40.5, aux=.001, lam=0.3, mttr=24, acc=5e-5, acc_cost=3e5, haz_kg=20.0, haz_w=1.0, delay=0.25),
- 'V':  dict(nome='Fluxo de vanádio', cE=1700, cP=3200, rte=.70, dod=.90, cyc=1e9, cal=25, om=.020, rep=0.0,
+ 'V':  dict(nome='Fluxo de vanádio', cE=1700, cP=3200, rte=.70, dod=.90, cyc=1e9, cal=25, om=.020, rep=0.0, eol=.90,
             gwp=184, aux=.004, lam=2.0, mttr=96, acc=5e-4, acc_cost=5e5, haz_kg=54.0, haz_w=0.3, delay=1.0,
             stack_share=0.4, stack_years=(12, 24), electrolyte_share=0.6, electrolyte_resid=0.5),
 }
@@ -32,42 +39,53 @@ CTX = {
  'turistica': dict(
    nome='Vila turística conectada', exemplo='Taipus de Fora, Maraú',
    F={'F1': dict(P=300, E=600, cyc=300), 'F2': dict(P=280, E=2000, cyc=5), 'F3': dict(P=30, E=240, cyc=3)},
-   T=25, costa=True, mttr_mult={'Li': 1.0, 'Pb': 1.0, 'V': 1.5}, leak={'Li': .30, 'Pb': .05, 'V': .02},
+   T=25, dT=1, costa=True, mttr_mult={'Li': 1.0, 'Pb': 1.0, 'V': 1.5}, leak={'Li': .30, 'Pb': .05, 'V': .02},
    p_delay=0.05, isolated=False, E_exp=10 * 3.6 * 137, core=0.15,
-   w=dict(custo=.30, recorrente=.05, ens=.20, co2=.10, tox=.10, acid=.25)),
+   w=dict(custo=.30, recorrente=.05, ens=.20, co2=.10, tox=.10, acid=.25, comum=0)),
  'hospital': dict(
    nome='Hospital regional conectado', exemplo='UTI e centro cirúrgico; equipe de manutenção própria',
    F={'F1': dict(P=200, E=400, cyc=250), 'F2': dict(P=150, E=3600, cyc=4), 'F3': dict(P=100, E=100, cyc=12)},
-   T=25, costa=False, mttr_mult={'Li': 1.0, 'Pb': 1.0, 'V': 1.5}, leak={'Li': .30, 'Pb': .05, 'V': .02},
+   T=25, dT=1, costa=False, mttr_mult={'Li': 1.0, 'Pb': 1.0, 'V': 1.5}, leak={'Li': .30, 'Pb': .05, 'V': .02},
    p_delay=0.05, isolated=False, E_exp=10 * 3.6 * 150, core=0.6,
-   w=dict(custo=.20, recorrente=.05, ens=.30, co2=.05, tox=.10, acid=.30)),
+   w=dict(custo=.20, recorrente=.05, ens=.30, co2=.05, tox=.10, acid=.30, comum=0)),
  'quilombo_linha': dict(
    nome='Comunidade quilombola em ponta de linha', exemplo='~100 famílias, rede fraca, faltas de até 3–5 dias',
    F={'F1': dict(P=25, E=50, cyc=300), 'F2': dict(P=15, E=290, cyc=5), 'F3': dict(P=5, E=40, cyc=6)},
-   T=30, costa=True, mttr_mult={'Li': 5.0, 'Pb': 1.5, 'V': 8.0}, leak={'Li': .40, 'Pb': .30, 'V': .05},
+   T=30, dT=3, costa=True, mttr_mult={'Li': 5.0, 'Pb': 1.5, 'V': 8.0}, leak={'Li': .40, 'Pb': .30, 'V': .05},
    p_delay=0.5, isolated=False, E_exp=(12 * 3 + 72) * 6, core=0.4,
-   w=dict(custo=.20, recorrente=.25, ens=.25, co2=.05, tox=.15, acid=.10)),
+   w=dict(custo=.20, recorrente=.25, ens=.25, co2=.05, tox=.15, acid=.10, comum=0)),
  'quilombo_isolado': dict(
    nome='Comunidade quilombola isolada (sem rede)', exemplo='~100 famílias, solar + bateria',
    F={'F1': dict(P=40, E=240, cyc=365), 'F2': dict(P=15, E=290, cyc=10), 'F3': dict(P=5, E=40, cyc=12)},
-   T=30, costa=True, mttr_mult={'Li': 5.0, 'Pb': 1.5, 'V': 8.0}, leak={'Li': .40, 'Pb': .30, 'V': .05},
+   T=30, dT=3, costa=True, mttr_mult={'Li': 5.0, 'Pb': 1.5, 'V': 8.0}, leak={'Li': .40, 'Pb': .30, 'V': .05},
    p_delay=0.5, isolated=True, night_kwh=240 * 365, alpha=0.3, core=0.4,
-   w=dict(custo=.20, recorrente=.25, ens=.30, co2=.05, tox=.15, acid=.05)),
+   w=dict(custo=.18, recorrente=.22, ens=.27, co2=.05, tox=.13, acid=.05, comum=.10)),
 }
-CRIT = ['custo', 'recorrente', 'ens', 'co2', 'tox', 'acid']
+CRIT = ['custo', 'recorrente', 'ens', 'co2', 'tox', 'acid', 'comum']
 CRIT_NOME = dict(custo='Custo de ciclo de vida', recorrente='Custo recorrente', ens='Energia crítica não suprida',
-                 co2='Carbono', tox='Resíduo tóxico em risco', acid='Risco de acidente')
+                 co2='Carbono', tox='Resíduo tóxico em risco', acid='Risco de acidente',
+                 comum='Energia perdida nas demais cargas')
 VOLL_C = 100.0  # R$/kWh crítico (para o custo social, só para referência)
 
-def life(p, k, cyc_yr, T):
+def day_mean(T, A, f, n=24):
+    """Média, ao longo de um dia com temperatura T ± A (senoide), de uma função da temperatura."""
+    return sum(f(T + (A or 0) * np.sin(2 * np.pi * (i + 0.5) / n)) for i in range(n)) / n
+
+def aging(k, T, A=0):
+    """Fator de envelhecimento: chumbo dobra a cada +10 °C, lítio a cada +15,5 °C. A curva é convexa:
+    oscilar em torno da média envelhece mais do que ficar na média."""
+    d = 10 if k == 'Pb' else 15.5
+    return day_mean(T, A, lambda t: 2 ** ((t - 25) / d))
+
+def life(p, k, cyc_yr, T, A=0):
     if k == 'V': return p['cal']
-    f = 2 ** (-(T - 25) / 10) if k == 'Pb' else min(1.0, 2 ** (-(T - 25) / 15.5))   # chumbo: metade a cada +10 °C; lítio: 0,8 a 30 °C
+    g = aging(k, T, A); f = 1 / g if k == 'Pb' else min(1.0, 1 / g)
     return min(p['cal'] * f, p['cyc'] * (f if k == 'Pb' else 1) / max(cyc_yr, 1e-9))
 
 def asset(k, P, E_use, cyc_yr, ctx, tech=TECH):
-    p = tech[k]; T = ctx['T']
-    En = E_use / p['dod']; capE = p['cE'] * En; capP = p['cP'] * P; capex = capE + capP
-    L = life(p, k, cyc_yr, T)
+    p = tech[k]; T = ctx['T']; dT = ctx.get('dT', 0)
+    En = E_use / (p['dod'] * p.get('eol', 1)); capE = p['cE'] * En; capP = p['cP'] * P; capex = capE + capP
+    L = life(p, k, cyc_yr, T, dT)
     if k == 'V':
         reps = list(p['stack_years']); rep_cost = [p['stack_share'] * capP] * len(reps); pcs = []
         resid = p['electrolyte_resid'] * p['electrolyte_share'] * capE
@@ -89,11 +107,11 @@ def asset(k, P, E_use, cyc_yr, ctx, tech=TECH):
     units = 1 + len(reps) if k != 'V' else 1
     gwp = p['gwp'] * En * units / 1000 + EF_GRID * loss * H / 1000
     mass = p['haz_kg'] * En * units
-    tox = mass * ctx['leak'][k] * p['haz_w']
+    tox = mass * min(1.0, ctx['leak'][k] * p.get('leak_m', 1)) * p['haz_w']
     acid_inc = p['acc'] * En / 1000 * H
     # indisponibilidade: falhas x reparo local (+maresia/HVAC na costa, +calor no vanádio) + atraso na reposição
     U_fail = p['lam'] * p['mttr'] * ctx['mttr_mult'][k] / 8760 * (1.3 if (ctx['costa'] and k in ('Li', 'V')) else 1) \
-             * (min(2.0, max(1.0, 1 + 0.1 * (T - 25))) if k == 'V' else 1)
+             * (day_mean(T, dT, lambda t: min(2.0, max(1.0, 1 + 0.1 * (t - 25)))) if k == 'V' else 1)
     U_delay = ctx['p_delay'] * p['delay'] * len(reps) / H
     return dict(k=k, P=P, E_use=E_use, En=En, capex=capex, capE=capE, capP=capP, life=L, n_reps=len(reps),
                 rep_total=sum(rep_cost) + pcs_cost * len(pcs), om=om, loss_kwh=loss, loss_cost_30=H * loss * TARIFF,
@@ -121,7 +139,7 @@ def portfolio(ctx, f1, f2, f3, sep=False, tech=TECH):
         ens = al * N * both * ((1 - core) + core * U3); ens_nc = (1 - al) * N * U1
     else:
         ens = ctx['E_exp'] * U2 * ((1 - core) + core * U3); ens_nc = 0.0
-    tot.update(ens=ens, ens_nc=ens_nc, custo=tot['pv'], co2=tot['gwp'], acid=tot['acid_cost'], recorrente=tot['recur'],
+    tot.update(ens=ens, ens_nc=ens_nc, comum=ens_nc, U1=U1, custo=tot['pv'], co2=tot['gwp'], acid=tot['acid_cost'], recorrente=tot['recur'],
                social=tot['pv'] + ANN * (ens * VOLL_C + ens_nc * 8.29) + tot['acid_cost'] * ANN / H,
                capex_share=tot['capex'] / tot['nominal'])
     return dict(combo=(f1, f2, f3, sep), assets=assets, **tot)
@@ -137,26 +155,34 @@ def all_portfolios(ctx, tech=TECH):
 
 def matrix(P): return np.array([[p[c] for c in CRIT] for p in P], float)
 
-def score(M, w):
-    N = M / np.where(M.max(0) > 0, M.max(0), 1)        # razão ao pior (0 = ideal, 1 = pior do conjunto)
-    return N @ np.array([w[c] for c in CRIT])
+def normalize(M, norm='max'):
+    """'max': razão ao pior do conjunto (0 = ideal, 1 = pior). 'wpm': logaritmo, para o produto ponderado,
+    que não depende da pior alternativa do conjunto."""
+    mx = np.where(M.max(0) > 0, M.max(0), 1)
+    return np.log(np.maximum(M, 1e-6 * mx) / mx) if norm == 'wpm' else M / mx
+
+def score(M, w, norm='max'):
+    return normalize(M, norm) @ np.array([w.get(c, 0) for c in CRIT])
 
 def perturb(rng):
+    """Sorteia as premissas incertas em escala logarítmica: metade e dobro com a mesma chance."""
     t = copy.deepcopy(TECH)
-    t['Li']['cE'] *= rng.uniform(.8, 1.25); t['Pb']['cE'] *= rng.uniform(.85, 1.2)
-    t['V']['cE'] *= rng.uniform(.65, 1.1); t['V']['cP'] *= rng.uniform(.8, 1.2)
+    U = lambda a, b: float(np.exp(rng.uniform(np.log(a), np.log(b))))
+    t['Li']['cE'] *= U(.8, 1.25); t['Pb']['cE'] *= U(.85, 1.2)
+    t['V']['cE'] *= U(.65, 1.1); t['V']['cP'] *= U(.8, 1.2)
     for k in t:
-        t[k]['lam'] *= rng.uniform(.5, 2); t[k]['mttr'] *= rng.uniform(.5, 2)
-        t[k]['acc'] *= rng.uniform(.3, 3); t[k]['delay'] *= rng.uniform(.5, 2)
+        t[k]['lam'] *= U(.5, 2); t[k]['mttr'] *= U(.5, 2)
+        t[k]['acc'] *= U(.3, 3); t[k]['delay'] *= U(.5, 2)
+        t[k]['leak_m'] = U(.5, 2); t[k]['eol'] = min(1.0, t[k]['eol'] * U(.9, 1.1))
     return t
 
-def smaa(ctx, n_w=400, n_p=60, conc=15, seed=7, params=True):
+def smaa(ctx, n_w=20, n_p=1000, conc=15, seed=7, params=True, norm='max'):
     """Probabilidade de cada combinação ser a melhor, sorteando pesos (Dirichlet em torno do contexto) e premissas."""
     rng = np.random.default_rng(seed); base = all_portfolios(ctx); wins = np.zeros(len(base))
-    w0 = np.array([ctx['w'][c] for c in CRIT])
+    w0 = np.array([ctx['w'].get(c, 0) for c in CRIT])
     for _ in range(n_p if params else 1):
         P = all_portfolios(ctx, perturb(rng)) if params else base
-        M = matrix(P); N = M / np.where(M.max(0) > 0, M.max(0), 1)
+        N = normalize(matrix(P), norm)
         W = rng.dirichlet(w0 * conc + 0.3, n_w)
         best = (N @ W.T).argmin(0); wins += np.bincount(best, minlength=len(P))
     return base, wins / wins.sum()
@@ -173,13 +199,14 @@ if __name__ == '__main__':
     for key, ctx in CTX.items():
         base, prob = smaa(ctx)
         _, prob_w = smaa(ctx, params=False, n_w=20000)
+        _, prob_p = smaa(ctx, n_p=400, norm='wpm')
         s = score(matrix(base), ctx['w']); order = np.argsort(-prob)
-        print('\n==', ctx['nome'])
+        print('\n==', ctx['nome'], '| produto ponderado indica:', label(base[int(np.argmax(prob_p))]['combo']), f"({prob_p.max():.2f})")
         for i in order[:6]:
             p = base[i]
             print(f"{label(p['combo']):62s} P(melhor) {prob[i]:.2f} (só pesos {prob_w[i]:.2f}) score {s[i]:.3f} | VPL {p['pv']/1e6:5.2f} capex {p['capex']/1e6:5.2f} "
                   f"recur {p['recur']/1e3:5.1f}k ENS {p['ens']:7.1f} CO2 {p['co2']:5.0f} tox {p['tox']:7.0f} acid {p['acid']/1e3:6.1f}k capex/total {p['capex_share']:.2f}")
-        res[key] = dict(prob=prob.tolist(), prob_w=prob_w.tolist(), score=s.tolist(),
+        res[key] = dict(prob=prob.tolist(), prob_w=prob_w.tolist(), prob_wpm=prob_p.tolist(), score=s.tolist(),
                         P=[{k: v for k, v in p.items() if k != 'assets'} | {'label': label(p['combo']),
                             'assets': [(f, a) for f, a in p['assets']]} for p in base])
     json.dump(res, open('res.json', 'w'), default=float, ensure_ascii=False)

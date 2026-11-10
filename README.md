@@ -52,11 +52,21 @@ Preços, taxas de falha, tempos de conserto, chances de acidente e frações de 
 
 - `index.html`: a ferramenta. É uma página única que roda no navegador, sem servidor.
 - `modelo/model.js`: o modelo usado pela página.
-- `modelo/mcda.py`: a mesma conta em Python, usada no relatório.
+- `modelo/mcda.py`: a mesma conta em Python.
 
 ## Método
 
 Teiu Energia (2026), *Case Maraú: armazenamento híbrido para resiliência energética*, seção "Modelo de decisão".
+
+### O que mudou no modelo na versão 4.0
+
+- **Folga para o fim da vida.** A bateria é dimensionada para entregar a energia útil até o último ano: 25% a mais no lítio e no chumbo (fim de vida a 80% da capacidade, como na IEEE 485 para o chumbo) e 11% a mais no vanádio (a capacidade volta com o rebalanceamento do eletrólito, mas cai entre um serviço e outro).
+- **Oscilação térmica.** O envelhecimento usa a temperatura média do abrigo e a oscilação ao longo do dia. Como o efeito do calor é convexo, oscilar em torno da média encurta a vida mais do que ficar nela.
+- **Sorteios simétricos.** As premissas incertas são sorteadas em escala logarítmica: metade e dobro têm a mesma chance, e o valor central é a mediana.
+- **Energia perdida nas demais cargas.** Critério novo, só para sistema isolado: o que a comunidade deixa de receber quando a bateria do dia a dia para.
+- **Teste de método.** Ao lado da soma ponderada, a página refaz a conta com o produto ponderado e avisa quando a recomendação muda.
+
+Os resultados da versão 4.0 não são comparáveis aos das versões anteriores nem aos do relatório de novembro de 2026.
 
 Fontes de contexto:
 
@@ -67,4 +77,4 @@ Fontes de contexto:
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.pt-br). O uso e a adaptação são livres, desde que a Teiu Energia seja citada.
 
-Versão 3.0, novembro de 2026.
+Versão 4.0, novembro de 2026.

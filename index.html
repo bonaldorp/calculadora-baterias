@@ -61,7 +61,7 @@ h1 { font: 800 clamp(38px, 5vw, 58px)/.92 var(--display); text-transform: upperc
 .big-pct { font: 800 64px/.9 var(--display); color: var(--accent); font-variant-numeric: tabular-nums; }
 .verdict .t { font-size: 14px; color: var(--band-ink); }
 .verdict .t small { display: block; color: var(--band-muted); font-size: 12.5px; margin-top: 3px; }
-.readouts { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; margin-top: 16px; border-top: 1px solid var(--band-line); }
+.readouts { display: grid; grid-template-columns: repeat(var(--n, 5), 1fr); gap: 0; margin-top: 16px; border-top: 1px solid var(--band-line); }
 .ro { padding: 10px 10px 0 0; }
 .ro + .ro { padding-left: 12px; border-left: 1px solid var(--band-line); }
 .ro .n { font: 600 18px/1.2 var(--mono); font-variant-numeric: tabular-nums; color: var(--band-ink); white-space: nowrap; }
@@ -304,6 +304,8 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
 .whyfoot .alert { display: block; border: 1px solid var(--line); border-left: 3px solid var(--pb); padding: 9px 12px; margin-bottom: 8px; }
 .whyfoot .alert b { color: var(--pb); }
 .verdict .t small.why { color: var(--band-ink); margin-top: 8px; }
+.verdict .t small.rob b { color: var(--pb); }
+.slider[hidden] { display: none; }
 .verdict .t small.why b { color: var(--accent); font-weight: 600; }
 .share { position: relative; display: flex; height: 44px; margin: 22px 0 0; background: var(--line); }
 .share .seg { height: 100%; width: 0; overflow: hidden; transition: width .8s cubic-bezier(.2,.8,.2,1); display: flex; align-items: center; justify-content: flex-start; box-shadow: inset -2px 0 0 var(--surface); }
@@ -418,7 +420,7 @@ table.eq tr.zero .eqn, table.eq tr.zero .kwh { color: var(--muted); }
       <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
       <h1>Qual bateria, para qual função e lugar</h1>
       <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 20 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
-      <p class="meta">Versão 3.0 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="meta">Versão 4.0 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
     </div>
     <div class="intro-side">
       <ul class="techkey" aria-label="As três tecnologias comparadas">
@@ -470,10 +472,14 @@ table.eq tr.zero .eqn, table.eq tr.zero .kwh { color: var(--muted); }
         <div><label for="alpha">Parte crítica da carga (%)</label><input type="number" id="alpha" min="0" max="100" step="5"></div>
       </div>
       <div class="row2" style="margin-top:10px">
-        <div><label for="temp">Temperatura do abrigo (°C)</label><input type="number" id="temp" min="20" max="40" step="1"></div>
-        <div><label for="familias">Famílias (divide o custo)</label><input type="number" id="familias" min="0" step="1"></div>
+        <div><label for="temp">Temperatura média do abrigo (°C)</label><input type="number" id="temp" min="20" max="40" step="1"></div>
+        <div><label for="dtemp">Oscilação ao longo do dia (± °C)</label><input type="number" id="dtemp" min="0" max="15" step="1"></div>
       </div>
-      <div class="check"><input type="checkbox" id="costa"><label for="costa">Litoral (maresia)</label></div>
+      <p class="note" style="margin:6px 0 0">O calor encurta a vida do chumbo e do lítio, e oscilar em torno da média encurta mais do que ficar nela. Referência: ± 3 °C no litoral, ± 7 °C no sertão, ± 1 °C em abrigo climatizado.</p>
+      <div class="row2" style="margin-top:10px;align-items:end">
+        <div><label for="familias">Famílias (divide o custo)</label><input type="number" id="familias" min="0" step="1"></div>
+        <div class="check" style="margin:0 0 8px"><input type="checkbox" id="costa"><label for="costa">Litoral (maresia)</label></div>
+      </div>
     </div>
     <div class="panel">
       <h2><span class="num">02</span>Operação e políticas</h2>
@@ -497,14 +503,14 @@ table.eq tr.zero .eqn, table.eq tr.zero .kwh { color: var(--muted); }
       </div>
       <dl class="hints">
         <dt>kW</dt><dd>a maior potência que a função precisa entregar.</dd>
-        <dt>kWh úteis</dt><dd>a energia que de fato sai da bateria; o modelo soma a parte que cada tecnologia não pode usar.</dd>
+        <dt>kWh úteis</dt><dd>a energia que de fato sai da bateria até o fim da vida dela. O modelo soma a parte que cada tecnologia não pode usar e a folga para a perda de capacidade com a idade (25% no lítio e no chumbo, 11% no vanádio).</dd>
         <dt>Ciclos/ano</dt><dd>~300–365 no ciclo diário; poucos na reserva e no no-break, que só trabalham nas faltas.</dd>
       </dl>
     </div>
     <div class="panel">
       <h2><span class="num">04</span>O que pesa mais</h2>
       <div class="stack" style="gap:9px" id="weights"></div>
-      <p class="note" style="margin:10px 0 0">Os pesos são normalizados para somar 100%. Numa comunidade quilombola, eles devem sair da consulta prévia.</p>
+      <p class="note" style="margin:10px 0 0">Os pesos são normalizados para somar 100%. Numa comunidade quilombola, eles devem sair da consulta prévia. "Energia perdida nas demais cargas" só aparece em sistema isolado: é o que a comunidade deixa de receber quando a bateria do dia a dia para.</p>
     </div>
   </section>
   <a class="to-result" href="#resultado">Ver a recomendação ↓</a>
@@ -526,7 +532,8 @@ table.eq tr.zero .eqn, table.eq tr.zero .kwh { color: var(--muted); }
       <div class="share" id="share" role="img"></div>
       <div class="sharelegend" id="bars"></div>
       <p id="shareMsg" class="whyfoot"></p>
-      <p class="note">São 20 mil simulações: 1.000 conjuntos de premissas (preços, falhas, tempo de conserto, acidentes, atraso na troca, entre metade e o dobro) × 20 conjuntos de pesos em torno dos escolhidos. A barra soma 100%: cada simulação aponta uma única combinação vencedora. O ± mostra quanto o número oscila se a simulação for repetida; ele não cobre o erro das próprias premissas.</p>
+      <p id="robMsg" class="whyfoot" aria-live="polite"></p>
+      <p class="note">São 20 mil simulações: 1.000 conjuntos de premissas (preços, falhas, tempo de conserto, acidentes, atraso na troca, resíduo que escapa e perda de capacidade; metade e dobro com a mesma chance) × 20 conjuntos de pesos em torno dos escolhidos. A barra soma 100%: cada simulação aponta uma única combinação vencedora. O ± mostra quanto o número oscila se a simulação for repetida; ele não cobre o erro das próprias premissas. A conta principal soma os critérios, cada um dividido pelo pior valor entre as 24 combinações. O teste de método troca a soma pelo produto ponderado, em que ficar duas vezes pior pesa o mesmo em qualquer critério e o resultado não depende da pior combinação.</p>
     </div>
     <div class="panel">
       <h2><span class="num">07</span>Por que ela ganha da segunda opção</h2>
@@ -556,7 +563,7 @@ table.eq tr.zero .eqn, table.eq tr.zero .kwh { color: var(--muted); }
     <div class="panel">
       <h2><span class="num">11</span>Cada tecnologia em cada função</h2>
       <div class="tablewrap"><table id="fn"></table></div>
-      <p class="note">Múltiplo = custo total em 30 anos ÷ investimento: quanto da solução se paga depois da compra. Dias parados = falhas × tempo até o conserto + atraso na troca. O fundo amarelo indica o melhor valor de cada função.</p>
+      <p class="note">O investimento já inclui a folga para a bateria entregar a energia útil no fim da vida. Múltiplo = custo total em 30 anos ÷ investimento: quanto da solução se paga depois da compra. Dias parados = falhas × tempo até o conserto + atraso na troca. O fundo amarelo indica o melhor valor de cada função.</p>
     </div>
   </section>
 </main>
@@ -633,11 +640,11 @@ table.eq tr.zero .eqn, table.eq tr.zero .kwh { color: var(--muted); }
 // Modelo por funções + ciclo de vida + risco + multicritério (port do mcda.py)
 const H = 30, PCS_LIFE = 15, EF_GRID = 0.04;
 const BASE_TECH = {
-  Li: { nome: 'Lítio (LFP)', cE: 1100, cP: 500, rte: .90, dod: .90, cyc: 6000, cal: 15, om: .015, rep: .75, gwp: 50, aux: .003, lam: 1.0, mttr: 48, acc: 1e-4, acc_cost: 3e6, haz_kg: 0.7, haz_w: 0.2, delay: 0.75 },
-  Pb: { nome: 'Chumbo-ácido', cE: 850, cP: 500, rte: .80, dod: .50, cyc: 2500, cal: 12, om: .010, rep: 1.0, gwp: 40.5, aux: .001, lam: 0.3, mttr: 24, acc: 5e-5, acc_cost: 3e5, haz_kg: 20.0, haz_w: 1.0, delay: 0.25 },
-  V:  { nome: 'Fluxo de vanádio', cE: 1700, cP: 3200, rte: .70, dod: .90, cyc: 1e9, cal: 25, om: .020, rep: 0.0, gwp: 184, aux: .004, lam: 2.0, mttr: 96, acc: 5e-4, acc_cost: 5e5, haz_kg: 54.0, haz_w: 0.3, delay: 1.0, stack_share: 0.4, stack_years: [12, 24], electrolyte_share: 0.6, electrolyte_resid: 0.5 },
+  Li: { nome: 'Lítio (LFP)', cE: 1100, cP: 500, rte: .90, dod: .90, cyc: 6000, cal: 15, om: .015, rep: .75, eol: .80, gwp: 50, aux: .003, lam: 1.0, mttr: 48, acc: 1e-4, acc_cost: 3e6, haz_kg: 0.7, haz_w: 0.2, delay: 0.75 },
+  Pb: { nome: 'Chumbo-ácido', cE: 850, cP: 500, rte: .80, dod: .50, cyc: 2500, cal: 12, om: .010, rep: 1.0, eol: .80, gwp: 40.5, aux: .001, lam: 0.3, mttr: 24, acc: 5e-5, acc_cost: 3e5, haz_kg: 20.0, haz_w: 1.0, delay: 0.25 },
+  V:  { nome: 'Fluxo de vanádio', cE: 1700, cP: 3200, rte: .70, dod: .90, cyc: 1e9, cal: 25, om: .020, rep: 0.0, eol: .90, gwp: 184, aux: .004, lam: 2.0, mttr: 96, acc: 5e-4, acc_cost: 5e5, haz_kg: 54.0, haz_w: 0.3, delay: 1.0, stack_share: 0.4, stack_years: [12, 24], electrolyte_share: 0.6, electrolyte_resid: 0.5 },
 };
-const CRIT = ['custo', 'recorrente', 'ens', 'co2', 'tox', 'acid'];
+const CRIT = ['custo', 'recorrente', 'ens', 'co2', 'tox', 'acid', 'comum'];
 const KS = ['Li', 'Pb', 'V'];
 
 function clone(o) { return JSON.parse(JSON.stringify(o)); }
@@ -654,17 +661,21 @@ function effCtx(ctx) {
   return c;
 }
 
-function life(p, k, cyc, T) {
+// média, ao longo de um dia com temperatura T ± A (senoide), de uma função da temperatura
+function dayMean(T, A, f) { const n = 24; let s = 0; for (let i = 0; i < n; i++) s += f(T + (A || 0) * Math.sin(2 * Math.PI * (i + 0.5) / n)); return s / n; }
+// fator de envelhecimento: chumbo dobra a cada +10 °C, lítio a cada +15,5 °C. Como a curva é convexa, oscilar em torno da média envelhece mais do que ficar na média
+function aging(k, T, A) { const d = k === 'Pb' ? 10 : 15.5; return dayMean(T, A, t => Math.pow(2, (t - 25) / d)); }
+function life(p, k, cyc, T, A) {
   if (k === 'V') return p.cal;
-  const f = k === 'Pb' ? Math.pow(2, -(T - 25) / 10) : Math.min(1, Math.pow(2, -(T - 25) / 15.5)); // chumbo: metade a cada +10 °C; lítio: 0,8 a 30 °C, 0,64 a 35 °C
+  const g = aging(k, T, A), f = k === 'Pb' ? 1 / g : Math.min(1, 1 / g);
   return Math.min(p.cal * f, p.cyc * (k === 'Pb' ? f : 1) / Math.max(cyc, 1e-9));
 }
 
 function asset(k, P, Euse, cyc, ctx, tech, I) {
   const p = tech[k], T = ctx.T, pv = t => Math.pow(1 + I, -t);
   let ANN = 0; for (let t = 1; t <= H; t++) ANN += pv(t);
-  const En = Euse / p.dod, capE = p.cE * En, capP = p.cP * P, capex = capE + capP;
-  const L = life(p, k, cyc, T);
+  const En = Euse / (p.dod * (p.eol || 1)), capE = p.cE * En, capP = p.cP * P, capex = capE + capP;
+  const L = life(p, k, cyc, T, ctx.dT);
   let reps = [], repCost = [], pcs = [], resid;
   if (k === 'V') {
     reps = p.stack_years.slice(); repCost = reps.map(() => p.stack_share * capP);
@@ -686,9 +697,9 @@ function asset(k, P, Euse, cyc, ctx, tech, I) {
   const units = k === 'V' ? 1 : 1 + reps.length;
   const gwp = p.gwp * En * units / 1000 + EF_GRID * loss * H / 1000;
   const mass = p.haz_kg * En * units;
-  const tox = mass * ctx.leak[k] * p.haz_w;
+  const tox = mass * Math.min(1, ctx.leak[k] * (p.leak_m || 1)) * p.haz_w;
   const accCost = p.acc * En / 1000 * H * p.acc_cost;
-  const Ufail = p.lam * p.mttr * ctx.mttr_mult[k] / 8760 * ((ctx.costa && (k === 'Li' || k === 'V')) ? 1.3 : 1) * (k === 'V' ? Math.min(2, Math.max(1, 1 + 0.1 * (T - 25))) : 1); // vanádio: +50% a 30 °C, +100% a 35 °C
+  const Ufail = p.lam * p.mttr * ctx.mttr_mult[k] / 8760 * ((ctx.costa && (k === 'Li' || k === 'V')) ? 1.3 : 1) * (k === 'V' ? dayMean(T, ctx.dT, t => Math.min(2, Math.max(1, 1 + 0.1 * (t - 25)))) : 1); // vanádio: +50% a 30 °C, +100% a 35 °C
   const Udelay = ctx.p_delay * p.delay * reps.length / H;
   const flows = new Array(H + 1).fill(0);
   flows[0] = capex;
@@ -719,7 +730,7 @@ function portfolio(ctx, f1, f2, f3, sep, tech, I) {
     ens = ctx.alpha * ctx.night_kwh * both * ((1 - core) + core * a3.U); ensNc = (1 - ctx.alpha) * ctx.night_kwh * U1;
   } else { ens = ctx.E_exp * U2 * ((1 - core) + core * a3.U); ensNc = 0; }
   const capex = sum('capex'), nominal = sum('nominal');
-  return { combo: [f1, f2, f3, sep], assets, custo: sum('pv'), recorrente: sum('recur'), ens, ensNc, co2: sum('gwp'),
+  return { combo: [f1, f2, f3, sep], assets, custo: sum('pv'), recorrente: sum('recur'), ens, ensNc, comum: ensNc, U1, co2: sum('gwp'),
     tox: sum('tox'), acid: sum('acid'), capex, nominal, mult: nominal / capex, mass: sum('mass') };
 }
 
@@ -749,10 +760,15 @@ function gamma(r, a) {
 function dirichlet(r, alpha) { const g = alpha.map(a => gamma(r, a)); const s = g.reduce((a, b) => a + b, 0); return g.map(x => x / s); }
 
 function perturb(tech, r) {
-  const t = clone(tech), U = (a, b) => a + (b - a) * r();
+  const t = clone(tech), U = (a, b) => Math.exp(Math.log(a) + (Math.log(b) - Math.log(a)) * r());
   t.Li.cE *= U(.8, 1.25); t.Pb.cE *= U(.85, 1.2); t.V.cE *= U(.65, 1.1); t.V.cP *= U(.8, 1.2);
-  for (const k of KS) { t[k].lam *= U(.5, 2); t[k].mttr *= U(.5, 2); t[k].acc *= U(.3, 3); t[k].delay *= U(.5, 2); }
+  for (const k of KS) { t[k].lam *= U(.5, 2); t[k].mttr *= U(.5, 2); t[k].acc *= U(.3, 3); t[k].delay *= U(.5, 2); t[k].leak_m = U(.5, 2); t[k].eol = Math.min(1, t[k].eol * U(.9, 1.1)); }
   return t;
+}
+
+// combinações não dominadas: nenhuma outra é melhor ou igual em todos os critérios e melhor em pelo menos um
+function nonDominated(P) {
+  return P.map((p, i) => !P.some((q, j) => j !== i && CRIT.every(c => q[c] <= p[c]) && CRIT.some(c => q[c] < p[c])));
 }
 
 function smaa(ctxRaw, opts = {}) {
@@ -762,11 +778,13 @@ function smaa(ctxRaw, opts = {}) {
   const NB = 10, bw = Array.from({ length: NB }, () => new Array(n).fill(0)), bn = new Array(NB).fill(0);
   const cw = Array.from({ length: n }, () => new Array(CRIT.length).fill(0));
   const keep = opts.keep ? new Float32Array(nP * nW * n) : null; let k = 0;
-  const w0 = CRIT.map(c => ctxRaw.w[c]);
+  const w0 = CRIT.map(c => ctxRaw.w[c] || 0);
   for (let i = 0; i < nP; i++) {
     const P = allPortfolios(ctx, perturb(tech, r), I), b = Math.min(NB - 1, Math.floor(i * NB / nP));
-    const mx = CRIT.map(c => Math.max(...P.map(p => p[c])) || 1);
-    const N = P.map(p => CRIT.map((c, j) => p[c] / mx[j]));
+    const ndm = opts.norm === 'nd' ? nonDominated(P) : null, ref = ndm ? P.filter((p, q) => ndm[q]) : P;
+    const mx = CRIT.map(c => Math.max(...ref.map(p => p[c])) || 1);
+    const N = opts.norm === 'wpm' ? P.map(p => CRIT.map((c, j) => Math.log(Math.max(p[c], 1e-6 * mx[j]) / mx[j])))
+      : P.map(p => CRIT.map((c, j) => p[c] / mx[j]));
     for (let j = 0; j < nW; j++) {
       const W = dirichlet(r, w0.map(x => x * conc + 0.3));
       let best = 0, bs = Infinity;
@@ -800,39 +818,39 @@ function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
 const PRESETS = {
   turistica: { nome: 'Vila turística conectada', desc: 'Ponta de alimentador numa península turística (Taipus de Fora, Maraú): pousadas, frio do pescado e bombeamento. Técnico a poucas horas, distribuidora paga as trocas.', F: { F1: { P: 300, E: 600, cyc: 300 }, F2: { P: 280, E: 2000, cyc: 5 }, F3: { P: 30, E: 240, cyc: 3 } },
-    T: 25, costa: true, longe: false, comunidade_paga: false, isolated: false, horas_falta: 36, carga_critica: 137, night_kwh_dia: 0, alpha: 0.3, core: 0.15, familias: 2000,
-    w: { custo: .30, recorrente: .05, ens: .20, co2: .10, tox: .10, acid: .25 } },
+    T: 25, dT: 1, costa: true, longe: false, comunidade_paga: false, isolated: false, horas_falta: 36, carga_critica: 137, night_kwh_dia: 0, alpha: 0.3, core: 0.15, familias: 2000,
+    w: { custo: .30, recorrente: .05, ens: .20, co2: .10, tox: .10, acid: .25, comum: 0 } },
   hospital: { nome: 'Hospital regional conectado', desc: 'UTI e centro cirúrgico com equipe de manutenção própria. O risco de incêndio dentro do prédio pesa muito.', F: { F1: { P: 200, E: 400, cyc: 250 }, F2: { P: 150, E: 3600, cyc: 4 }, F3: { P: 100, E: 100, cyc: 12 } },
-    T: 25, costa: false, longe: false, comunidade_paga: false, isolated: false, horas_falta: 36, carga_critica: 150, night_kwh_dia: 0, alpha: 0.3, core: 0.6, familias: 0,
-    w: { custo: .20, recorrente: .05, ens: .30, co2: .05, tox: .10, acid: .30 } },
+    T: 25, dT: 1, costa: false, longe: false, comunidade_paga: false, isolated: false, horas_falta: 36, carga_critica: 150, night_kwh_dia: 0, alpha: 0.3, core: 0.6, familias: 0,
+    w: { custo: .20, recorrente: .05, ens: .30, co2: .05, tox: .10, acid: .30, comum: 0 } },
   quilombo_linha: { nome: 'Comunidade quilombola em ponta de linha', desc: '~100 famílias com rede fraca e faltas de até 3–5 dias. Técnico longe, comunidade paga as trocas. Pesos devem sair da consulta prévia.', F: { F1: { P: 25, E: 50, cyc: 300 }, F2: { P: 15, E: 290, cyc: 5 }, F3: { P: 5, E: 40, cyc: 6 } },
-    T: 30, costa: true, longe: true, comunidade_paga: true, isolated: false, horas_falta: 108, carga_critica: 6, night_kwh_dia: 0, alpha: 0.3, core: 0.4, familias: 100,
-    w: { custo: .20, recorrente: .25, ens: .25, co2: .05, tox: .15, acid: .10 } },
+    T: 30, dT: 3, costa: true, longe: true, comunidade_paga: true, isolated: false, horas_falta: 108, carga_critica: 6, night_kwh_dia: 0, alpha: 0.3, core: 0.4, familias: 100,
+    w: { custo: .20, recorrente: .25, ens: .25, co2: .05, tox: .15, acid: .10, comum: 0 } },
   quilombo_isolado: { nome: 'Comunidade quilombola isolada (sem rede)', desc: '~100 famílias com solar e bateria, como Barra Velha e Peso, na Resex de Canavieiras. Técnico longe, comunidade paga as trocas.', F: { F1: { P: 40, E: 240, cyc: 365 }, F2: { P: 15, E: 290, cyc: 10 }, F3: { P: 5, E: 40, cyc: 12 } },
-    T: 30, costa: true, longe: true, comunidade_paga: true, isolated: true, horas_falta: 0, carga_critica: 0, night_kwh_dia: 240, alpha: 0.3, core: 0.4, familias: 100,
-    w: { custo: .20, recorrente: .25, ens: .30, co2: .05, tox: .15, acid: .05 } },
+    T: 30, dT: 3, costa: true, longe: true, comunidade_paga: true, isolated: true, horas_falta: 0, carga_critica: 0, night_kwh_dia: 240, alpha: 0.3, core: 0.4, familias: 100,
+    w: { custo: .18, recorrente: .22, ens: .27, co2: .05, tox: .13, acid: .05, comum: .10 } },
   pequena_cidade: { nome: 'Pequeno centro urbano', desc: 'Sede municipal de ~20 mil habitantes: hospital, água, telecom e prefeitura como carga crítica. Técnico na região, distribuidora paga as trocas, contêiner climatizado.',
     F: { F1: { P: 1000, E: 2000, cyc: 300 }, F2: { P: 500, E: 6000, cyc: 4 }, F3: { P: 100, E: 400, cyc: 6 } },
-    T: 25, costa: false, longe: false, comunidade_paga: false, isolated: false, horas_falta: 20, carga_critica: 300, night_kwh_dia: 0, alpha: 0.3, core: 0.3, familias: 6000,
-    w: { custo: .35, recorrente: .05, ens: .20, co2: .10, tox: .10, acid: .20 } },
+    T: 25, dT: 1, costa: false, longe: false, comunidade_paga: false, isolated: false, horas_falta: 20, carga_critica: 300, night_kwh_dia: 0, alpha: 0.3, core: 0.3, familias: 6000,
+    w: { custo: .35, recorrente: .05, ens: .20, co2: .10, tox: .10, acid: .20, comum: 0 } },
   sertaneja: { nome: 'Comunidade sertaneja em ponta de linha', desc: 'Semiárido, ~60 famílias no fim de uma linha rural longa. Bomba do poço, posto e refrigeração de leite e vacinas são a carga crítica. Abrigo quente (35 °C), técnico longe, comunidade paga as trocas.',
     F: { F1: { P: 30, E: 60, cyc: 300 }, F2: { P: 15, E: 200, cyc: 5 }, F3: { P: 5, E: 30, cyc: 6 } },
-    T: 35, costa: false, longe: true, comunidade_paga: true, isolated: false, horas_falta: 48, carga_critica: 8, night_kwh_dia: 0, alpha: 0.3, core: 0.5, familias: 60,
-    w: { custo: .20, recorrente: .25, ens: .30, co2: .05, tox: .10, acid: .10 } },
+    T: 35, dT: 7, costa: false, longe: true, comunidade_paga: true, isolated: false, horas_falta: 48, carga_critica: 8, night_kwh_dia: 0, alpha: 0.3, core: 0.5, familias: 60,
+    w: { custo: .20, recorrente: .25, ens: .30, co2: .05, tox: .10, acid: .10, comum: 0 } },
   indigena: { nome: 'Aldeia indígena isolada (sem rede)', desc: '~40 famílias sem rede: UBS indígena, escola, rádio e bomba d\'água como carga crítica. Técnico longe, comunidade paga as trocas. Pesos devem sair da consulta livre, prévia e informada (Convenção 169 da OIT).',
     F: { F1: { P: 20, E: 100, cyc: 365 }, F2: { P: 8, E: 150, cyc: 10 }, F3: { P: 3, E: 24, cyc: 12 } },
-    T: 30, costa: false, longe: true, comunidade_paga: true, isolated: true, horas_falta: 0, carga_critica: 0, night_kwh_dia: 100, alpha: 0.3, core: 0.4, familias: 40,
-    w: { custo: .15, recorrente: .25, ens: .25, co2: .05, tox: .20, acid: .10 } },
+    T: 30, dT: 5, costa: false, longe: true, comunidade_paga: true, isolated: true, horas_falta: 0, carga_critica: 0, night_kwh_dia: 100, alpha: 0.3, core: 0.4, familias: 40,
+    w: { custo: .14, recorrente: .22, ens: .23, co2: .04, tox: .18, acid: .09, comum: .10 } },
   ilha: { nome: 'Comunidade de ilha ou ribeirinha (sem rede)', desc: '~50 famílias de pesca sem rede, como nas ilhas da Baía de Camamu: frio do pescado, posto e água como carga crítica. Maresia, técnico longe, comunidade paga as trocas.',
     F: { F1: { P: 25, E: 130, cyc: 365 }, F2: { P: 10, E: 180, cyc: 10 }, F3: { P: 4, E: 30, cyc: 12 } },
-    T: 30, costa: true, longe: true, comunidade_paga: true, isolated: true, horas_falta: 0, carga_critica: 0, night_kwh_dia: 130, alpha: 0.35, core: 0.4, familias: 50,
-    w: { custo: .20, recorrente: .25, ens: .30, co2: .05, tox: .15, acid: .05 } },
+    T: 30, dT: 3, costa: true, longe: true, comunidade_paga: true, isolated: true, horas_falta: 0, carga_critica: 0, night_kwh_dia: 130, alpha: 0.35, core: 0.4, familias: 50,
+    w: { custo: .18, recorrente: .22, ens: .27, co2: .05, tox: .13, acid: .05, comum: .10 } },
 };
 
 // converte as escolhas da tela no contexto do modelo
 function buildCtx(s) {
   return {
-    F: s.F, T: s.T, costa: s.costa, isolated: s.isolated, core: s.core, alpha: s.alpha,
+    F: s.F, T: s.T, dT: s.dT || 0, costa: s.costa, isolated: s.isolated, core: s.core, alpha: s.alpha,
     E_exp: s.horas_falta * s.carga_critica, night_kwh: s.night_kwh_dia * 365,
     mttr_mult: s.longe ? { Li: 5, Pb: 1.5, V: 8 } : { Li: 1, Pb: 1, V: 1.5 },
     leak: s.longe ? { Li: .40, Pb: .30, V: .05 } : { Li: .30, Pb: .05, V: .02 },
@@ -841,10 +859,12 @@ function buildCtx(s) {
   };
 }
 
-if (typeof module !== 'undefined') module.exports = { BASE_TECH, PRESETS, buildCtx, smaa, label, asset, effCtx, techFor, KS, CRIT };
+if (typeof module !== 'undefined') module.exports = { BASE_TECH, PRESETS, buildCtx, smaa, label, asset, effCtx, techFor, KS, CRIT, aging, life, nonDominated };
 
 const $ = id => document.getElementById(id);
-const WNOME = { custo: 'Custo em 30 anos', recorrente: 'Custo recorrente (trocas e O&M)', ens: 'Energia crítica perdida', co2: 'Carbono', tox: 'Resíduo tóxico em risco', acid: 'Risco de acidente' };
+const WNOME = { custo: 'Custo em 30 anos', recorrente: 'Custo recorrente (trocas e O&M)', ens: 'Energia crítica perdida', co2: 'Carbono', tox: 'Resíduo tóxico em risco', acid: 'Risco de acidente', comum: 'Energia perdida nas demais cargas' };
+// o critério das demais cargas só existe em sistema isolado: com rede, elas são cortadas de propósito na falta
+const critOn = c => c !== 'comum' || S.isolated;
 let S = null;
 const brl = v => v >= 1e6 ? 'R$ ' + (v / 1e6).toLocaleString('pt-BR', { maximumFractionDigits: 2, minimumFractionDigits: 2 }) + ' mi' : 'R$ ' + Math.round(v / 1e3).toLocaleString('pt-BR') + ' mil';
 const num = (v, d = 0) => v.toLocaleString('pt-BR', { maximumFractionDigits: d, minimumFractionDigits: d });
@@ -859,7 +879,7 @@ function load(key) {
 }
 function toForm() {
   $('isolated').checked = S.isolated; $('horas').value = S.horas_falta; $('carga').value = S.carga_critica;
-  $('noite').value = S.night_kwh_dia; $('alpha').value = Math.round(S.alpha * 100); $('temp').value = S.T; $('familias').value = S.familias;
+  $('noite').value = S.night_kwh_dia; $('alpha').value = Math.round(S.alpha * 100); $('temp').value = S.T; $('dtemp').value = S.dT || 0; $('familias').value = S.familias;
   $('costa').checked = S.costa; $('agentes').checked = S.agentes; $('eletrolito').checked = S.eletrolito; $('chumbo_lr').checked = S.chumbo_lr;
   $('rate').value = Math.round(S.rate * 100); $('rateOut').textContent = Math.round(S.rate * 100) + '%';
   $('perto').setAttribute('aria-pressed', !S.longe); $('longe').setAttribute('aria-pressed', S.longe);
@@ -869,21 +889,23 @@ function toForm() {
   const W = $('weights'); W.innerHTML = '';
   for (const c of CRIT) {
     const d = document.createElement('div'); d.className = 'slider';
-    d.innerHTML = `<label for="w_${c}">${WNOME[c]}</label><input type="range" id="w_${c}" min="0" max="50" step="1" value="${Math.round(S.w[c] * 100)}"><output id="wo_${c}"></output>`;
+    d.id = 'ws_' + c; d.hidden = !critOn(c);
+    d.innerHTML = `<label for="w_${c}">${WNOME[c]}</label><input type="range" id="w_${c}" min="0" max="50" step="1" value="${Math.round((S.w[c] || 0) * 100)}"><output id="wo_${c}"></output>`;
     W.appendChild(d); d.querySelector('input').addEventListener('input', fromForm);
   }
   showW();
 }
-function showW() { const tot = CRIT.reduce((s, c) => s + Number($('w_' + c).value), 0) || 1; for (const c of CRIT) $('wo_' + c).textContent = Math.round(Number($('w_' + c).value) / tot * 100) + '%'; }
+const wv = c => critOn(c) ? Number($('w_' + c).value) : 0;
+function showW() { const tot = CRIT.reduce((s, c) => s + wv(c), 0) || 1; for (const c of CRIT) { $('wo_' + c).textContent = Math.round(wv(c) / tot * 100) + '%'; $('ws_' + c).hidden = !critOn(c); } }
 function fromForm() {
   const n = id => Math.max(0, Number($(id).value) || 0);
   S.isolated = $('isolated').checked; S.horas_falta = n('horas'); S.carga_critica = n('carga'); S.night_kwh_dia = n('noite');
-  S.alpha = Math.min(1, n('alpha') / 100); S.T = n('temp') || 25; S.familias = n('familias'); S.costa = $('costa').checked;
+  S.alpha = Math.min(1, n('alpha') / 100); S.T = n('temp') || 25; S.dT = Math.min(15, n('dtemp')); S.familias = n('familias'); S.costa = $('costa').checked;
   S.agentes = $('agentes').checked; S.eletrolito = $('eletrolito').checked; S.chumbo_lr = $('chumbo_lr').checked;
   S.rate = n('rate') / 100; $('rateOut').textContent = Math.round(S.rate * 100) + '%';
   for (const f of ['F1', 'F2', 'F3']) S.F[f] = { P: Math.max(0.1, n(f + 'P')), E: Math.max(0.1, n(f + 'E')), cyc: Math.max(0.1, n(f + 'c')) };
-  const tot = CRIT.reduce((s, c) => s + Number($('w_' + c).value), 0) || 1;
-  for (const c of CRIT) S.w[c] = Number($('w_' + c).value) / tot;
+  const tot = CRIT.reduce((s, c) => s + wv(c), 0) || 1;
+  for (const c of CRIT) S.w[c] = wv(c) / tot;
   showW();
   $('gridFields').style.display = S.isolated ? 'none' : ''; $('isoFields').style.display = S.isolated ? '' : 'none';
   schedule();
@@ -924,6 +946,8 @@ function run() {
     [num(best.mult, 1) + '×', 'custo total ÷ investimento'], [brl(best.recorrente) + '/ano', perFam],
     [num(best.ens, 0) + ' kWh', 'energia crítica perdida por ano'],
   ];
+  if (S.isolated) KP.push([num(best.U1 * 365, best.U1 * 365 < 10 ? 1 : 0) + ' dias', 'por ano com as demais cargas sem luz']);
+  $('kpis').style.setProperty('--n', KP.length);
   $('kpis').innerHTML = KP.map(([n, l], j) => `<div class="ro"><div class="n ${PREVKP[j] !== undefined && PREVKP[j] !== n ? 'tick' : ''}">${n}</div><div class="l">${l}</div></div>`).join('');
   PREVKP = KP.map(x => x[0]);
   const tri = c => `<span class="tri" aria-hidden="true"><i class="${c[0]}"></i><i class="${c[1]}"></i><i class="${c[2]}"></i></span>`;
@@ -931,6 +955,7 @@ function run() {
   const top = idx.slice(0, 4).map(i => r.base[i]);
   const rowsC = [['Investimento', p => brl(p.capex), p => p.capex], ['Custo em 30 anos (valor presente)', p => brl(p.custo), p => p.custo], ['Custo total ÷ investimento', p => num(p.mult, 1) + '×', p => p.mult],
     ['Custo recorrente por ano', p => brl(p.recorrente), p => p.recorrente], ['Energia crítica perdida (kWh/ano)', p => num(p.ens, 0), p => p.ens],
+    ...(S.isolated ? [['Demais cargas sem luz (dias/ano)', p => num(p.U1 * 365, p.U1 * 365 < 10 ? 1 : 0), p => p.U1]] : []),
     ['Carbono em 30 anos (t CO₂e)', p => num(p.co2, 0), p => p.co2], ['Resíduo tóxico em risco (kg equiv. chumbo)', p => num(p.tox, 0), p => p.tox],
     ['Perda esperada por acidente (30 anos)', p => brl(p.acid), p => p.acid]];
   $('cmp').innerHTML = `<thead><tr><th>Indicador</th>${top.map((p, j) => `<th>${tri(p.combo)}${String.fromCharCode(65 + j)}</th>`).join('')}</tr></thead><tbody>` +
@@ -952,18 +977,19 @@ function run() {
   LAST = { r, idx, W };
   drawCurve();
   $('levers').style.opacity = '.5'; clearTimeout(LEVTIMER); LEVTIMER = setTimeout(computeLevers, 60);
+  clearTimeout(ROBTIMER); $('robMsg').innerHTML = ''; ROBTIMER = setTimeout(() => robust(ctx, best), 30);
   DOCK.com = `${tri(best.combo)}<b>${Math.round(r.prob[idx[0]] * 100)}%</b> <span>${label(best.combo)}</span>`; dockPulse();
   $('results').classList.remove('busy'); $('results-top').classList.remove('busy');
 }
 
 // ---- por que a primeira ganha da segunda
-const WHY_PRO = { custo: 'custa menos em 30 anos', recorrente: 'tem custo recorrente menor', ens: 'perde menos energia crítica', co2: 'emite menos carbono', tox: 'deixa menos resíduo tóxico em risco', acid: 'tem risco de acidente menor' };
-const WHY_CON = { custo: 'custa mais em 30 anos', recorrente: 'tem custo recorrente maior', ens: 'perde mais energia crítica', co2: 'emite mais carbono', tox: 'deixa mais resíduo tóxico em risco', acid: 'tem risco de acidente maior' };
-const WHY_FMT = { custo: brl, recorrente: v => brl(v) + '/ano', ens: v => num(v) + ' kWh/ano', co2: v => num(v) + ' t CO₂e', tox: v => num(v) + ' kg', acid: brl };
+const WHY_PRO = { custo: 'custa menos em 30 anos', recorrente: 'tem custo recorrente menor', ens: 'perde menos energia crítica', co2: 'emite menos carbono', tox: 'deixa menos resíduo tóxico em risco', acid: 'tem risco de acidente menor', comum: 'deixa as demais cargas menos tempo sem luz' };
+const WHY_CON = { custo: 'custa mais em 30 anos', recorrente: 'tem custo recorrente maior', ens: 'perde mais energia crítica', co2: 'emite mais carbono', tox: 'deixa mais resíduo tóxico em risco', acid: 'tem risco de acidente maior', comum: 'deixa as demais cargas mais tempo sem luz' };
+const WHY_FMT = { custo: brl, recorrente: v => brl(v) + '/ano', ens: v => num(v) + ' kWh/ano', co2: v => num(v) + ' t CO₂e', tox: v => num(v) + ' kg', acid: brl, comum: v => num(v) + ' kWh/ano' };
 function explain(r, idx) {
   const A = r.base[idx[0]], B = r.base[idx[1]];
   const mx = CRIT.map(c => Math.max(...r.base.map(p => p[c])) || 1);
-  const rows = CRIT.map((c, j) => ({ c, a: A[c], b: B[c], d: S.w[c] * (B[c] - A[c]) / mx[j] })).sort((x, y) => Math.abs(y.d) - Math.abs(x.d));
+  const rows = CRIT.map((c, j) => ({ c, a: A[c], b: B[c], d: (S.w[c] || 0) * (B[c] - A[c]) / mx[j] })).filter(x => critOn(x.c)).sort((x, y) => Math.abs(y.d) - Math.abs(x.d));
   const EPS = 0.002, pro = rows.filter(x => x.d > EPS), con = rows.filter(x => x.d < -EPS).sort((x, y) => x.d - y.d);
   const net = rows.reduce((s, x) => s + x.d, 0);
   const vs = x => `${WHY_FMT[x.c](x.a)} contra ${WHY_FMT[x.c](x.b)}`;
@@ -1181,6 +1207,18 @@ function drawCurve() {
   });
 }
 
+let ROBTIMER = null;
+// teste de método: refaz a conta com o produto ponderado no lugar da soma ponderada
+function robust(ctx, best) {
+  const rr = smaa(ctx, { nP: 400, nW: 20, norm: 'wpm' });
+  const i = rr.prob.indexOf(Math.max(...rr.prob)), same = JSON.stringify(rr.base[i].combo) === JSON.stringify(best.combo), pct = Math.round(rr.prob[i] * 100);
+  $('robMsg').innerHTML = same
+    ? `<span class="fl"><b>Teste de método:</b> somando os critérios de outro jeito (produto ponderado), a mais indicada continua a mesma (${pct}%).</span>`
+    : `<span class="alert"><b>Sensível ao método:</b> somando os critérios de outro jeito (produto ponderado), a mais indicada passa a ser <b style="color:inherit">${label(rr.base[i].combo).toLowerCase()}</b> (${pct}%). Trate as duas como candidatas: a escolha depende de quanto pesa uma diferença grande em energia perdida, resíduo ou acidente frente a uma diferença menor de custo.</span>`;
+  const v = $('verdict'), old = v.querySelector('.rob'); if (old) old.remove();
+  if (!same) v.insertAdjacentHTML('beforeend', `<small class="why rob"><b>Sensível ao método:</b> outra forma de somar os critérios indica ${label(rr.base[i].combo).toLowerCase()}. Veja "Chance de ser a melhor".</small>`);
+  if (LAST) LAST.rob = { same, label: label(rr.base[i].combo), pct };
+}
 let LEVTIMER = null, LEVTOKEN = 0, LEVFN = [];
 function computeLevers() {
   const token = ++LEVTOKEN; const { r, idx } = LAST; const bestKey = JSON.stringify(r.base[idx[0]].combo);
@@ -1197,8 +1235,8 @@ function computeLevers() {
   L.push([S.chumbo_lr ? 'Sem logística reversa do chumbo' : 'Com logística reversa do chumbo garantida', st => st.chumbo_lr = !st.chumbo_lr]);
   L.push([S.longe ? 'Com técnico a poucas horas' : 'Com técnico longe', st => st.longe = !st.longe]);
   L.push([S.comunidade_paga ? 'Se a distribuidora pagar as trocas' : 'Se a comunidade pagar as trocas', st => st.comunidade_paga = !st.comunidade_paga]);
-  const Tnew = S.T > 25 ? 25 : 32;
-  L.push([S.T > 25 ? 'Com abrigo climatizado (25 °C)' : 'Sem climatização (abrigo a 32 °C)', st => st.T = Tnew]);
+  const Tnew = S.T > 25 ? [25, 1] : [32, S.costa ? 3 : 6];
+  L.push([S.T > 25 ? 'Com abrigo climatizado (25 °C, quase sem oscilação)' : `Sem climatização (abrigo a 32 °C, ± ${Tnew[1]} °C)`, st => { st.T = Tnew[0]; st.dT = Tnew[1]; }]);
   if (S.rate > 0) L.push(['Com taxa de desconto 0% (olhar de fundo público)', st => st.rate = 0]);
   if (S.rate < 0.12) L.push(['Com taxa de desconto 12%', st => st.rate = 0.12]);
   const rows = []; let i = 0, p0 = null;
@@ -1233,18 +1271,19 @@ let LAST = null;
 function resumo() {
   const { r, idx } = LAST; const pr = i => Math.round(r.prob[i] * 100) + '%';
   const linhas = [`Qual bateria, para qual função e lugar (Teiu Energia)`,
-    `Lugar: ${S.isolated ? 'sem rede' : 'conectado'}; técnico ${S.longe ? 'longe' : 'a poucas horas'}; troca paga por ${S.comunidade_paga ? 'comunidade' : 'distribuidora'}; abrigo a ${S.T} °C; taxa ${Math.round(S.rate * 100)}%` +
+    `Lugar: ${S.isolated ? 'sem rede' : 'conectado'}; técnico ${S.longe ? 'longe' : 'a poucas horas'}; troca paga por ${S.comunidade_paga ? 'comunidade' : 'distribuidora'}; abrigo a ${S.T} °C ± ${S.dT || 0} °C; taxa ${Math.round(S.rate * 100)}%` +
       `${S.agentes ? '; agentes treinados' : ''}${S.eletrolito ? '; eletrólito nacional' : ''}${S.chumbo_lr ? '; logística reversa do chumbo' : ''}`,
     `Funções (kW / kWh úteis / ciclos por ano): ciclo ${S.F.F1.P}/${S.F.F1.E}/${S.F.F1.cyc}; reserva ${S.F.F2.P}/${S.F.F2.E}/${S.F.F2.cyc}; no-break ${S.F.F3.P}/${S.F.F3.E}/${S.F.F3.cyc}`,
-    `Pesos: ` + CRIT.map(c => `${WNOME[c]} ${Math.round(S.w[c] * 100)}%`).join('; '), ''];
-  idx.slice(0, 4).forEach(i => { const p = r.base[i]; linhas.push(`${pr(i)}  ${label(p.combo)} | investimento ${brl(p.capex)} | 30 anos ${brl(p.custo)} | ${num(p.mult, 1)}× | recorrente ${brl(p.recorrente)}/ano | energia crítica perdida ${num(p.ens)} kWh/ano | carbono ${num(p.co2)} t | tóxico ${num(p.tox)} kg | acidente ${brl(p.acid)}`); });
+    `Pesos: ` + CRIT.filter(critOn).map(c => `${WNOME[c]} ${Math.round(S.w[c] * 100)}%`).join('; '), ''];
+  idx.slice(0, 4).forEach(i => { const p = r.base[i]; linhas.push(`${pr(i)}  ${label(p.combo)} | investimento ${brl(p.capex)} | 30 anos ${brl(p.custo)} | ${num(p.mult, 1)}× | recorrente ${brl(p.recorrente)}/ano | energia crítica perdida ${num(p.ens)} kWh/ano | carbono ${num(p.co2)} t | tóxico ${num(p.tox)} kg | acidente ${brl(p.acid)}${S.isolated ? ` | demais cargas sem luz ${num(p.U1 * 365, 1)} dias/ano` : ''}`); });
   if (LAST.W && LAST.W.short && !(LAST.W.duel && LAST.W.duel.win < 0.5)) linhas.push('', 'Por quê: ' + LAST.W.short);
+  if (LAST.rob) linhas.push('', LAST.rob.same ? `Teste de método (produto ponderado): a mais indicada continua a mesma (${LAST.rob.pct}%).` : `Teste de método (produto ponderado): a mais indicada passa a ser ${LAST.rob.label} (${LAST.rob.pct}%).`);
   linhas.push('', 'Premissas de falha, conserto, acidente e resíduo são hipóteses de partida.');
   return linhas.join('\n');
 }
 // ---- link do cenário
 function encodeState() {
-  const o = { v: 1, p: $('preset').value, i: +S.isolated, hf: S.horas_falta, cc: S.carga_critica, nk: S.night_kwh_dia, a: S.alpha, T: S.T, fa: S.familias,
+  const o = { v: 2, p: $('preset').value, i: +S.isolated, hf: S.horas_falta, cc: S.carga_critica, nk: S.night_kwh_dia, a: S.alpha, T: S.T, dT: S.dT || 0, fa: S.familias,
     co: +S.costa, lo: +S.longe, cp: +S.comunidade_paga, ag: +S.agentes, el: +S.eletrolito, lr: +S.chumbo_lr, r: S.rate,
     F: ['F1', 'F2', 'F3'].map(f => [S.F[f].P, S.F[f].E, S.F[f].cyc]), w: CRIT.map(c => Math.round(S.w[c] * 1e4) / 1e4) };
   return btoa(JSON.stringify(o)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
@@ -1256,12 +1295,12 @@ function decodeState(str) {
     const st = Object.assign({ agentes: false, chumbo_lr: false, eletrolito: false, rate: 0.08 }, JSON.parse(JSON.stringify(PRESETS[key])));
     const n = (x, lo, hi, d) => { const v = Number(x); return Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : d; };
     st.isolated = !!o.i; st.horas_falta = n(o.hf, 0, 8760, st.horas_falta); st.carga_critica = n(o.cc, 0, 1e6, st.carga_critica);
-    st.night_kwh_dia = n(o.nk, 0, 1e7, st.night_kwh_dia); st.alpha = n(o.a, 0, 1, st.alpha); st.T = n(o.T, 15, 45, st.T); st.familias = n(o.fa, 0, 1e7, st.familias);
+    st.night_kwh_dia = n(o.nk, 0, 1e7, st.night_kwh_dia); st.alpha = n(o.a, 0, 1, st.alpha); st.T = n(o.T, 15, 45, st.T); st.dT = n(o.dT, 0, 15, st.dT || 0); st.familias = n(o.fa, 0, 1e7, st.familias);
     st.costa = !!o.co; st.longe = !!o.lo; st.comunidade_paga = !!o.cp; st.agentes = !!o.ag; st.eletrolito = !!o.el; st.chumbo_lr = !!o.lr; st.rate = n(o.r, 0, 0.12, 0.08);
     if (Array.isArray(o.F) && o.F.length === 3) ['F1', 'F2', 'F3'].forEach((f, j) => { const a = Array.isArray(o.F[j]) ? o.F[j] : [];
       st.F[f] = { P: n(a[0], 0.1, 1e6, st.F[f].P), E: n(a[1], 0.1, 1e7, st.F[f].E), cyc: n(a[2], 0.1, 1e4, st.F[f].cyc) }; });
-    if (Array.isArray(o.w) && o.w.length === CRIT.length) { const w = o.w.map(x => n(x, 0, 1, 0)), t = w.reduce((a, b) => a + b, 0);
-      if (t > 0) CRIT.forEach((c, j) => st.w[c] = w[j] / t); }
+    if (Array.isArray(o.w) && o.w.length >= 6) { const w = CRIT.map((c, j) => n(o.w[j], 0, 1, 0)), t = w.reduce((a, b) => a + b, 0);
+      if (t > 0) CRIT.forEach((c, j) => st.w[c] = w[j] / t); }  // links antigos têm 6 pesos: o das demais cargas entra como zero
     return { st, key };
   } catch (e) { return null; }
 }
@@ -1291,7 +1330,7 @@ function setupReveal() {
 
 document.addEventListener('DOMContentLoaded', () => {
   $('preset').addEventListener('change', e => load(e.target.value));
-  for (const id of ['isolated', 'horas', 'carga', 'noite', 'alpha', 'temp', 'familias', 'costa', 'agentes', 'eletrolito', 'chumbo_lr', 'rate', 'F1P', 'F1E', 'F1c', 'F2P', 'F2E', 'F2c', 'F3P', 'F3E', 'F3c'])
+  for (const id of ['isolated', 'horas', 'carga', 'noite', 'alpha', 'temp', 'dtemp', 'familias', 'costa', 'agentes', 'eletrolito', 'chumbo_lr', 'rate', 'F1P', 'F1E', 'F1c', 'F2P', 'F2E', 'F2c', 'F3P', 'F3E', 'F3c'])
     $(id).addEventListener('input', fromForm);
   $('perto').addEventListener('click', () => { S.longe = false; toFormKeep(); });
   $('longe').addEventListener('click', () => { S.longe = true; toFormKeep(); });

@@ -27,10 +27,20 @@ Lugares de exemplo, todos ajustáveis:
 
 **Aba "Minha casa"** (https://bonaldorp.github.io/calculadora-baterias/#casa): você lista os aparelhos da residência, informa consumo e horas de uso e marca quais ficam ligados numa falta. A aba mostra:
 
-- quanto tempo a bateria aguenta, com e sem solar no telhado;
-- a comparação entre as três tecnologias;
+- quanto tempo a bateria aguenta, com e sem solar no telhado, para a hora em que a falta começa;
+- que tamanho de bateria segura o essencial pelo tempo desejado, nas três tecnologias;
 - a curva de carga em 72 horas;
-- a autonomia de cada aparelho sozinho.
+- cada aparelho sozinho: parte do consumo da casa e autonomia ligado sem parar e no uso típico.
+
+A lista de aparelhos fica guardada só no navegador de quem usa.
+
+**Outros recursos:**
+
+- link que reabre o mesmo cenário ("Copiar link deste cenário");
+- impressão ou PDF em versão clara;
+- "O que muda a escolha": cada mudança testada pode ser aplicada ao cenário com um clique;
+- gráficos com leitura ao passar o mouse ou tocar;
+- desenho do sistema e gráficos adaptados ao celular.
 
 **Acesse:** https://bonaldorp.github.io/calculadora-baterias/
 
@@ -57,4 +67,4 @@ Fontes de contexto:
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.pt-br). O uso e a adaptação são livres, desde que a Teiu Energia seja citada.
 
-Versão 2.1, novembro de 2026.
+Versão 3.0, novembro de 2026.

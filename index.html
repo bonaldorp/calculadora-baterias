@@ -6,6 +6,11 @@
 <title>Qual bateria, para qual função e lugar</title>
 <meta name="author" content="Teiu Energia">
 <meta name="description" content="Compara lítio, chumbo-ácido e fluxo de vanádio por função e por lugar, com custo de 30 anos, tempo parado, resíduo tóxico e risco de acidente.">
+<meta name="theme-color" content="#0d1a1f">
+<meta property="og:title" content="Qual bateria, para qual função e lugar">
+<meta property="og:description" content="Calculadora da Teiu Energia: lítio, chumbo-ácido ou fluxo de vanádio, por função e por lugar. Custo de 30 anos, tempo parado, resíduo tóxico e risco de acidente.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%230d1a1f'/%3E%3Crect x='5' y='8' width='6' height='18' fill='%236aa2f0'/%3E%3Crect x='13' y='8' width='6' height='18' fill='%23f08f63'/%3E%3Crect x='21' y='8' width='6' height='18' fill='%233cc495'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;600&display=swap">
 <style>
@@ -80,7 +85,7 @@ h1 { font: 800 clamp(38px, 5vw, 58px)/.92 var(--display); text-transform: upperc
 @keyframes flow { to { stroke-dashoffset: -32; } }
 @media (prefers-reduced-motion: reduce) { #sysdraw .flow { animation: none; } }
 .levers { display: grid; gap: 10px; }
-.lever { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 46px; gap: 12px; align-items: center; font-size: 13.5px; }
+.lever { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 52px auto; gap: 12px; align-items: center; font-size: 13.5px; }
 .lever .track { position: relative; height: 12px; background: var(--line); }
 .lever .fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--ink); }
 .lever .fill.up { background: var(--v); } .lever .fill.down { background: var(--pb); }
@@ -136,8 +141,8 @@ h1 { font: 800 clamp(38px, 5vw, 58px)/.92 var(--display); text-transform: upperc
 .casa-inputs { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
 @media (max-width: 860px) { .casa-inputs { grid-template-columns: 1fr; } }
 table.eq td, table.eq th { padding: 4px 4px; }
-table.eq input[type=number] { width: 72px; padding: 5px 6px; font-size: 13px; }
-table.eq input.eqn { width: 100%; min-width: 170px; font: 14px var(--body); color: var(--ink); background: transparent; border: 1px solid transparent; padding: 5px 6px; }
+table.eq input[type=number] { width: 66px; padding: 5px 6px; font-size: 13px; }
+table.eq input.eqn { width: 100%; min-width: 200px; font: 14px var(--body); color: var(--ink); background: transparent; border: 1px solid transparent; padding: 5px 6px; }
 table.eq input.eqn:hover, table.eq input.eqn:focus { border-color: var(--line); background: var(--paper); }
 table.eq input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent); }
 table.eq td.kwh { font-weight: 600; }
@@ -156,28 +161,40 @@ table.eq tr.ess td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
 .h-card .pos { font: 600 11px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--band-muted); }
 .h-num { font: 800 54px/1 var(--display); color: var(--band-ink); margin: 10px 0 6px; font-variant-numeric: tabular-nums; }
 .h-card.first .h-num { color: var(--accent); }
+.h-num.long { font-size: 34px; line-height: 1.1; }
 .h-card .obs { font-size: 12.5px; color: var(--band-muted); }
 .h-cmp { display: grid; gap: 10px; margin-top: 12px; }
-.hc-row { display: grid; grid-template-columns: 70px 1fr 92px; gap: 10px; align-items: center; font-size: 13px; color: var(--band-muted); }
+.hc-row { display: grid; grid-template-columns: 70px 1fr 118px; gap: 10px; align-items: center; font-size: 13px; color: var(--band-muted); }
 .hc-row.sel { color: var(--band-ink); font-weight: 600; }
-.hc-row b { font: 600 13px var(--mono); text-align: right; color: var(--band-ink); }
+.hc-row b { font: 600 13px var(--mono); text-align: right; color: var(--band-ink); white-space: nowrap; }
 .hc-track { height: 12px; background: var(--band-line); }
 .hc-fill { height: 100%; transition: width .7s cubic-bezier(.2,.8,.2,1); }
 .hc-fill.Li { background: var(--li); } .hc-fill.Pb { background: var(--pb); } .hc-fill.V { background: var(--v); }
 .h-warn p { margin: 12px 0 0; font-size: 13.5px; color: var(--band-ink); border-left: 3px solid var(--accent); padding-left: 10px; }
 #hCurve svg { width: 100%; height: auto; display: block; }
 #hCurve .draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1.4s ease-out forwards; }
-.h-each { display: grid; gap: 8px; }
-.he-row { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) 140px; gap: 12px; align-items: center; font-size: 13.5px; }
+.h-each { display: grid; gap: 0; }
+.he-row { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) 44px 124px 124px; gap: 12px; align-items: center; font-size: 13.5px; padding: 7px 0; border-top: 1px solid var(--line); }
+.he-row:first-child { border-top: 0; }
+.he-head { font: 600 10.5px/1.2 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); padding-bottom: 8px; }
+.he-head .v { font: inherit; white-space: normal; }
+.he-head + .he-row { border-top-color: var(--ink); }
+@media (min-width: 701px) { .he-row:not(.he-head) .v small { display: none; } }
+@media (max-width: 700px) { .he-head { display: none; } .he-head + .he-row { border-top: 0; } }
+.he-row .sh { font: 600 12.5px var(--mono); text-align: right; }
+.he-row .v { font: 600 13px var(--mono); text-align: right; white-space: nowrap; }
+.he-row .v small { display: block; font: 400 10.5px var(--body); color: var(--muted); }
 .he-row em { font-style: normal; font: 600 10.5px var(--mono); text-transform: uppercase; color: var(--ink); background: rgba(232,163,23,.3); padding: 1px 5px; margin-left: 6px; }
 .he-row b { font: 600 13px var(--mono); text-align: right; white-space: nowrap; }
 .he-track { height: 10px; background: var(--line); }
 .he-fill { height: 100%; background: var(--muted); transition: width .7s cubic-bezier(.2,.8,.2,1); }
 .he-fill.ess { background: var(--accent); }
-@media (max-width: 700px) { .he-row { grid-template-columns: 1fr 90px; } .he-track { grid-column: 1 / -1; grid-row: 2; } }
+@media (max-width: 700px) { .he-row { grid-template-columns: 1fr 1fr 44px; gap: 6px 12px; } .he-row .nm { grid-column: 1 / -1; } .he-track { grid-column: 1 / 3; } .he-row .v { grid-row: 3; text-align: left; } }
 .copyrow { display: flex; gap: 12px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
 .btn { font: 600 13px var(--body); color: var(--band); background: var(--accent); border: 0; padding: 8px 14px; cursor: pointer; }
 .btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--band-ink); border: 1px solid var(--band-line); padding: 7px 13px; }
+.btn.ghost:hover { border-color: var(--accent); color: var(--accent); filter: none; }
 #copyMsg { font-size: 12.5px; color: var(--band-muted); }
 
 /* corpo */
@@ -190,7 +207,7 @@ main { display: grid; gap: 16px; padding: 24px; max-width: 1280px; margin: 0 aut
 .hints dd { margin: 0; }
 .to-result { justify-self: start; font: 600 13px var(--body); color: var(--ink); border: 1px solid var(--ink); padding: 8px 14px; text-decoration: none; }
 .to-result:hover { background: var(--ink); color: var(--paper); }
-.band-inner.intro { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: end; }
+.band-inner.intro { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); align-items: end; }
 .intro-side .warn { margin: 0; max-width: none; }
 .result-band { border-top: 3px solid var(--accent); scroll-margin-top: 50px; }
 .result-inner { max-width: 1280px; margin: 0 auto; padding: 26px 24px 28px; }
@@ -251,13 +268,19 @@ footer { max-width: 1280px; margin: 0 auto; padding: 0 24px 40px; }
 footer .panel { font-size: 12.5px; color: var(--muted); }
 .busy { opacity: .55; transition: opacity .15s; }
 @media (prefers-reduced-motion: reduce) { .busy { transition: none; } }
-@media (max-width: 700px) { .lever { grid-template-columns: 1fr 46px; } .lever .track { grid-column: 1 / -1; grid-row: 2; } }
+@media (max-width: 700px) { .lever { grid-template-columns: 1fr 52px auto; } .lever .track { grid-column: 1 / -1; grid-row: 2; } }
 @media (max-width: 960px) {
   .band-inner { grid-template-columns: 1fr; gap: 22px; }
   .readouts { grid-template-columns: repeat(2, 1fr); } .ro + .ro { border-left: 0; padding-left: 0; } .ro { padding-right: 8px; }
   main { padding: 16px; } .band-inner { padding: 22px 16px; } .band-inner.intro { grid-template-columns: 1fr; } .result-inner { padding: 22px 16px; } footer { padding: 0 16px 32px; }
 }
-@media (max-width: 520px) { .rack { grid-template-columns: 1fr; } .slot { min-height: 0; } .slot .tec { font-size: 32px; } }
+@media (max-width: 520px) {
+  .rack { grid-template-columns: 1fr; gap: 6px; }
+  .slot { min-height: 0; display: grid; grid-template-columns: 1fr auto; column-gap: 10px; align-items: center; padding: 14px 12px 10px; }
+  .slot .pos { margin: 0; } .slot .obs { grid-column: 1; } .slot .tec { font-size: 30px; margin: 0; grid-column: 2; grid-row: 1 / span 2; }
+  .slider { grid-template-columns: minmax(0, 1fr) 38px; } .slider label { grid-column: 1 / -1; }
+  .tab { font-size: 15px; padding: 12px 10px 10px; }
+}
 
 /* 06 por que ganha · 07 chance */
 .whylead { font-size: 16px; line-height: 1.5; margin: 0 0 16px; max-width: 78ch; }
@@ -300,6 +323,92 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
 .sl b small { font-weight: 400; color: var(--muted); font-size: 12px; }
 .sl.first { font-weight: 600; }
 @media (max-width: 640px) { .whyhead, .whyrow { grid-template-columns: 1fr; } .whyhead span:first-child { display: none; } .whyhead { grid-template-columns: 1fr 1fr; } .share .seg span { font-size: 16px; padding-left: 6px; } }
+
+/* v3: legenda das tecnologias no topo */
+.techkey { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.techkey li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; border-top: 3px solid var(--c); padding-top: 12px; animation: rise .7s cubic-bezier(.2,.8,.2,1) both; }
+.techkey li:nth-child(1) { animation-delay: .22s; } .techkey li:nth-child(2) { animation-delay: .3s; } .techkey li:nth-child(3) { animation-delay: .38s; }
+.techkey b { display: block; font: 800 20px/1 var(--display); text-transform: uppercase; letter-spacing: .02em; color: var(--c); margin-bottom: 5px; }
+.techkey div span { font-size: 12.5px; line-height: 1.4; color: var(--band-muted); display: block; }
+.techkey .cell { display: block; position: relative; width: 16px; height: 46px; border: 1.5px solid var(--c); margin-top: 5px; }
+.techkey .cell::before { content: ""; position: absolute; left: 3px; right: 3px; top: -5px; height: 3px; background: var(--c); }
+.techkey .cell i { position: absolute; left: 2px; right: 2px; top: 2px; bottom: 2px; background: var(--c); transform-origin: 50% 100%; animation: cellfill 1.8s cubic-bezier(.3,.7,.2,1) .5s both; }
+.techkey li:nth-child(2) .cell i { animation-delay: .65s; } .techkey li:nth-child(3) .cell i { animation-delay: .8s; }
+@keyframes cellfill { from { transform: scaleY(.06); } to { transform: scaleY(1); } }
+@media (max-width: 960px) { .techkey { gap: 10px; } }
+@media (max-width: 560px) { .techkey { gap: 8px; margin-bottom: 12px; } .techkey li { grid-template-columns: 1fr; gap: 0; padding-top: 8px; } .techkey .cell, .techkey div span { display: none; } .techkey b { font-size: 15px; margin: 0; } }
+
+/* barra fixa com o resultado */
+.dock { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 20; display: flex; gap: 14px; align-items: center; max-width: min(760px, calc(100vw - 20px)); padding: 9px 14px; background: var(--band); color: var(--band-ink); border: 1px solid var(--accent); box-shadow: 0 10px 30px rgba(0, 0, 0, .4); font: 500 13.5px/1.2 var(--body); cursor: pointer; text-align: left; animation: dockin .35s cubic-bezier(.2,.8,.2,1) both; }
+.dock[hidden] { display: none; }
+.dock #dockTxt { display: flex; align-items: center; gap: 4px; min-width: 0; }
+.dock #dockTxt > span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.dock #dockTxt b { font: 800 24px/1 var(--display); color: var(--accent); margin-right: 6px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.dock .tri { flex: none; }
+.dock .go { font: 600 11px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--accent); white-space: nowrap; }
+.dock.pulse { animation: dockpulse .6s ease-out; }
+@keyframes dockin { from { opacity: 0; transform: translate(-50%, 16px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@keyframes dockpulse { from { box-shadow: 0 0 0 0 var(--accent), 0 10px 30px rgba(0, 0, 0, .4); } to { box-shadow: 0 0 0 12px transparent, 0 10px 30px rgba(0, 0, 0, .4); } }
+
+/* movimento */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease-out, transform .6s cubic-bezier(.2,.8,.2,1); }
+.reveal.in { opacity: 1; transform: none; }
+.tabin { animation: fadein .35s ease-out both; }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+.ro .n.tick { animation: tick .9s ease-out; }
+@keyframes tick { 0% { color: var(--accent); transform: translateY(-4px); } 100% { color: var(--band-ink); transform: none; } }
+.seg button, .seg3 button, .modes button, .chips-row button, .btn-line, .to-result, .apply, .tab, .btn, .sz button, select, input[type=number] { transition: background-color .15s, color .15s, border-color .15s; }
+select:hover, input[type=number]:hover { border-color: var(--muted); }
+
+/* alavancas */
+.lever b small { display: block; font: 400 11px/1.3 var(--mono); color: var(--muted); }
+.lever b small.up { color: var(--v); } .lever b small.down { color: var(--pb); }
+.apply { font: 600 11px/1 var(--mono); letter-spacing: .04em; text-transform: uppercase; padding: 6px 8px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; }
+.apply:hover { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+
+/* leitura dos gráficos */
+.chartread { font-size: 13px; color: var(--muted); margin: 0 0 6px; min-height: 1.6em; display: flex; flex-wrap: wrap; gap: 2px 16px; align-items: baseline; }
+.chartread b { font-family: var(--mono); font-weight: 600; }
+.chartread > b:first-child { color: var(--ink); }
+.chartread.on-band { color: var(--band-muted); } .chartread.on-band > b:first-child { color: var(--band-ink); }
+#curve svg, #hCurve svg { touch-action: pan-y; cursor: crosshair; }
+
+/* casa */
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+table.eq tr.zero .eqn, table.eq tr.zero .kwh { color: var(--muted); }
+.sizing p { margin: 12px 0 8px; font-size: 13.5px; }
+.sz { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+.sz button { text-align: left; padding: 8px 10px; background: var(--paper); border: 1px solid var(--line); border-top: 3px solid var(--c); color: var(--ink); font: 13px var(--body); cursor: pointer; }
+.sz button.Li { --c: var(--li); } .sz button.Pb { --c: var(--pb); } .sz button.V { --c: var(--v); }
+.sz button b { display: block; font: 600 16px/1.3 var(--mono); font-variant-numeric: tabular-nums; }
+.sz button:hover { border-color: var(--ink); border-top-color: var(--c); }
+@media (max-width: 700px) {
+  table.eq thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  table.eq, table.eq tbody { display: block; }
+  table.eq tr { display: grid; grid-template-columns: 26px repeat(3, minmax(0, 1fr)) minmax(54px, auto) 28px; gap: 6px 8px; align-items: end; padding: 10px 0 10px 8px; border-bottom: 1px solid var(--line); }
+  table.eq td { display: block; border: 0; padding: 0; text-align: left; white-space: normal; }
+  table.eq tr.ess { box-shadow: inset 3px 0 0 var(--accent); } table.eq tr.ess td:first-child { box-shadow: none; }
+  table.eq .c-e { grid-area: 1 / 1; align-self: center; } table.eq .c-n { grid-area: 1 / 2 / 2 / 6; } table.eq .c-x { grid-area: 1 / 6; align-self: center; }
+  table.eq .c-q { grid-area: 2 / 2; } table.eq .c-w { grid-area: 2 / 3; } table.eq .c-h { grid-area: 2 / 4; } table.eq .kwh { grid-area: 2 / 5 / 3 / 7; text-align: right; font-size: 13px; }
+  table.eq td[data-l]::before { content: attr(data-l); display: block; font: 600 9.5px/1.2 var(--mono); letter-spacing: .05em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+  table.eq input[type=number] { width: 100%; }
+  table.eq input.eqn { min-width: 0; font-weight: 600; padding-left: 0; }
+  #cmp th:first-child, #cmp td:first-child, #fn th:first-child, #fn td:first-child { position: sticky; left: 0; background: var(--surface); z-index: 1; max-width: 128px; }
+}
+
+/* impressão e PDF: sempre claro, sem controles */
+@media print {
+  :root:root:root { --paper: #fff; --surface: #fff; --ink: #111; --muted: #444; --line: #bbb; --accent: #c98a00; --band: #fff; --band-ink: #111; --band-muted: #444; --band-line: #bbb; --li: #1f55b0; --pb: #b9501f; --v: #157a5c; color-scheme: light; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .tabs, .dock, .to-result, .copyrow, .play, .modes, .apply, .eqdel, #eqAdd, #eqReset, .chips-row, .chartread, .step { display: none !important; }
+  body { font-size: 12px; }
+  .band { border: 0; } .result-band { border-top: 2px solid #111; border-bottom: 2px solid #111; }
+  main { padding: 12px 0; } .band-inner, .result-inner { padding: 14px 0; } footer { padding: 0; }
+  h2 .num { background: #111; color: #fff; }
+  .panel, .slot, .lever, .whyrow, .he-row, tr, .techkey li, .sys, #curve, #hCurve, .verdict, .readouts { break-inside: avoid; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .inputs { grid-template-columns: 1fr 1fr; }
+}
 </style>
 </head>
 <body>
@@ -309,11 +418,15 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
       <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
       <h1>Qual bateria, para qual função e lugar</h1>
       <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 20 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
-      <p class="meta">Versão 2.1 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="meta">Versão 3.0 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
     </div>
     <div class="intro-side">
+      <ul class="techkey" aria-label="As três tecnologias comparadas">
+        <li style="--c:var(--li)"><span class="cell" aria-hidden="true"><i></i></span><div><b>Lítio (LFP)</b><span>Menor custo por kWh útil e 12 a 15 anos de vida. O conserto depende de técnico especializado.</span></div></li>
+        <li style="--c:var(--pb)"><span class="cell" aria-hidden="true"><i></i></span><div><b>Chumbo-ácido</b><span>Conhecido e simples de consertar. Só usa metade da capacidade e pede troca a cada 5 a 9 anos.</span></div></li>
+        <li style="--c:var(--v)"><span class="cell" aria-hidden="true"><i></i></span><div><b>Fluxo de vanádio</b><span>Dura 25 anos e o eletrólito é reaproveitado. Custa mais na compra e tem bombas que falham.</span></div></li>
+      </ul>
       <p class="warn"><b>Leia antes de usar.</b> Preços, taxas de falha, tempos de conserto, chances de acidente e frações de resíduo que escapam da reciclagem são hipóteses de partida, não medições: não há base pública de falhas de baterias estacionárias no Brasil. Serve para comparar opções e ver o que muda a escolha, não para dimensionar um projeto.</p>
-    </div>
     </div>
   </div>
 </div>
@@ -398,12 +511,13 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
 </main>
 <section class="band result-band" id="resultado" aria-label="Recomendação">
     <div id="results-top" class="result-inner" aria-live="polite">
-      <div class="rack-label"><h2 class="on-band"><span class="num">05</span>Combinação recomendada</h2><span id="lugarNome"></span></div>
+      <div class="rack-label"><h2 class="on-band"><span class="num">05</span>Combinação recomendada</h2></div>
       <div class="rack" id="rack"></div>
       <div class="verdict"><div class="big-pct" id="bigPct"></div><div class="t" id="verdict"></div></div>
       <div class="readouts" id="kpis"></div>
       <div class="sys"><div class="rack-label"><span>Como fica o sistema</span><div class="modes" role="group" aria-label="Momento do dia"><button type="button" data-mode="dia" aria-pressed="true">Dia</button><button type="button" data-mode="noite" aria-pressed="false">Noite</button><button type="button" data-mode="falha" aria-pressed="false" id="modeFalha">Falta da rede</button></div><button type="button" id="play" class="play" aria-pressed="false">▶ Ver o dia passar</button></div><p id="modeText" class="modetext"></p><div id="sysdraw"></div><p id="sysnote"></p></div>
-      <div class="copyrow"><button type="button" id="copy" class="btn">Copiar resultado</button><span id="copyMsg" role="status"></span></div>
+      <div class="copyrow"><button type="button" id="copy" class="btn">Copiar resultado</button><button type="button" id="copyLink" class="btn ghost">Copiar link deste cenário</button><button type="button" id="printBtn" class="btn ghost">Imprimir ou salvar em PDF</button><span id="copyMsg" role="status"></span></div>
+    </div>
 </section>
 <main class="after">
   <section class="stack details" aria-label="Detalhes do resultado" id="results">
@@ -424,18 +538,20 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
     </div>
     <div class="panel">
       <h2><span class="num">08</span>O que muda a escolha</h2>
-      <p class="note" style="margin-top:0">A recomendação recalculada mudando uma coisa de cada vez no cenário acima. A barra mostra a chance que a combinação recomendada passa a ter (verde: sobe; laranja: cai); o traço amarelo marca a chance atual. Os itens que mais mexem vêm primeiro.</p>
+      <p class="note" style="margin-top:0">A recomendação recalculada mudando uma coisa de cada vez no cenário acima. A barra mostra a chance que a combinação recomendada passa a ter (verde: sobe; laranja: cai); o traço amarelo marca a chance atual. Os itens que mais mexem vêm primeiro. "Aplicar" leva a mudança para o cenário.</p>
       <div id="levers" class="levers"></div>
     </div>
     <div class="panel">
       <h2><span class="num">09</span>Custo acumulado em 30 anos</h2>
       <div class="fnsel seg3" role="group" aria-label="Função"><button type="button" data-f="F1" aria-pressed="false">Ciclo diário</button><button type="button" data-f="F2" aria-pressed="true">Reserva longa</button><button type="button" data-f="F3" aria-pressed="false">No-break</button></div>
+      <p id="curveRead" class="chartread" aria-live="off"></p>
       <div id="curve"></div>
-      <p class="note">Quanto já se gastou em cada ano: compra no ano 0, depois operação, perdas de energia e cada troca de bateria ou de eletrônica (os degraus). No ano 30 entra o valor residual. Valores sem desconto, em reais de 2026.</p>
+      <p class="note">Quanto já se gastou em cada ano: compra no ano 0, depois operação, perdas de energia e cada troca de bateria ou de eletrônica (os degraus). Cada ponto marca uma troca de bateria (ou das pilhas, no vanádio). No ano 30 entra o valor residual. Valores sem desconto, em reais de 2026.</p>
     </div>
     <div class="panel">
       <h2><span class="num">10</span>As melhores lado a lado</h2>
       <div class="tablewrap"><table id="cmp"></table></div>
+      <p class="note" id="cmpKey"></p>
     </div>
     <div class="panel">
       <h2><span class="num">11</span>Cada tecnologia em cada função</h2>
@@ -453,7 +569,7 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
       <h2><span class="num">01</span>Aparelhos da casa</h2>
       <div class="tablewrap">
         <table class="eq" id="eq">
-          <thead><tr><th>Na falta</th><th>Aparelho</th><th>Qtd.</th><th>Watts</th><th>Horas/dia</th><th>kWh/dia</th><th></th></tr></thead>
+          <thead><tr><th>Na falta</th><th>Aparelho</th><th>Qtd.</th><th>Watts</th><th>Horas/dia</th><th>kWh/dia</th><th><span class="sr">Remover</span></th></tr></thead>
           <tbody></tbody>
         </table>
       </div>
@@ -476,10 +592,16 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
         <div><label for="hHsp">Sol médio (kWh por kWp/dia)</label><input type="number" id="hHsp" min="0" step="0.1" value="5.2"></div>
       </div>
       <p class="note" style="margin:8px 0 0">Sem solar, a bateria só esvazia. Com solar, ela recarrega de dia: num dia nublado o painel gera cerca de um terço do normal. Bahia: 5,0 a 6,0 kWh por kWp por dia.</p>
+      <h3>A falta de energia</h3>
+      <div class="row2">
+        <div><label for="hStart">Começa às</label><select id="hStart"><option value="18">18 h (início da noite)</option><option value="0">0 h (madrugada)</option><option value="6">6 h (manhã)</option><option value="12">12 h (meio do dia)</option></select></div>
+        <div><label for="hTarget">Quero segurar o essencial por</label><select id="hTarget"><option value="12">12 horas</option><option value="24" selected>24 horas</option><option value="48">2 dias</option><option value="72">3 dias</option><option value="120">5 dias</option></select></div>
+      </div>
+      <div class="sizing" id="hSizing" aria-live="polite"></div>
     </div>
   </section>
 </main>
-<section class="band result-band" aria-label="Autonomia">
+<section class="band result-band" id="casaResultado" aria-label="Autonomia">
   <div class="result-inner">
     <div class="rack-label"><h2 class="on-band"><span class="num">03</span>Quanto tempo a casa aguenta</h2></div>
     <div class="h-big">
@@ -488,19 +610,20 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
       <div class="h-card"><div class="pos">Mesma capacidade, outras tecnologias (essencial)</div><div id="hTechCmp" class="h-cmp"></div></div>
     </div>
     <div id="hWarn" class="h-warn" role="status"></div>
-    <div class="sys"><div class="rack-label"><span>Carga da bateria durante uma falta que começa às 18 h</span></div><div id="hCurve"></div></div>
+    <div class="sys"><div class="rack-label"><span id="hCurveTitle">Carga da bateria durante a falta</span></div><p id="hCurveRead" class="chartread on-band" aria-live="off"></p><div id="hCurve"></div></div>
   </div>
 </section>
 <main class="after">
   <section class="stack details">
     <div class="panel">
       <h2><span class="num">04</span>Cada aparelho sozinho</h2>
-      <p class="note" style="margin-top:0">Quanto tempo a bateria cheia seguraria só aquele aparelho, no uso típico de cada dia. Ajuda a decidir o que deixar de fora.</p>
+      <p class="note" style="margin-top:0">Do que mais gasta para o que menos gasta. A barra é a parte do consumo diário da casa. As duas colunas mostram quanto tempo a bateria cheia seguraria só aquele aparelho: ligado sem parar e no uso típico de cada dia.</p>
       <div id="hEach" class="h-each"></div>
     </div>
   </section>
 </main>
 </div>
+<button type="button" id="dock" class="dock" hidden title="Ir para o resultado"><span id="dockTxt"></span><span class="go">ver ↓</span></button>
 <footer>
   <div class="panel">
     Método: Teiu Energia, "Case Maraú: armazenamento híbrido para resiliência energética" (2026), seção "Modelo de decisão". Fontes de contexto: Rede Energia &amp; Comunidades (IEMA, 2026) e CONAQ (2026). Preços em reais de 2026.
@@ -767,7 +890,7 @@ function fromForm() {
 }
 let timer = null;
 function schedule() { $('results').classList.add('busy'); $('results-top').classList.add('busy'); clearTimeout(timer); timer = setTimeout(run, 120); }
-let PREVKEY = null, PCT = 0, PCTRAF = null;
+let PREVKEY = null, PCT = 0, PCTRAF = null, PREVKP = [];
 const REDUCED = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function countTo(el, to) {
   cancelAnimationFrame(PCTRAF); const from = PCT; PCT = to;
@@ -787,7 +910,6 @@ function run() {
   $('rack').innerHTML = slot('1 · Ciclo diário', f1, shared ? 'mesmo bloco da reserva' : (f1 === f2 ? 'bloco próprio' : 'bloco próprio'), shared ? 'joined-left' : '')
     + slot('2 · Reserva longa', f2, shared ? 'mesmo bloco do ciclo' : (f1 === f2 ? 'segundo bloco, independente' : 'bloco próprio'), shared ? 'joined-right' : '')
     + slot('3 · No-break', f3, 'junto às cargas críticas');
-  $('lugarNome').textContent = '';
   drawSystem(best.combo);
   countTo($('bigPct'), Math.round(r.prob[idx[0]] * 100));
   const key = JSON.stringify(best.combo);
@@ -797,11 +919,13 @@ function run() {
   const second = r.prob[idx[1]] > 0.1 ? `<small>Segunda opção, em ${Math.round(r.prob[idx[1]] * 100)}% das simulações: ${label(r.base[idx[1]].combo).toLowerCase()}.</small>` : `<small>Nenhuma outra combinação passa de 10%.</small>`;
   $('verdict').innerHTML = `das simulações indicam esta combinação.${second}${W.duel && W.duel.win < 0.5 ? `<small class="why"><b>Atenção:</b> no confronto direto, a segunda opção vence a primeira em ${Math.round((1 - W.duel.win) * 100)}% das simulações. Trate as duas como candidatas.</small>` : W.short ? `<small class="why"><b>Por quê:</b> ${W.short}</small>` : ''}`;
   const perFam = S.familias > 0 ? `R$ ${num(best.recorrente / S.familias / 12)} por família/mês` : 'trocas e O&M';
-  $('kpis').innerHTML = [
+  const KP = [
     [brl(best.capex), 'investimento'], [brl(best.custo), 'custo em 30 anos, valor presente'],
     [num(best.mult, 1) + '×', 'custo total ÷ investimento'], [brl(best.recorrente) + '/ano', perFam],
     [num(best.ens, 0) + ' kWh', 'energia crítica perdida por ano'],
-  ].map(([n, l]) => `<div class="ro"><div class="n">${n}</div><div class="l">${l}</div></div>`).join('');
+  ];
+  $('kpis').innerHTML = KP.map(([n, l], j) => `<div class="ro"><div class="n ${PREVKP[j] !== undefined && PREVKP[j] !== n ? 'tick' : ''}">${n}</div><div class="l">${l}</div></div>`).join('');
+  PREVKP = KP.map(x => x[0]);
   const tri = c => `<span class="tri" aria-hidden="true"><i class="${c[0]}"></i><i class="${c[1]}"></i><i class="${c[2]}"></i></span>`;
   drawWhy(W); drawShare(r, idx, tri);
   const top = idx.slice(0, 4).map(i => r.base[i]);
@@ -811,7 +935,8 @@ function run() {
     ['Perda esperada por acidente (30 anos)', p => brl(p.acid), p => p.acid]];
   $('cmp').innerHTML = `<thead><tr><th>Indicador</th>${top.map((p, j) => `<th>${tri(p.combo)}${String.fromCharCode(65 + j)}</th>`).join('')}</tr></thead><tbody>` +
     rowsC.map(([n, f, v]) => { const m = Math.min(...top.map(v)); return `<tr><td>${n}</td>${top.map(p => `<td class="${v(p) === m ? 'best' : ''}">${f(p)}</td>`).join('')}</tr>`; }).join('') +
-    `</tbody><caption class="note">${top.map((p, j) => `<b>${String.fromCharCode(65 + j)}</b> ${label(p.combo)}`).join('<br>')}<br>Cores na ordem ciclo · reserva · no-break. O fundo amarelo indica o melhor valor de cada linha.</caption>`;
+    '</tbody>';
+  $('cmpKey').innerHTML = `${top.map((p, j) => `<b>${String.fromCharCode(65 + j)}</b> ${label(p.combo)}`).join('<br>')}<br>Cores na ordem ciclo · reserva · no-break. O fundo amarelo indica o melhor valor de cada linha.`;
   const ctxE = r.ctx, tech = r.tech, fn = { F1: 'Ciclo diário', F2: 'Reserva longa', F3: 'No-break' };
   let html = '<thead><tr><th>Tecnologia</th><th>Investimento</th><th>30 anos (VP)</th><th>Múltiplo</th><th>Vida (anos)</th><th>Dias parados/ano</th><th>Carbono (t)</th><th>Tóxico em risco (kg)</th></tr></thead><tbody>';
   for (const f of ['F1', 'F2', 'F3']) {
@@ -826,7 +951,8 @@ function run() {
   $('fn').innerHTML = html + '</tbody>';
   LAST = { r, idx, W };
   drawCurve();
-  $('levers').style.opacity = '.5'; clearTimeout(LEVTIMER); LEVTIMER = setTimeout(() => { computeLevers(); $('levers').style.opacity = '1'; }, 60);
+  $('levers').style.opacity = '.5'; clearTimeout(LEVTIMER); LEVTIMER = setTimeout(computeLevers, 60);
+  DOCK.com = `${tri(best.combo)}<b>${Math.round(r.prob[idx[0]] * 100)}%</b> <span>${label(best.combo)}</span>`; dockPulse();
   $('results').classList.remove('busy'); $('results-top').classList.remove('busy');
 }
 
@@ -890,7 +1016,7 @@ function drawShare(r, idx, tri) {
   $('shareMsg').innerHTML = msg.join('');
 }
 
-let MODE = 'dia', LASTCOMBO = null, PLAY = null;
+let MODE = 'dia', LASTCOMBO = null, PLAY = null, SYSNARROW = false;
 function stopPlay() { if (PLAY) { clearInterval(PLAY); PLAY = null; } const b = $('play'); if (b) { b.textContent = '▶ Ver o dia passar'; b.setAttribute('aria-pressed', 'false'); } }
 function togglePlay() {
   if (PLAY) { stopPlay(); return; }
@@ -901,40 +1027,62 @@ function togglePlay() {
 function drawSystem(c) {
   LASTCOMBO = c;
   const [f1, f2, f3, sep] = c, shared = f1 === f2 && !sep, iso = S.isolated;
+  const narrow = ($('sysdraw').clientWidth || 1000) < 620; SYSNARROW = narrow;
   const NOME = { Li: 'Lítio', Pb: 'Chumbo', V: 'Vanádio' }, COR = { Li: 'var(--li)', Pb: 'var(--pb)', V: 'var(--v)' };
   const ink = 'var(--band-ink)', mut = 'var(--band-muted)', line = 'var(--band-muted)', acc = 'var(--accent)';
   const kwh = v => num(v) + ' kWh úteis', kw = v => num(v) + ' kW';
+  const fT = narrow ? 16 : 15, fS = narrow ? 13 : 12.5;
   const box = (x, y, w, hh, title, sub) => `<rect x="${x}" y="${y}" width="${w}" height="${hh}" fill="none" stroke="${line}" stroke-width="1.2"/>`
-    + `<text x="${x + 12}" y="${y + 24}" font-size="15" font-weight="600" fill="${ink}">${title}</text>` + (sub ? `<text x="${x + 12}" y="${y + 44}" font-size="12.5" fill="${mut}">${sub}</text>` : '');
+    + `<text x="${x + 12}" y="${y + 23}" font-size="${fT}" font-weight="600" fill="${ink}">${title}</text>` + (sub ? `<text x="${x + 12}" y="${y + 43}" font-size="${fS}" fill="${mut}">${sub}</text>` : '');
   const bat = (x, y, w, fn, k, e, p) => `<rect x="${x}" y="${y}" width="${w}" height="86" fill="${COR[k]}" fill-opacity="0.12" stroke="${COR[k]}" stroke-width="1.6"/>`
     + `<rect x="${x}" y="${y}" width="${w}" height="6" fill="${COR[k]}"/>`
     + `<text x="${x + 12}" y="${y + 26}" font-family="var(--mono)" font-size="11" letter-spacing="1" fill="${mut}">${fn.toUpperCase()}</text>`
     + `<text x="${x + 12}" y="${y + 56}" font-family="var(--display)" font-weight="800" font-size="30" fill="${COR[k]}">${NOME[k].toUpperCase()}</text>`
-    + `<text x="${x + 12}" y="${y + 76}" font-size="12.5" fill="${ink}">${kwh(e)} · ${kw(p)}</text>`
+    + `<text x="${x + 12}" y="${y + 76}" font-size="${fS}" fill="${ink}">${kwh(e)} · ${kw(p)}</text>`
     + `<rect x="${x + w - 24}" y="${y + 16}" width="12" height="62" fill="none" stroke="${COR[k]}" stroke-opacity="0.7"/>`
     + `<rect class="soc" x="${x + w - 22}" y="${y + 18}" width="8" height="58" fill="${COR[k]}"/>`;
   const L = (x1, y1, x2, y2, dash) => `<line class="ln" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${line}" stroke-width="1.6"${dash ? ' stroke-dasharray="5 4"' : ''}/>`;
   const G = (k, inner) => `<g data-k="${k}">${inner}</g>`;
-  const busY = 170; let s = '';
-  s += `<line x1="40" y1="${busY}" x2="970" y2="${busY}" stroke="${ink}" stroke-width="3"/>`;
-  s += `<text x="440" y="${busY - 8}" font-family="var(--mono)" font-size="10.5" letter-spacing="1" fill="${mut}">BARRAMENTO DA MICRORREDE</text>`;
-  let xs = 40;
-  if (!iso) {
-    s += G('grid', box(40, 30, 190, 58, 'Rede da distribuidora', 'cai nas faltas') + L(135, 88, 135, 112) + L(135, 142, 135, busY));
-    s += `<g id="rel"><rect id="relBox" x="95" y="112" width="80" height="30" fill="${acc}" stroke="${acc}" stroke-width="1.6"/><text id="relTxt" x="135" y="132" text-anchor="middle" font-size="12" font-weight="600" fill="#111">religador</text></g>`;
-    xs = 270;
+  const rel = (x, y, w, hh) => `<g id="rel"><rect id="relBox" x="${x}" y="${y}" width="${w}" height="${hh}" fill="${acc}" stroke="${acc}" stroke-width="1.6"/><text id="relTxt" x="${x + w / 2}" y="${y + hh / 2 + 4}" text-anchor="middle" font-size="12" font-weight="600" fill="#111">religador</text></g>`;
+  const pvSub = iso ? 'carrega as baterias de dia' : 'atende de dia e carrega', critSub = `${Math.round(S.alpha * 100)}% da carga`;
+  const E12 = S.F.F1.E + S.F.F2.E, P12 = Math.max(S.F.F1.P, S.F.F2.P);
+  let s = '', vb, xm, xs = 44;
+  if (!narrow) {
+    const busY = 170;
+    s += `<line x1="40" y1="${busY}" x2="970" y2="${busY}" stroke="${ink}" stroke-width="3"/>`;
+    s += `<text x="440" y="${busY - 8}" font-family="var(--mono)" font-size="10.5" letter-spacing="1" fill="${mut}">BARRAMENTO DA MICRORREDE</text>`;
+    let x0 = 40;
+    if (!iso) { s += G('grid', box(40, 30, 190, 58, 'Rede da distribuidora', 'cai nas faltas') + L(135, 88, 135, 112) + L(135, 142, 135, busY)) + rel(95, 112, 80, 30); x0 = 270; }
+    s += G('pv', box(x0, 30, 190, 58, 'Solar', pvSub) + L(x0 + 95, 88, x0 + 95, busY) + `<circle class="sun" cx="${x0 + 166}" cy="50" r="9" fill="${acc}"/>`);
+    s += G('crit', box(560, 30, 180, 58, 'Cargas críticas', critSub) + L(650, 88, 650, busY));
+    s += G('nb', bat(760, 16, 210, '3 · No-break', f3, S.F.F3.E, S.F.F3.P) + L(740, 59, 760, 59));
+    s += G('rest', box(770, 232, 200, 58, 'Demais cargas', iso ? 'dependem do ciclo diário' : 'cortadas na falta') + L(870, busY, 870, 232, !iso)
+      + (!iso ? `<text x="878" y="${busY + 34}" font-size="11.5" fill="${mut}">chave de corte</text>` : ''));
+    if (shared) s += G('b1', bat(40, 226, 420, '1 + 2 · Ciclo diário e reserva longa (mesmo bloco)', f1, E12, P12) + L(250, busY, 250, 226));
+    else { s += G('b1', bat(40, 226, 230, '1 · Ciclo diário', f1, S.F.F1.E, S.F.F1.P) + L(155, busY, 155, 226));
+           s += G('b2', bat(290, 226, 230, '2 · Reserva longa', f2, S.F.F2.E, S.F.F2.P) + L(405, busY, 405, 226)); }
+    vb = '0 0 1000 330'; xm = iso ? [shared ? 424 : 236, 262] : [146, 110];
+  } else {
+    // celular: barramento na vertical, um elemento por linha
+    const bx = 22, X = 58, Wd = 332; let y = 22, yFirst = null, yLast = 0;
+    const tap = yc => { if (yFirst === null) yFirst = yc; yLast = yc; return yc; };
+    if (!iso) { const yc = tap(y + 27);
+      s += G('grid', box(128, y, Wd - 70, 54, 'Rede', 'cai nas faltas') + L(128, yc, 110, yc) + L(40, yc, bx, yc)) + rel(40, yc - 14, 70, 28);
+      xm = [62, y + 6]; y += 70; }
+    { const yc = tap(y + 27); s += G('pv', box(X, y, Wd, 54, 'Solar', pvSub) + L(X, yc, bx, yc) + `<circle class="sun" cx="${X + Wd - 24}" cy="${y + 22}" r="9" fill="${acc}"/>`); y += 70; }
+    if (shared) { const yc = tap(y + 43); s += G('b1', bat(X, y, Wd, '1 + 2 · Ciclo e reserva (mesmo bloco)', f1, E12, P12) + L(bx, yc, X, yc)); if (iso) xm = [X + Wd - 70, y + 58]; y += 102; }
+    else { let yc = tap(y + 43); s += G('b1', bat(X, y, Wd, '1 · Ciclo diário', f1, S.F.F1.E, S.F.F1.P) + L(bx, yc, X, yc)); if (iso) xm = [X + Wd - 70, y + 58]; y += 102;
+           yc = tap(y + 43); s += G('b2', bat(X, y, Wd, '2 · Reserva longa', f2, S.F.F2.E, S.F.F2.P) + L(bx, yc, X, yc)); y += 102; }
+    { const yc = tap(y + 27); s += G('crit', box(X, y, Wd, 54, 'Cargas críticas', critSub) + L(X, yc, bx, yc)); const yb = y + 54; y += 68;
+      s += G('nb', bat(X + 30, y, Wd - 30, '3 · No-break', f3, S.F.F3.E, S.F.F3.P) + L(X + 54, yb, X + 54, y)); y += 102; }
+    { const yc = tap(y + 27); s += G('rest', box(X, y, Wd, 54, 'Demais cargas', iso ? 'dependem do ciclo diário' : 'cortadas na falta (chave de corte)') + L(bx, yc, X, yc, !iso)); y += 64; }
+    const mid = (yFirst + yLast) / 2;
+    s = `<line x1="${bx}" y1="${yFirst - 10}" x2="${bx}" y2="${yLast + 10}" stroke="${ink}" stroke-width="3"/>`
+      + `<text transform="rotate(-90 10 ${mid})" x="10" y="${mid}" text-anchor="middle" font-family="var(--mono)" font-size="9.5" letter-spacing="1" fill="${mut}">BARRAMENTO DA MICRORREDE</text>` + s;
+    vb = `0 0 400 ${y}`;
   }
-  s += G('pv', box(xs, 30, 190, 58, 'Solar', iso ? 'carrega as baterias de dia' : 'atende de dia e carrega') + L(xs + 95, 88, xs + 95, busY)
-    + `<circle class="sun" cx="${xs + 166}" cy="${50}" r="9" fill="var(--accent)"/>`);
-  s += G('crit', box(560, 30, 180, 58, 'Cargas críticas', `${Math.round(S.alpha * 100)}% da carga`) + L(650, 88, 650, busY));
-  s += G('nb', bat(760, 16, 210, '3 · No-break', f3, S.F.F3.E, S.F.F3.P) + L(740, 59, 760, 59));
-  s += G('rest', box(770, 232, 200, 58, 'Demais cargas', iso ? 'dependem do ciclo diário' : 'cortadas na falta') + L(870, busY, 870, 232, !iso)
-    + (!iso ? `<text x="878" y="${busY + 34}" font-size="11.5" fill="${mut}">chave de corte</text>` : ''));
-  if (shared) s += G('b1', bat(40, 226, 420, '1 + 2 · Ciclo diário e reserva longa (mesmo bloco)', f1, S.F.F1.E + S.F.F2.E, Math.max(S.F.F1.P, S.F.F2.P)) + L(250, busY, 250, 226));
-  else { s += G('b1', bat(40, 226, 230, '1 · Ciclo diário', f1, S.F.F1.E, S.F.F1.P) + L(155, busY, 155, 226));
-         s += G('b2', bat(290, 226, 230, '2 · Reserva longa', f2, S.F.F2.E, S.F.F2.P) + L(405, busY, 405, 226)); }
-  s += `<text id="xmark" x="0" y="0" font-size="44" font-weight="800" fill="var(--pb)" display="none">×</text>`;
-  $('sysdraw').innerHTML = `<svg viewBox="0 0 1000 330" role="img" aria-label="Esquema do sistema recomendado" font-family="var(--body)">${s}</svg>`;
+  s += `<text id="xmark" x="${xm[0]}" y="${xm[1]}" font-size="${narrow ? 34 : 44}" font-weight="800" fill="var(--pb)" display="none">×</text>`;
+  $('sysdraw').innerHTML = `<svg viewBox="${vb}" role="img" aria-label="Esquema do sistema recomendado" font-family="var(--body)">${s}</svg>`;
   $('modeFalha').textContent = iso ? 'Falha no ciclo diário' : 'Falta da rede';
   applyMode();
 }
@@ -970,7 +1118,7 @@ function applyMode() {
   const rb = document.getElementById('relBox'), rt = document.getElementById('relTxt');
   if (rb) { const open = MODE === 'falha'; rb.setAttribute('fill', open ? 'none' : 'var(--accent)'); rt.setAttribute('fill', open ? 'var(--accent)' : '#111'); rt.textContent = open ? 'aberto' : 'religador'; }
   const xm = document.getElementById('xmark');
-  if (xm) { if (MODE === 'falha') { xm.setAttribute('display', ''); if (iso) { xm.setAttribute('x', shared ? 424 : 236); xm.setAttribute('y', 262); } else { xm.setAttribute('x', 146); xm.setAttribute('y', 110); } } else xm.setAttribute('display', 'none'); }
+  if (xm) xm.setAttribute('display', MODE === 'falha' ? '' : 'none');
   let t;
   if (MODE === 'dia') t = iso ? `Dia: o solar atende a comunidade e carrega ${shared ? 'o bloco' : 'os dois blocos'} de baterias.`
     : `Dia: o solar atende a vila, a rede completa e o bloco de ${NOME[f1]} guarda o excedente; a reserva fica cheia, parada.`;
@@ -984,37 +1132,59 @@ function applyMode() {
 }
 
 let CURF = 'F2';
+function chartW(el, fb) { return Math.max(300, Math.min(1100, el.clientWidth || fb)); }
+// leitura ao passar o mouse ou tocar: chama cb(passo) com o passo mais próximo, ou cb(null) ao sair
+function hoverable(svg, W, x0, x1, n, cb) {
+  const move = ev => { const r = svg.getBoundingClientRect(); const px = (ev.clientX - r.left) * (W / r.width);
+    cb(Math.max(0, Math.min(n, Math.round((px - x0) / (x1 - x0) * n)))); };
+  svg.addEventListener('pointermove', move); svg.addEventListener('pointerdown', move);
+  svg.addEventListener('pointerleave', () => cb(null));
+}
 function drawCurve() {
-  const ctxE = LAST.r.ctx, tech = LAST.r.tech, f = CURF;
+  if (!LAST) return;
+  const ctxE = LAST.r.ctx, tech = LAST.r.tech, f = CURF, el = $('curve');
   const as = KS.map(k => asset(k, S.F[f].P, S.F[f].E, S.F[f].cyc, ctxE, tech, S.rate));
   const cum = as.map(a => { let s = 0; return a.flows.map(v => (s += v)); });
   const mx = Math.max(...cum.flat()) * 1.05;
-  const W = 760, Hh = 320, x0 = 70, x1 = 640, y0 = 20, y1 = 280;
+  const W = chartW(el, 760), small = W < 560, Hh = small ? 290 : 360;
+  const x0 = small ? 52 : 74, x1 = W - (small ? 96 : 150), y0 = 14, y1 = Hh - 42, fs = small ? 10.5 : 11.5;
   const X = t => x0 + t / 30 * (x1 - x0), Y = v => y1 - v / mx * (y1 - y0);
   const step = Math.pow(10, Math.floor(Math.log10(mx / 4))); const nice = [1, 2, 2.5, 5, 10].map(m => m * step).find(s => mx / s <= 5) || step * 10;
   const ticks = []; for (let v = 0; v <= mx; v += nice) ticks.push(v);
   const COR = { Li: 'var(--li)', Pb: 'var(--pb)', V: 'var(--v)' }, NOME = { Li: 'Lítio', Pb: 'Chumbo', V: 'Vanádio' };
-  let s = ticks.map(v => `<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${x0 - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="11" font-family="var(--mono)" fill="var(--muted)">${brl(v).replace('R$ ', '')}</text>`).join('');
-  s += [0, 5, 10, 15, 20, 25, 30].map(t => `<text x="${X(t)}" y="${y1 + 18}" text-anchor="middle" font-size="11" font-family="var(--mono)" fill="var(--muted)">${t}</text>`).join('');
-  s += `<text x="${(x0 + x1) / 2}" y="${y1 + 36}" text-anchor="middle" font-size="11.5" fill="var(--muted)">anos</text>`;
+  let s = ticks.map(v => `<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${x0 - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="${fs}" font-family="var(--mono)" fill="var(--muted)">${v === 0 ? '0' : brl(v).replace('R$ ', '')}</text>`).join('');
+  s += [0, 5, 10, 15, 20, 25, 30].map(t => `<text x="${X(t)}" y="${y1 + 18}" text-anchor="middle" font-size="${fs}" font-family="var(--mono)" fill="var(--muted)">${t}</text>`).join('');
+  s += `<text x="${(x0 + x1) / 2}" y="${y1 + 36}" text-anchor="middle" font-size="${fs}" fill="var(--muted)">anos</text>`;
   const ends = [];
   as.forEach((a, i) => {
     const c = cum[i];
-    // degraus: sobe linear com o custo anual e dá o salto no ano da troca
-    let p = `M${X(0)} ${Y(c[0])}`; for (let t = 1; t <= 30; t++) p += ` L${X(t)} ${Y(c[t])}`;
-    s += `<path class="draw" pathLength="1" d="${p}" fill="none" stroke="${COR[a.k]}" stroke-width="2.6" style="animation-delay:${i * 180}ms"/>`;
+    let p = `M${X(0)} ${Y(c[0])}`; for (let t = 1; t <= 30; t++) p += ` L${X(t).toFixed(1)} ${Y(c[t]).toFixed(1)}`;
+    s += `<path class="draw" pathLength="1" d="${p}" fill="none" stroke="${COR[a.k]}" stroke-width="2.6" stroke-linejoin="round" style="animation-delay:${i * 180}ms"/>`;
     a.repYears.forEach(t => { if (t >= 1 && t <= 30) s += `<circle class="pop" cx="${X(t)}" cy="${Y(c[t])}" r="3.5" fill="${COR[a.k]}" style="animation-delay:${900 + i * 180 + t * 20}ms"/>`; });
     ends.push({ k: a.k, v: c[30], y: Y(c[30]) });
   });
-  ends.sort((p, q) => p.y - q.y); for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < 36) ends[i].y = ends[i - 1].y + 36;
-  ends.forEach(e => { s += `<text x="${x1 + 10}" y="${e.y}" font-size="13" font-weight="600" fill="${COR[e.k]}">${NOME[e.k]}</text><text x="${x1 + 10}" y="${e.y + 15}" font-size="12" font-family="var(--mono)" fill="var(--ink)">${brl(e.v)}</text>`; });
+  const gap = small ? 30 : 36;
+  ends.sort((p, q) => p.y - q.y); for (let i = 1; i < ends.length; i++) if (ends[i].y - ends[i - 1].y < gap) ends[i].y = ends[i - 1].y + gap;
+  const over = ends[ends.length - 1].y + 15 - (Hh - 4); if (over > 0) ends.forEach(e => e.y -= over);
+  ends.forEach(e => { s += `<text x="${x1 + 10}" y="${e.y}" font-size="${small ? 12 : 13}" font-weight="600" fill="${COR[e.k]}">${NOME[e.k]}</text><text x="${x1 + 10}" y="${e.y + 15}" font-size="${small ? 11 : 12}" font-family="var(--mono)" fill="var(--ink)">${brl(e.v)}</text>`; });
+  s += `<g id="curveHov" display="none"><line id="curveHovL" y1="${y0}" y2="${y1}" stroke="var(--ink)" stroke-dasharray="3 3"/>${as.map(a => `<circle r="5" fill="var(--surface)" stroke="${COR[a.k]}" stroke-width="2.5"/>`).join('')}</g>`;
   const fn = { F1: 'ciclo diário', F2: 'reserva longa', F3: 'no-break' }[f];
-  $('curve').innerHTML = `<svg viewBox="0 0 ${W} ${Hh + 20}" role="img" aria-label="Custo acumulado em 30 anos, ${fn}">${s}<text x="${x0}" y="${Hh + 14}" font-size="11.5" fill="var(--muted)">• cada ponto é uma troca de bateria (ou das pilhas, no vanádio)</text></svg>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Custo acumulado em 30 anos, ${fn}" font-family="var(--body)">${s}</svg>`;
+  const read = $('curveRead'), idle = 'Passe o mouse ou toque no gráfico para ver quanto já se gastou em cada ano.';
+  read.textContent = idle;
+  const svg = el.querySelector('svg'), hov = svg.querySelector('#curveHov'), dots = hov.querySelectorAll('circle'), ln = svg.querySelector('#curveHovL');
+  hoverable(svg, W, x0, x1, 30, t => {
+    if (t === null) { hov.setAttribute('display', 'none'); read.textContent = idle; return; }
+    hov.setAttribute('display', ''); ln.setAttribute('x1', X(t)); ln.setAttribute('x2', X(t));
+    dots.forEach((d, i) => { d.setAttribute('cx', X(t)); d.setAttribute('cy', Y(cum[i][t])); });
+    read.innerHTML = `<b>Ano ${t}</b>` + as.map((a, i) => `<span style="color:${COR[a.k]}">${NOME[a.k]} <b>${brl(cum[i][t])}</b></span>`).join('');
+  });
 }
 
-let LEVTIMER = null;
+let LEVTIMER = null, LEVTOKEN = 0, LEVFN = [];
 function computeLevers() {
-  const { r, idx } = LAST; const bestKey = JSON.stringify(r.base[idx[0]].combo);
+  const token = ++LEVTOKEN; const { r, idx } = LAST; const bestKey = JSON.stringify(r.base[idx[0]].combo);
+  // mesmos sorteios em todos os testes (inclusive no de referência): a diferença entre eles quase não tem ruído
   const runP = st => { const rr = smaa(buildCtx(st), { nP: 250, nW: 40 });
     const i0 = rr.base.findIndex(p => JSON.stringify(p.combo) === bestKey);
     const top = [...rr.prob.keys()].sort((a, b) => rr.prob[b] - rr.prob[a])[0];
@@ -1022,24 +1192,41 @@ function computeLevers() {
   const base = { p: r.prob[idx[0]] };
   const C = () => JSON.parse(JSON.stringify(S));
   const L = [];
-  L.push([S.agentes ? 'Sem agentes comunitários treinados' : 'Com agentes comunitários treinados', st => st.agentes = !S.agentes]);
-  L.push([S.eletrolito ? 'Sem eletrólito de vanádio nacional' : 'Com eletrólito de vanádio nacional e arrendado', st => st.eletrolito = !S.eletrolito]);
-  L.push([S.chumbo_lr ? 'Sem logística reversa do chumbo' : 'Com logística reversa do chumbo garantida', st => st.chumbo_lr = !S.chumbo_lr]);
-  L.push([S.longe ? 'Com técnico a poucas horas' : 'Com técnico longe', st => st.longe = !S.longe]);
-  L.push([S.comunidade_paga ? 'Se a distribuidora pagar as trocas' : 'Se a comunidade pagar as trocas', st => st.comunidade_paga = !S.comunidade_paga]);
-  L.push([S.T > 25 ? 'Com abrigo climatizado (25 °C)' : 'Sem climatização (abrigo a 32 °C)', st => st.T = S.T > 25 ? 25 : 32]);
+  L.push([S.agentes ? 'Sem agentes comunitários treinados' : 'Com agentes comunitários treinados', st => st.agentes = !st.agentes]);
+  L.push([S.eletrolito ? 'Sem eletrólito de vanádio nacional' : 'Com eletrólito de vanádio nacional e arrendado', st => st.eletrolito = !st.eletrolito]);
+  L.push([S.chumbo_lr ? 'Sem logística reversa do chumbo' : 'Com logística reversa do chumbo garantida', st => st.chumbo_lr = !st.chumbo_lr]);
+  L.push([S.longe ? 'Com técnico a poucas horas' : 'Com técnico longe', st => st.longe = !st.longe]);
+  L.push([S.comunidade_paga ? 'Se a distribuidora pagar as trocas' : 'Se a comunidade pagar as trocas', st => st.comunidade_paga = !st.comunidade_paga]);
+  const Tnew = S.T > 25 ? 25 : 32;
+  L.push([S.T > 25 ? 'Com abrigo climatizado (25 °C)' : 'Sem climatização (abrigo a 32 °C)', st => st.T = Tnew]);
   if (S.rate > 0) L.push(['Com taxa de desconto 0% (olhar de fundo público)', st => st.rate = 0]);
   if (S.rate < 0.12) L.push(['Com taxa de desconto 12%', st => st.rate = 0.12]);
-  const rows = L.map(([nome, fn]) => { const st = C(); fn(st); return [nome, runP(st)]; });
-  rows.sort((a, b) => Math.abs(b[1].p - base.p) - Math.abs(a[1].p - base.p));
-  $('levers').innerHTML = rows.map(([nome, v]) => {
-    const flip = JSON.stringify(v.top) !== bestKey;
-    const dir = v.p > base.p + 0.04 ? 'up' : v.p < base.p - 0.04 ? 'down' : '';
-    const sub = flip ? `<span class="sub flip">passa a ganhar: ${label(v.top).toLowerCase()} (${Math.round(v.ptop * 100)}%)</span>`
-      : `<span class="sub">a recomendação continua a mesma</span>`;
-    return `<div class="lever"><div>${nome}${sub}</div><div class="track"><div class="fill ${dir}" data-w="${(v.p * 100).toFixed(1)}%" style="width:0"></div><div class="mark" style="left:calc(${(base.p * 100).toFixed(1)}% - 1px)"></div></div><b>${Math.round(v.p * 100)}%</b></div>`;
-  }).join('');
-  grow('#levers .fill');
+  const rows = []; let i = 0, p0 = null;
+  const render = () => {
+    rows.sort((a, b) => Math.abs(b[1].p - base.p) - Math.abs(a[1].p - base.p));
+    LEVFN = rows.map(x => x[2]);
+    $('levers').innerHTML = rows.map(([nome, v], j) => {
+      const dir = v.p > base.p + 0.03 ? 'up' : v.p < base.p - 0.03 ? 'down' : '';
+      const dpts = Math.round(v.p * 100) - Math.round(base.p * 100);
+      const sub = v.flip ? `<span class="sub flip">passa a ganhar: ${label(v.top).toLowerCase()} (${Math.round(v.ptop * 100)}%)</span>`
+        : `<span class="sub">a recomendação continua a mesma</span>`;
+      return `<div class="lever"><div>${nome}${sub}</div><div class="track"><div class="fill ${dir}" data-w="${(v.p * 100).toFixed(1)}%" style="width:0"></div><div class="mark" style="left:calc(${(base.p * 100).toFixed(1)}% - 1px)"></div></div>`
+        + `<b>${Math.round(v.p * 100)}%<small class="${dir}">${dpts > 0 ? '+' : dpts < 0 ? '−' : '±'}${Math.abs(dpts)}</small></b><button type="button" class="apply" data-i="${j}" aria-label="Aplicar: ${nome}">Aplicar</button></div>`;
+    }).join('');
+    $('levers').querySelectorAll('.apply').forEach(b => b.addEventListener('click', () => { LEVFN[+b.dataset.i](S); toForm(); run(); $('levers').closest('.panel').scrollIntoView({ block: 'nearest' }); }));
+    $('levers').style.opacity = '1';
+    grow('#levers .fill');
+  };
+  const step = () => {
+    if (token !== LEVTOKEN) return;
+    if (p0 === null) { p0 = runP(C()); setTimeout(step, 0); return; }
+    if (i >= L.length) { render(); return; }
+    const [nome, fn] = L[i++]; const st = C(); fn(st); const v = runP(st);
+    v.flip = JSON.stringify(v.top) !== bestKey && v.ptop - v.p > 0.02;
+    v.p = Math.max(0, Math.min(1, base.p + (v.p - p0.p)));
+    rows.push([nome, v, fn]); setTimeout(step, 0);
+  };
+  step();
 }
 
 let LAST = null;
@@ -1055,6 +1242,53 @@ function resumo() {
   linhas.push('', 'Premissas de falha, conserto, acidente e resíduo são hipóteses de partida.');
   return linhas.join('\n');
 }
+// ---- link do cenário
+function encodeState() {
+  const o = { v: 1, p: $('preset').value, i: +S.isolated, hf: S.horas_falta, cc: S.carga_critica, nk: S.night_kwh_dia, a: S.alpha, T: S.T, fa: S.familias,
+    co: +S.costa, lo: +S.longe, cp: +S.comunidade_paga, ag: +S.agentes, el: +S.eletrolito, lr: +S.chumbo_lr, r: S.rate,
+    F: ['F1', 'F2', 'F3'].map(f => [S.F[f].P, S.F[f].E, S.F[f].cyc]), w: CRIT.map(c => Math.round(S.w[c] * 1e4) / 1e4) };
+  return btoa(JSON.stringify(o)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+function decodeState(str) {
+  try {
+    const o = JSON.parse(atob(String(str).replace(/-/g, '+').replace(/_/g, '/')));
+    const key = Object.prototype.hasOwnProperty.call(PRESETS, o.p) ? o.p : 'quilombo_isolado';
+    const st = Object.assign({ agentes: false, chumbo_lr: false, eletrolito: false, rate: 0.08 }, JSON.parse(JSON.stringify(PRESETS[key])));
+    const n = (x, lo, hi, d) => { const v = Number(x); return Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : d; };
+    st.isolated = !!o.i; st.horas_falta = n(o.hf, 0, 8760, st.horas_falta); st.carga_critica = n(o.cc, 0, 1e6, st.carga_critica);
+    st.night_kwh_dia = n(o.nk, 0, 1e7, st.night_kwh_dia); st.alpha = n(o.a, 0, 1, st.alpha); st.T = n(o.T, 15, 45, st.T); st.familias = n(o.fa, 0, 1e7, st.familias);
+    st.costa = !!o.co; st.longe = !!o.lo; st.comunidade_paga = !!o.cp; st.agentes = !!o.ag; st.eletrolito = !!o.el; st.chumbo_lr = !!o.lr; st.rate = n(o.r, 0, 0.12, 0.08);
+    if (Array.isArray(o.F) && o.F.length === 3) ['F1', 'F2', 'F3'].forEach((f, j) => { const a = Array.isArray(o.F[j]) ? o.F[j] : [];
+      st.F[f] = { P: n(a[0], 0.1, 1e6, st.F[f].P), E: n(a[1], 0.1, 1e7, st.F[f].E), cyc: n(a[2], 0.1, 1e4, st.F[f].cyc) }; });
+    if (Array.isArray(o.w) && o.w.length === CRIT.length) { const w = o.w.map(x => n(x, 0, 1, 0)), t = w.reduce((a, b) => a + b, 0);
+      if (t > 0) CRIT.forEach((c, j) => st.w[c] = w[j] / t); }
+    return { st, key };
+  } catch (e) { return null; }
+}
+async function copyText(t, ok) {
+  try { await navigator.clipboard.writeText(t); $('copyMsg').textContent = ok; }
+  catch (e) { $('copyMsg').textContent = 'Seu navegador bloqueou a cópia.'; }
+}
+
+// ---- barra fixa com o resultado, enquanto ele está fora da tela
+const DOCK = { com: '', casa: '' };
+function dockUpdate() {
+  const casa = location.hash === '#casa', band = $(casa ? 'casaResultado' : 'resultado'), d = $('dock');
+  const html = casa ? DOCK.casa : DOCK.com;
+  const show = !!html && band.getBoundingClientRect().top > window.innerHeight - 40;
+  if ($('dockTxt').innerHTML !== html) $('dockTxt').innerHTML = html;
+  d.hidden = !show;
+}
+function dockPulse() { const d = $('dock'); d.classList.remove('pulse'); void d.offsetWidth; d.classList.add('pulse'); dockUpdate(); }
+
+// ---- painéis aparecem ao rolar
+function setupReveal() {
+  if (REDUCED || !('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -6% 0px' });
+  document.querySelectorAll('.details > .panel').forEach(el => { el.classList.add('reveal'); io.observe(el); });
+  window.addEventListener('beforeprint', () => document.querySelectorAll('.reveal').forEach(el => el.classList.add('in')));
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   $('preset').addEventListener('change', e => load(e.target.value));
   for (const id of ['isolated', 'horas', 'carga', 'noite', 'alpha', 'temp', 'familias', 'costa', 'agentes', 'eletrolito', 'chumbo_lr', 'rate', 'F1P', 'F1E', 'F1c', 'F2P', 'F2E', 'F2c', 'F3P', 'F3E', 'F3c'])
@@ -1066,13 +1300,28 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.modes button').forEach(b => b.addEventListener('click', () => { stopPlay(); MODE = b.dataset.mode; applyMode(); }));
   $('play').addEventListener('click', togglePlay);
   document.querySelectorAll('.seg3 button').forEach(b => b.addEventListener('click', () => { CURF = b.dataset.f; document.querySelectorAll('.seg3 button').forEach(x => x.setAttribute('aria-pressed', x === b)); drawCurve(); }));
-  $('copy').addEventListener('click', async () => {
-    const t = resumo();
-    try { await navigator.clipboard.writeText(t); $('copyMsg').textContent = 'Copiado. Cole numa planilha ou num documento.'; }
-    catch (e) { $('copyMsg').textContent = 'Seu navegador bloqueou a cópia. Selecione e copie a tabela abaixo.'; }
-  });
-  load('quilombo_isolado');
+  $('copy').addEventListener('click', () => copyText(resumo(), 'Copiado. Cole numa planilha ou num documento.'));
+  $('copyLink').addEventListener('click', () => copyText(location.href.split(/[?#]/)[0] + '?c=' + encodeState(), 'Link copiado. Quem abrir vê este mesmo cenário.'));
+  $('printBtn').addEventListener('click', () => window.print());
+  $('dock').addEventListener('click', () => $(location.hash === '#casa' ? 'casaResultado' : 'resultado').scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' }));
+  let tick = false; const onScroll = () => { if (tick) return; tick = true; requestAnimationFrame(() => { tick = false; dockUpdate(); }); };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  let rz = null, lastW = window.innerWidth;
+  window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(() => { dockUpdate(); if (window.innerWidth === lastW) return; lastW = window.innerWidth; redraw(); }, 160); });
+  setupReveal();
+  let fromLink = null;
+  try { const q = new URLSearchParams(location.search).get('c'); if (q) fromLink = decodeState(q); } catch (e) {}
+  if (fromLink) {
+    S = fromLink.st; $('preset').value = fromLink.key;
+    $('presetDesc').textContent = 'Cenário aberto por link, montado a partir de "' + PRESETS[fromLink.key].nome + '". Todos os campos abaixo podem ser ajustados.';
+    toForm(); run();
+  } else load('quilombo_isolado');
 });
+// redesenha o que depende da largura da tela
+function redraw() {
+  if (!$('tab-comunidade').hidden && LAST) { drawSystem(LASTCOMBO); drawCurve(); }
+  if (!$('tab-casa').hidden && typeof casaRun === 'function') casaRun();
+}
 function toFormKeep() { $('perto').setAttribute('aria-pressed', !S.longe); $('longe').setAttribute('aria-pressed', S.longe);
   $('distrib').setAttribute('aria-pressed', !S.comunidade_paga); $('comun').setAttribute('aria-pressed', S.comunidade_paga); schedule(); }
 
@@ -1110,16 +1359,40 @@ function fmtH(h) {
   if (h >= 48) return num(h / 24, 1) + ' dias';
   return num(h, h < 10 ? 1 : 0) + ' h';
 }
+function fmtLong(h) {
+  if (!isFinite(h) || h > 24 * 30) return 'mais de 30 dias';
+  if (h >= 48) return num(h / 24, h < 240 ? 1 : 0) + ' dias';
+  if (h < 1) return num(h * 60) + ' min';
+  return num(h, h < 10 ? 1 : 0) + ' h';
+}
+const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+// guarda a lista e os ajustes no próprio navegador de quem usa
+const CASA_KEY = 'teiu-casa-v1';
+function casaSave() {
+  try { localStorage.setItem(CASA_KEY, JSON.stringify({ EQ, HTECH, cap: $('hCap').value, inv: $('hInv').value, pv: $('hPv').value, hsp: $('hHsp').value, start: $('hStart').value, target: $('hTarget').value })); } catch (e) {}
+}
+function casaLoad() {
+  try {
+    const o = JSON.parse(localStorage.getItem(CASA_KEY) || 'null'); if (!o || !Array.isArray(o.EQ)) return;
+    const n = (x, lo, hi, d) => { const v = Number(x); return Number.isFinite(v) ? Math.max(lo, Math.min(hi, v)) : d; };
+    const list = o.EQ.slice(0, 60).map(i => ({ n: String(i.n || '').slice(0, 60), q: n(i.q, 0, 999, 0), w: n(i.w, 0, 1e5, 0), h: n(i.h, 0, 24, 0), e: !!i.e }));
+    if (list.length) EQ = list;
+    if (HT[o.HTECH]) HTECH = o.HTECH;
+    $('hCap').value = n(o.cap, 0, 1e4, 10); $('hInv').value = n(o.inv, 0, 1e3, 5); $('hPv').value = n(o.pv, 0, 1e3, 0); $('hHsp').value = n(o.hsp, 0, 10, 5.2);
+    if (['18', '0', '6', '12'].includes(String(o.start))) $('hStart').value = String(o.start);
+    if (['12', '24', '48', '72', '120'].includes(String(o.target))) $('hTarget').value = String(o.target);
+  } catch (e) {}
+}
 function eqRender() {
   const tb = document.querySelector('#eq tbody');
   tb.innerHTML = EQ.map((it, i) => `<tr data-i="${i}">
-    <td><input type="checkbox" aria-label="${it.n}: manter na falta" data-f="e" ${it.e ? 'checked' : ''}></td>
-    <td><input type="text" class="eqn" aria-label="Nome do aparelho" data-f="n" value="${it.n.replace(/"/g, '&quot;')}"></td>
-    <td><input type="number" min="0" step="1" aria-label="${it.n}: quantidade" data-f="q" value="${it.q}"></td>
-    <td><input type="number" min="0" step="1" aria-label="${it.n}: watts" data-f="w" value="${it.w}"></td>
-    <td><input type="number" min="0" max="24" step="0.1" aria-label="${it.n}: horas por dia" data-f="h" value="${it.h}"></td>
-    <td class="kwh"></td>
-    <td><button type="button" class="eqdel" aria-label="Remover ${it.n}">×</button></td></tr>`).join('');
+    <td class="c-e"><input type="checkbox" aria-label="${esc(it.n)}: manter na falta" data-f="e" ${it.e ? 'checked' : ''}></td>
+    <td class="c-n"><input type="text" class="eqn" aria-label="Nome do aparelho" data-f="n" maxlength="60" value="${esc(it.n)}"></td>
+    <td class="c-q" data-l="Qtd."><input type="number" min="0" step="1" aria-label="${esc(it.n)}: quantidade" data-f="q" value="${it.q}"></td>
+    <td class="c-w" data-l="Watts"><input type="number" min="0" step="1" aria-label="${esc(it.n)}: watts" data-f="w" value="${it.w}"></td>
+    <td class="c-h" data-l="Horas/dia"><input type="number" min="0" max="24" step="0.1" aria-label="${esc(it.n)}: horas por dia" data-f="h" value="${it.h}"></td>
+    <td class="kwh" data-l="kWh/dia"></td>
+    <td class="c-x"><button type="button" class="eqdel" aria-label="Remover ${esc(it.n)}">×</button></td></tr>`).join('');
   tb.querySelectorAll('input').forEach(inp => inp.addEventListener('input', e => {
     const tr = e.target.closest('tr'), i = +tr.dataset.i, f = e.target.dataset.f;
     EQ[i][f] = f === 'e' ? e.target.checked : f === 'n' ? e.target.value : Math.max(0, Number(e.target.value) || 0);
@@ -1130,7 +1403,8 @@ function eqRender() {
 }
 function simulate(dailyWh, capWh, pvKwp, hsp, startHour, hours) {
   // energia útil já descontadas profundidade de descarga e perdas; recarga com 90% de eficiência
-  let soc = capWh; const pts = [soc / capWh]; let empty = Infinity;
+  if (!(capWh > 0)) return { pts: new Array(hours + 1).fill(0), empty: 0 };
+  let soc = capWh; const pts = [1]; let empty = Infinity;
   for (let t = 0; t < hours; t++) {
     const h = (startHour + t) % 24;
     const load = dailyWh * LOAD_SHAPE[h], gen = pvKwp * hsp * 1000 * SUN_SHAPE[h];
@@ -1138,69 +1412,109 @@ function simulate(dailyWh, capWh, pvKwp, hsp, startHour, hours) {
     soc -= (load - direct);
     if (gen > load) soc = Math.min(capWh, soc + (gen - load) * 0.9);
     if (soc <= 0 && empty === Infinity) { empty = t + (soc + (load - direct)) / Math.max(1e-9, load - direct); soc = 0; }
-    pts.push(Math.max(0, soc) / capWh);
+    if (soc < 0) soc = 0;
+    pts.push(soc / capWh);
   }
   return { pts, empty };
 }
 function casaRun() {
   const cap = Math.max(0, Number($('hCap').value) || 0), inv = Math.max(0, Number($('hInv').value) || 0);
   const pv = Math.max(0, Number($('hPv').value) || 0), hsp = Math.max(0, Number($('hHsp').value) || 0);
-  const t = HT[HTECH]; const usable = tc => cap * 1000 * HT[tc].dod * HT[tc].eff * INV_EFF;
-  document.querySelectorAll('#eq tbody tr').forEach(tr => { const it = EQ[+tr.dataset.i]; tr.querySelector('.kwh').textContent = num(it.q * it.w * it.h / 1000, 2); tr.classList.toggle('ess', it.e && it.q > 0); });
-  const Eess = EQ.filter(i => i.e).reduce((s, i) => s + i.q * i.w * i.h, 0), Eall = EQ.reduce((s, i) => s + i.q * i.w * i.h, 0);
-  const Pess = EQ.filter(i => i.e).reduce((s, i) => s + i.q * i.w, 0);
+  const start = Number($('hStart').value) || 0, target = Number($('hTarget').value) || 24;
+  const t = HT[HTECH]; const k1 = tc => HT[tc].dod * HT[tc].eff * INV_EFF, usable = tc => cap * 1000 * k1(tc);
+  document.querySelectorAll('#eq tbody tr').forEach(tr => { const it = EQ[+tr.dataset.i]; tr.querySelector('.kwh').textContent = num(it.q * it.w * it.h / 1000, 2); tr.classList.toggle('ess', it.e && it.q > 0); tr.classList.toggle('zero', !(it.q > 0)); });
+  const on = EQ.filter(i => i.q > 0), ess = on.filter(i => i.e);
+  const Eess = ess.reduce((s, i) => s + i.q * i.w * i.h, 0), Eall = on.reduce((s, i) => s + i.q * i.w * i.h, 0);
+  const Pess = ess.reduce((s, i) => s + i.q * i.w, 0);
   const H = 24 * 7;
-  const sE = simulate(Eess, usable(HTECH), pv, hsp, 18, H), sA = simulate(Eall, usable(HTECH), pv, hsp, 18, H);
-  const cE = simulate(Eess, usable(HTECH), pv, hsp / 3, 18, H);
+  const sE = simulate(Eess, usable(HTECH), pv, hsp, start, H), sA = simulate(Eall, usable(HTECH), pv, hsp, start, H);
+  const cE = simulate(Eess, usable(HTECH), pv, hsp / 3, start, H);
   const genDay = pv * hsp;
-  $('hEss').textContent = Eess > 0 ? fmtH(sE.empty) : '—';
+  const big2 = (id, txt) => { const el = $(id); el.textContent = txt; el.classList.toggle('long', txt.length > 8); };
+  big2('hEss', Eess > 0 ? fmtH(sE.empty) : '—');
   $('hEssSub').textContent = Eess > 0 ? `${num(Eess / 1000, 1)} kWh por dia` + (pv > 0 ? ` · em dias nublados: ${fmtH(cE.empty)}` : '') : 'marque o que fica ligado na falta';
-  $('hAll').textContent = Eall > 0 ? fmtH(sA.empty) : '—';
-  $('hAllSub').textContent = `${num(Eall / 1000, 1)} kWh por dia` + (pv > 0 ? ` · o solar gera ~${num(genDay, 1)} kWh por dia de sol` : '');
-  $('hTechCmp').innerHTML = ['Li', 'Pb', 'V'].map(k => { const s = simulate(Eess, usable(k), pv, hsp, 18, H).empty; const w = Math.min(1, (isFinite(s) ? s : H) / H);
+  big2('hAll', Eall > 0 ? fmtH(sA.empty) : '—');
+  $('hAllSub').textContent = `${num(Eall / 1000, 1)} kWh por dia` + (pv > 0 ? ` · o solar gera ~${num(genDay, 1)} kWh por dia de sol` + (isFinite(sA.empty) && sA.pts.slice(Math.ceil(sA.empty)).some(v => v > 0.05) ? '; a bateria esvazia à noite e volta a carregar com o sol' : '') : '');
+  $('hTechCmp').innerHTML = ['Li', 'Pb', 'V'].map(k => { const s = simulate(Eess, usable(k), pv, hsp, start, H).empty; const w = Math.min(1, (isFinite(s) ? s : H) / H);
     return `<div class="hc-row ${k === HTECH ? 'sel' : ''}"><span>${HT[k].nome}</span><div class="hc-track"><div class="hc-fill ${k}" data-w="${(w * 100).toFixed(1)}%" style="width:0"></div></div><b>${Eess > 0 ? fmtH(s) : '—'}</b></div>`; }).join('');
   grow('#hTechCmp .hc-fill');
   $('hTechNote').textContent = t.note + ` Com ${num(cap, 1)} kWh nominais, sobram ~${num(usable(HTECH) / 1000, 1)} kWh para a casa.`;
+  // que bateria segura o essencial pelo tempo desejado (sem contar o solar)
+  let need = 0; for (let i = 0; i < target; i++) need += Eess * LOAD_SHAPE[(start + i) % 24];
+  const tl = { 12: '12 horas', 24: '24 horas', 48: '2 dias', 72: '3 dias', 120: '5 dias' }[target] || target + ' h';
+  if (Eess > 0) {
+    const sz = k => Math.max(0.5, Math.ceil(need / k1(k) / 1000 * 2) / 2);
+    const okNow = usable(HTECH) >= need;
+    $('hSizing').innerHTML = `<p>Para segurar o essencial por <b>${tl}</b>, sem contar o solar, a bateria precisa ter pelo menos:</p><div class="sz">`
+      + ['Li', 'Pb', 'V'].map(k => `<button type="button" data-k="${k}" data-cap="${sz(k)}" class="${k}"><span>${HT[k].nome}</span><b>${num(sz(k), 1)} kWh</b></button>`).join('')
+      + `</div><p class="note" style="margin:8px 0 0">${okNow ? `A bateria escolhida (${num(cap, 1)} kWh de ${t.nome.toLowerCase()}) cobre esse tempo.` : `A bateria escolhida (${num(cap, 1)} kWh de ${t.nome.toLowerCase()}) não cobre esse tempo sem sol.`} Toque num tamanho para usá-lo.</p>`;
+    $('hSizing').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { HTECH = b.dataset.k; $('hCap').value = b.dataset.cap; syncTech(); casaRun(); }));
+  } else $('hSizing').innerHTML = '';
   const warns = [];
-  if (Pess > inv * 1000) warns.push(`Se todo o essencial ligar ao mesmo tempo, são ${num(Pess / 1000, 1)} kW, acima dos ${num(inv, 1)} kW do inversor. Evite ligar a bomba e o micro-ondas juntos, ou escolha um inversor maior.`);
-  if (EQ.some(i => i.e && i.q > 0 && i.w >= 2000)) warns.push('Há um aparelho de mais de 2 kW marcado como essencial: ele sozinho esvazia a bateria muito rápido.');
+  const big = ess.slice().sort((a, b) => b.q * b.w - a.q * a.w);
+  if (big.length && big[0].w > inv * 1000) warns.push(`${esc(big[0].n)} pede ${num(big[0].w / 1000, 1)} kW, mais do que os ${num(inv, 1)} kW do inversor: não liga nem sozinho.`);
+  else if (Pess > inv * 1000) warns.push(`Se todo o essencial ligar ao mesmo tempo, são ${num(Pess / 1000, 1)} kW, acima dos ${num(inv, 1)} kW do inversor. Evite ligar juntos os aparelhos mais fortes (${big.slice(0, 2).map(i => esc(i.n)).join(' e ')}) ou escolha um inversor maior.`);
+  if (ess.some(i => i.w >= 2000)) warns.push('Há um aparelho de mais de 2 kW marcado como essencial: ele sozinho esvazia a bateria muito rápido.');
   if (pv > 0 && genDay * 1000 * 0.9 >= Eess && Eess > 0) warns.push('Em dias de sol, o painel gera mais do que o essencial consome: a casa segura o essencial indefinidamente enquanto houver sol.');
   $('hWarn').innerHTML = warns.map(w => `<p>${w}</p>`).join('');
-  drawHCurve(sE.pts.slice(0, 73), sA.pts.slice(0, 73));
-  const items = EQ.filter(i => i.q > 0 && i.w * i.h > 0).map(i => ({ n: i.n, q: i.q, e: i.e, hrs: usable(HTECH) / (i.q * i.w * i.h / 24) })).sort((a, b) => a.hrs - b.hrs);
-  const mx = Math.log10(24 * 30), mn = Math.log10(0.5);
-  $('hEach').innerHTML = items.map(i => { const v = Math.min(24 * 30, Math.max(0.5, i.hrs)); const w = (Math.log10(v) - mn) / (mx - mn);
-    return `<div class="he-row"><span>${i.q > 1 ? i.q + '× ' : ''}${i.n}${i.e ? ' <em>essencial</em>' : ''}</span><div class="he-track"><div class="he-fill ${i.e ? 'ess' : ''}" data-w="${(w * 100).toFixed(1)}%" style="width:0"></div></div><b>${fmtH(i.hrs).replace('mais de 7 dias', i.hrs > 24 * 30 ? 'mais de 30 dias' : num(i.hrs / 24, 0) + ' dias')}</b></div>`; }).join('')
-    + `<p class="note" style="margin:10px 0 0">Escala das barras em logaritmo: de meia hora a 30 dias.</p>`;
+  $('hCurveTitle').textContent = `Carga da bateria durante uma falta que começa às ${start} h`;
+  drawHCurve(sE.pts.slice(0, 73), sA.pts.slice(0, 73), start);
+  const items = on.filter(i => i.w * i.h > 0).map(i => ({ n: i.n, q: i.q, e: i.e, wh: i.q * i.w * i.h, cont: usable(HTECH) / (i.q * i.w), typ: usable(HTECH) / (i.q * i.w * i.h / 24) })).sort((a, b) => b.wh - a.wh);
+  const mxw = Math.max(1, ...items.map(i => i.wh));
+  $('hEach').innerHTML = items.length ? `<div class="he-row he-head" aria-hidden="true"><span>Aparelho</span><span>Parte do consumo diário da casa</span><span></span><span class="v">Ligado sem parar</span><span class="v">No uso típico</span></div>` + items.map(i => `<div class="he-row"><span class="nm">${i.q > 1 ? i.q + '× ' : ''}${esc(i.n)}${i.e ? ' <em>essencial</em>' : ''}</span>`
+    + `<div class="he-track"><div class="he-fill ${i.e ? 'ess' : ''}" data-w="${(i.wh / mxw * 100).toFixed(1)}%" style="width:0"></div></div><b class="sh">${num(i.wh / Eall * 100)}%</b>`
+    + `<span class="v"><small>ligado sem parar</small>${cap > 0 ? fmtLong(i.cont) : '—'}</span><span class="v"><small>no uso típico</small>${cap > 0 ? fmtLong(i.typ) : '—'}</span></div>`).join('')
+    : '<p class="note" style="margin:0">Nenhum aparelho com quantidade maior que zero.</p>';
   grow('#hEach .he-fill');
+  DOCK.casa = Eess > 0 ? `<b>${fmtH(sE.empty)}</b> <span>só o essencial · casa toda: ${Eall > 0 ? fmtH(sA.empty) : '—'}</span>` : '';
+  dockUpdate(); casaSave();
 }
-function drawHCurve(pe, pa) {
-  const W = 1000, Hh = 250, x0 = 50, x1 = 980, y0 = 16, y1 = 210;
+function drawHCurve(pe, pa, start) {
+  const el = $('hCurve'), W = chartW(el, 1000), small = W < 560, Hh = small ? 230 : 260;
+  const x0 = small ? 40 : 50, x1 = W - (small ? 10 : 20), y0 = 16, y1 = Hh - 50, fs = small ? 10.5 : 11;
   const X = t => x0 + t / 72 * (x1 - x0), Y = v => y1 - v * (y1 - y0);
   let s = '';
-  for (let d = 0; d < 3; d++) { const a = X(d * 24), b = X(d * 24 + 12); s += `<rect x="${a}" y="${y0}" width="${b - a}" height="${y1 - y0}" fill="rgba(47,111,214,.10)"/>`; }
-  [0, .25, .5, .75, 1].forEach(v => { s += `<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--band-line)"/><text x="${x0 - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="11" font-family="var(--mono)" fill="var(--band-muted)">${v * 100}%</text>`; });
-  for (let t = 0; t <= 72; t += 6) { const hr = (18 + t) % 24; s += `<text x="${X(t)}" y="${y1 + 18}" text-anchor="middle" font-size="11" font-family="var(--mono)" fill="var(--band-muted)">${hr}h</text>`; }
-  [24, 48].forEach(t => { s += `<text x="${X(t) + 4}" y="${y0 + 12}" font-size="11" fill="var(--band-muted)">+${t / 24}º dia</text><line x1="${X(t)}" x2="${X(t)}" y1="${y0}" y2="${y1}" stroke="var(--band-muted)" stroke-dasharray="3 4"/>`; });
+  for (let t = 0, a = null; t <= 72; t++) { const hr = (start + t) % 24, night = t < 72 && (hr >= 18 || hr < 6);
+    if (night && a === null) a = t; if (!night && a !== null) { s += `<rect x="${X(a).toFixed(1)}" y="${y0}" width="${(X(t) - X(a)).toFixed(1)}" height="${y1 - y0}" fill="rgba(47,111,214,.12)"/>`; a = null; } }
+  [0, .25, .5, .75, 1].forEach(v => { s += `<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--band-line)"/><text x="${x0 - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="${fs}" font-family="var(--mono)" fill="var(--band-muted)">${v * 100}%</text>`; });
+  for (let t = 0; t <= 72; t += small ? 12 : 6) s += `<text x="${X(t)}" y="${y1 + 18}" text-anchor="${t === 72 ? 'end' : 'middle'}" font-size="${fs}" font-family="var(--mono)" fill="var(--band-muted)">${(start + t) % 24}h</text>`;
+  [24, 48].forEach(t => { s += `<text x="${X(t) + 4}" y="${y0 + 12}" font-size="${fs}" fill="var(--band-muted)">${t} h de falta</text><line x1="${X(t)}" x2="${X(t)}" y1="${y0}" y2="${y1}" stroke="var(--band-muted)" stroke-dasharray="3 4"/>`; });
   const path = p => p.map((v, t) => `${t ? 'L' : 'M'}${X(t).toFixed(1)} ${Y(v).toFixed(1)}`).join(' ');
   s += `<path class="draw" pathLength="1" d="${path(pa)}" fill="none" stroke="var(--band-muted)" stroke-width="2.4"/>`;
   s += `<path class="draw" pathLength="1" d="${path(pe)}" fill="none" stroke="var(--accent)" stroke-width="3" style="animation-delay:.2s"/>`;
-  s += `<text x="${x0}" y="${Hh - 6}" font-size="12" fill="var(--accent)">━ só o essencial</text><text x="${x0 + 140}" y="${Hh - 6}" font-size="12" fill="var(--band-muted)">━ a casa toda</text><text x="${x0 + 270}" y="${Hh - 6}" font-size="12" fill="var(--band-muted)">faixas azuis = noite</text>`;
-  $('hCurve').innerHTML = `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Carga da bateria durante a falta" font-family="var(--body)">${s}</svg>`;
+  const ly = Hh - 8;
+  s += `<rect x="${x0}" y="${ly - 8}" width="18" height="3" fill="var(--accent)"/><text x="${x0 + 24}" y="${ly}" font-size="12" fill="var(--band-ink)">só o essencial</text>`
+    + `<rect x="${x0 + 124}" y="${ly - 8}" width="18" height="3" fill="var(--band-muted)"/><text x="${x0 + 148}" y="${ly}" font-size="12" fill="var(--band-ink)">a casa toda</text>`
+    + (small ? '' : `<rect x="${x0 + 240}" y="${ly - 11}" width="18" height="10" fill="rgba(47,111,214,.35)"/><text x="${x0 + 264}" y="${ly}" font-size="12" fill="var(--band-ink)">noite</text>`);
+  s += `<g id="hHov" display="none"><line id="hHovL" y1="${y0}" y2="${y1}" stroke="var(--band-ink)" stroke-dasharray="3 3"/><circle r="5" fill="var(--band)" stroke="var(--band-muted)" stroke-width="2.5"/><circle r="5" fill="var(--band)" stroke="var(--accent)" stroke-width="2.5"/></g>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Carga da bateria durante a falta" font-family="var(--body)">${s}</svg>`;
+  const read = $('hCurveRead'), idle = 'Passe o mouse ou toque no gráfico para ver quanto resta em cada hora.' + (small ? ' Faixas azuis: noite.' : '');
+  read.textContent = idle;
+  const svg = el.querySelector('svg'), hov = svg.querySelector('#hHov'), dots = hov.querySelectorAll('circle'), ln = svg.querySelector('#hHovL');
+  hoverable(svg, W, x0, x1, 72, tt => {
+    if (tt === null) { hov.setAttribute('display', 'none'); read.textContent = idle; return; }
+    hov.setAttribute('display', ''); ln.setAttribute('x1', X(tt)); ln.setAttribute('x2', X(tt));
+    dots[0].setAttribute('cx', X(tt)); dots[0].setAttribute('cy', Y(pa[tt])); dots[1].setAttribute('cx', X(tt)); dots[1].setAttribute('cy', Y(pe[tt]));
+    read.innerHTML = `<b>${tt} h de falta</b> (${(start + tt) % 24} h)<span style="color:var(--accent)">só o essencial <b>${num(pe[tt] * 100)}%</b></span><span>a casa toda <b>${num(pa[tt] * 100)}%</b></span>`;
+  });
 }
+let CURTAB = null;
+function syncTech() { document.querySelectorAll('#hTech button').forEach(x => x.setAttribute('aria-pressed', x.dataset.k === HTECH)); }
 function showTab() {
-  const casa = location.hash === '#casa';
+  const casa = location.hash === '#casa', changed = CURTAB !== casa; CURTAB = casa;
   $('tab-casa').hidden = !casa; $('tab-comunidade').hidden = casa;
-  $('tabbtn-casa').toggleAttribute('aria-current', casa); $('tabbtn-comunidade').toggleAttribute('aria-current', !casa);
-  if (casa) { $('tabbtn-casa').setAttribute('aria-current', 'page'); casaRun(); } else $('tabbtn-comunidade').setAttribute('aria-current', 'page');
+  const a = $('tabbtn-casa'), b = $('tabbtn-comunidade');
+  if (casa) { a.setAttribute('aria-current', 'page'); b.removeAttribute('aria-current'); } else { b.setAttribute('aria-current', 'page'); a.removeAttribute('aria-current'); }
+  if (changed) { const shown = $(casa ? 'tab-casa' : 'tab-comunidade'); shown.classList.remove('tabin'); void shown.offsetWidth; shown.classList.add('tabin'); redraw(); }
+  dockUpdate();
 }
 document.addEventListener('DOMContentLoaded', () => {
-  eqRender();
-  $('eqAdd').addEventListener('click', () => { EQ.push({ n: 'Novo aparelho', q: 1, w: 100, h: 1, e: false }); eqRender(); casaRun(); });
+  casaLoad(); syncTech(); eqRender();
+  $('eqAdd').addEventListener('click', () => { EQ.push({ n: 'Novo aparelho', q: 1, w: 100, h: 1, e: false }); eqRender(); casaRun(); const inp = document.querySelector('#eq tbody tr:last-child .eqn'); if (inp) { inp.focus(); inp.select(); } });
   $('eqReset').addEventListener('click', () => { EQ = JSON.parse(JSON.stringify(EQ_DEFAULT)); eqRender(); casaRun(); });
-  document.querySelectorAll('#hTech button').forEach(b => b.addEventListener('click', () => { HTECH = b.dataset.k; document.querySelectorAll('#hTech button').forEach(x => x.setAttribute('aria-pressed', x === b)); casaRun(); }));
+  document.querySelectorAll('#hTech button').forEach(b => b.addEventListener('click', () => { HTECH = b.dataset.k; syncTech(); casaRun(); }));
   document.querySelectorAll('.chips-row button').forEach(b => b.addEventListener('click', () => { $('hCap').value = b.dataset.cap; casaRun(); }));
-  ['hCap', 'hInv', 'hPv', 'hHsp'].forEach(id => $(id).addEventListener('input', casaRun));
+  ['hCap', 'hInv', 'hPv', 'hHsp', 'hStart', 'hTarget'].forEach(id => $(id).addEventListener('input', casaRun));
   window.addEventListener('hashchange', showTab);
   showTab();
 });

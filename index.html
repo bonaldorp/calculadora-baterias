@@ -128,6 +128,53 @@ h1 { font: 800 clamp(38px, 5vw, 58px)/.92 var(--display); text-transform: upperc
   #curve .draw { stroke-dashoffset: 0; } #curve .pop { opacity: 1; }
   #sysdraw .soc.charge { transform: scaleY(.6); } #sysdraw .soc.drain { transform: scaleY(.6); }
 }
+.tabs { background: var(--band); position: sticky; top: 0; z-index: 10; border-bottom: 1px solid var(--band-line); }
+.tabs-inner { max-width: 1280px; margin: 0 auto; padding: 0 24px; display: flex; gap: 4px; }
+.tab { font: 800 17px/1 var(--display); text-transform: uppercase; letter-spacing: .03em; color: var(--band-muted); text-decoration: none; padding: 14px 14px 12px; border-bottom: 3px solid transparent; }
+.tab:hover { color: var(--band-ink); }
+.tab[aria-current="page"] { color: var(--band-ink); border-bottom-color: var(--accent); }
+.casa-inputs { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+@media (max-width: 860px) { .casa-inputs { grid-template-columns: 1fr; } }
+table.eq td, table.eq th { padding: 4px 4px; }
+table.eq input[type=number] { width: 72px; padding: 5px 6px; font-size: 13px; }
+table.eq input.eqn { width: 100%; min-width: 170px; font: 14px var(--body); color: var(--ink); background: transparent; border: 1px solid transparent; padding: 5px 6px; }
+table.eq input.eqn:hover, table.eq input.eqn:focus { border-color: var(--line); background: var(--paper); }
+table.eq input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--accent); }
+table.eq td.kwh { font-weight: 600; }
+table.eq tr.ess td:first-child { box-shadow: inset 3px 0 0 var(--accent); }
+.eqdel { border: 0; background: transparent; color: var(--muted); font-size: 18px; cursor: pointer; line-height: 1; padding: 2px 6px; }
+.eqdel:hover { color: var(--pb); }
+.btn-line { font: 600 13px var(--body); color: var(--ink); background: transparent; border: 1px solid var(--ink); padding: 7px 12px; cursor: pointer; }
+.btn-line:hover { background: var(--ink); color: var(--paper); }
+.seg.seg-3 { grid-template-columns: repeat(3, 1fr); }
+.chips-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 10px; font-size: 12.5px; color: var(--muted); }
+.chips-row button { font: 600 12px var(--mono); padding: 4px 8px; background: var(--paper); color: var(--ink); border: 1px solid var(--line); cursor: pointer; }
+.chips-row button:hover { border-color: var(--ink); }
+.h-big { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: 10px; }
+@media (max-width: 860px) { .h-big { grid-template-columns: 1fr; } }
+.h-card { border: 1px solid var(--band-line); padding: 14px 16px; }
+.h-card .pos { font: 600 11px/1.3 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--band-muted); }
+.h-num { font: 800 54px/1 var(--display); color: var(--band-ink); margin: 10px 0 6px; font-variant-numeric: tabular-nums; }
+.h-card.first .h-num { color: var(--accent); }
+.h-card .obs { font-size: 12.5px; color: var(--band-muted); }
+.h-cmp { display: grid; gap: 10px; margin-top: 12px; }
+.hc-row { display: grid; grid-template-columns: 70px 1fr 92px; gap: 10px; align-items: center; font-size: 13px; color: var(--band-muted); }
+.hc-row.sel { color: var(--band-ink); font-weight: 600; }
+.hc-row b { font: 600 13px var(--mono); text-align: right; color: var(--band-ink); }
+.hc-track { height: 12px; background: var(--band-line); }
+.hc-fill { height: 100%; transition: width .7s cubic-bezier(.2,.8,.2,1); }
+.hc-fill.Li { background: var(--li); } .hc-fill.Pb { background: var(--pb); } .hc-fill.V { background: var(--v); }
+.h-warn p { margin: 12px 0 0; font-size: 13.5px; color: var(--band-ink); border-left: 3px solid var(--accent); padding-left: 10px; }
+#hCurve svg { width: 100%; height: auto; display: block; }
+#hCurve .draw { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 1.4s ease-out forwards; }
+.h-each { display: grid; gap: 8px; }
+.he-row { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) 140px; gap: 12px; align-items: center; font-size: 13.5px; }
+.he-row em { font-style: normal; font: 600 10.5px var(--mono); text-transform: uppercase; color: var(--ink); background: rgba(232,163,23,.3); padding: 1px 5px; margin-left: 6px; }
+.he-row b { font: 600 13px var(--mono); text-align: right; white-space: nowrap; }
+.he-track { height: 10px; background: var(--line); }
+.he-fill { height: 100%; background: var(--muted); transition: width .7s cubic-bezier(.2,.8,.2,1); }
+.he-fill.ess { background: var(--accent); }
+@media (max-width: 700px) { .he-row { grid-template-columns: 1fr 90px; } .he-track { grid-column: 1 / -1; grid-row: 2; } }
 .copyrow { display: flex; gap: 12px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
 .btn { font: 600 13px var(--body); color: var(--band); background: var(--accent); border: 0; padding: 8px 14px; cursor: pointer; }
 .btn:hover { filter: brightness(1.08); }
@@ -145,7 +192,7 @@ main { display: grid; gap: 16px; padding: 24px; max-width: 1280px; margin: 0 aut
 .to-result:hover { background: var(--ink); color: var(--paper); }
 .band-inner.intro { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: end; }
 .intro-side .warn { margin: 0; max-width: none; }
-.result-band { border-top: 3px solid var(--accent); }
+.result-band { border-top: 3px solid var(--accent); scroll-margin-top: 50px; }
 .result-inner { max-width: 1280px; margin: 0 auto; padding: 26px 24px 28px; }
 h2.on-band { color: var(--band-ink); margin: 0; }
 main.after { padding-top: 24px; }
@@ -220,7 +267,7 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
       <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
       <h1>Qual bateria, para qual função e lugar</h1>
       <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 8 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
-      <p class="meta">Versão 1.8 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="meta">Versão 1.9 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
     </div>
     <div class="intro-side">
       <p class="warn"><b>Leia antes de usar.</b> Preços, taxas de falha, tempos de conserto, chances de acidente e frações de resíduo que escapam da reciclagem são hipóteses de partida, não medições: não há base pública de falhas de baterias estacionárias no Brasil. Serve para comparar opções e ver o que muda a escolha, não para dimensionar um projeto.</p>
@@ -228,6 +275,13 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
     </div>
   </div>
 </div>
+<nav class="tabs" aria-label="Ferramentas">
+  <div class="tabs-inner">
+    <a href="#comunidade" id="tabbtn-comunidade" class="tab" aria-current="page">Comunidades e serviços</a>
+    <a href="#casa" id="tabbtn-casa" class="tab">Minha casa</a>
+  </div>
+</nav>
+<div id="tab-comunidade">
 <main>
   <p class="step">Ajuste o lugar, as políticas, o tamanho de cada função e os pesos. A recomendação aparece logo abaixo e se atualiza a cada mudança.</p>
   <section class="inputs" aria-label="Escolhas">
@@ -338,6 +392,63 @@ footer .panel { font-size: 12.5px; color: var(--muted); }
     </div>
   </section>
 </main>
+</div>
+<div id="tab-casa" hidden>
+<main>
+  <p class="step">Marque os aparelhos da casa e quais precisam continuar ligados numa falta de energia. Ajuste potência, quantidade e horas de uso por dia. A conta mostra quanto tempo a bateria segura a casa.</p>
+  <section class="inputs casa-inputs" aria-label="Casa">
+    <div class="panel">
+      <h2><span class="num">01</span>Aparelhos da casa</h2>
+      <div class="tablewrap">
+        <table class="eq" id="eq">
+          <thead><tr><th>Na falta</th><th>Aparelho</th><th>Qtd.</th><th>Watts</th><th>Horas/dia</th><th>kWh/dia</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px"><button type="button" class="btn-line" id="eqAdd">+ Adicionar aparelho</button><button type="button" class="btn-line" id="eqReset">Voltar à lista padrão</button></div>
+      <p class="note">Potências e horas são médias típicas (fabricantes e Procel); a geladeira e o freezer já consideram que o motor liga e desliga. Chuveiro, ar-condicionado e ferro gastam muito: numa falta, quase sempre ficam de fora.</p>
+    </div>
+    <div class="panel">
+      <h2><span class="num">02</span>A bateria</h2>
+      <h3 style="margin-top:0">Tecnologia</h3>
+      <div class="seg seg-3" role="group" aria-label="Tecnologia da bateria" id="hTech"><button type="button" data-k="Li" aria-pressed="true">Lítio</button><button type="button" data-k="Pb" aria-pressed="false">Chumbo</button><button type="button" data-k="V" aria-pressed="false">Vanádio</button></div>
+      <p class="note" id="hTechNote" style="margin:8px 0 0"></p>
+      <div class="row2" style="margin-top:12px">
+        <div><label for="hCap">Capacidade nominal (kWh)</label><input type="number" id="hCap" min="0.5" step="0.5" value="10"></div>
+        <div><label for="hInv">Potência do inversor (kW)</label><input type="number" id="hInv" min="0.5" step="0.5" value="5"></div>
+      </div>
+      <div class="chips-row" aria-label="Tamanhos comuns"><span>Tamanhos comuns:</span><button type="button" data-cap="5">5 kWh</button><button type="button" data-cap="10">10 kWh</button><button type="button" data-cap="15">15 kWh</button><button type="button" data-cap="20">20 kWh</button></div>
+      <h3>Solar no telhado</h3>
+      <div class="row2">
+        <div><label for="hPv">Potência dos painéis (kWp)</label><input type="number" id="hPv" min="0" step="0.5" value="0"></div>
+        <div><label for="hHsp">Sol médio (kWh por kWp/dia)</label><input type="number" id="hHsp" min="0" step="0.1" value="5.2"></div>
+      </div>
+      <p class="note" style="margin:8px 0 0">Sem solar, a bateria só esvazia. Com solar, ela recarrega de dia: num dia nublado o painel gera cerca de um terço do normal. Bahia: 5,0 a 6,0 kWh por kWp por dia.</p>
+    </div>
+  </section>
+</main>
+<section class="band result-band" aria-label="Autonomia">
+  <div class="result-inner">
+    <div class="rack-label"><h2 class="on-band"><span class="num">03</span>Quanto tempo a casa aguenta</h2></div>
+    <div class="h-big">
+      <div class="h-card first"><div class="pos">Só o essencial</div><div class="h-num" id="hEss"></div><div class="obs" id="hEssSub"></div></div>
+      <div class="h-card"><div class="pos">A casa toda</div><div class="h-num" id="hAll"></div><div class="obs" id="hAllSub"></div></div>
+      <div class="h-card"><div class="pos">Mesma capacidade, outras tecnologias (essencial)</div><div id="hTechCmp" class="h-cmp"></div></div>
+    </div>
+    <div id="hWarn" class="h-warn" role="status"></div>
+    <div class="sys"><div class="rack-label"><span>Carga da bateria durante uma falta que começa às 18 h</span></div><div id="hCurve"></div></div>
+  </div>
+</section>
+<main class="after">
+  <section class="stack details">
+    <div class="panel">
+      <h2><span class="num">04</span>Cada aparelho sozinho</h2>
+      <p class="note" style="margin-top:0">Quanto tempo a bateria cheia seguraria só aquele aparelho, no uso típico de cada dia. Ajuda a decidir o que deixar de fora.</p>
+      <div id="hEach" class="h-each"></div>
+    </div>
+  </section>
+</main>
+</div>
 <footer>
   <div class="panel">
     Método: Teiu Energia, "Case Maraú: armazenamento híbrido para resiliência energética" (2026), seção "Modelo de decisão". Fontes de contexto: Rede Energia &amp; Comunidades (IEMA, 2026) e CONAQ (2026). Preços em reais de 2026.
@@ -841,6 +952,135 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 function toFormKeep() { $('perto').setAttribute('aria-pressed', !S.longe); $('longe').setAttribute('aria-pressed', S.longe);
   $('distrib').setAttribute('aria-pressed', !S.comunidade_paga); $('comun').setAttribute('aria-pressed', S.comunidade_paga); schedule(); }
+
+// ===== Aba "Minha casa" =====
+const EQ_DEFAULT = [
+  { n: 'Geladeira', q: 1, w: 130, h: 9, e: true },
+  { n: 'Freezer', q: 0, w: 150, h: 10, e: true },
+  { n: 'Lâmpadas LED', q: 6, w: 9, h: 5, e: true },
+  { n: 'Roteador de internet', q: 1, w: 10, h: 24, e: true },
+  { n: 'Carregador de celular', q: 3, w: 10, h: 3, e: true },
+  { n: 'Bomba d\'água (½ cv)', q: 1, w: 370, h: 1, e: true },
+  { n: 'Ventilador', q: 2, w: 70, h: 8, e: false },
+  { n: 'TV LED', q: 1, w: 80, h: 5, e: false },
+  { n: 'Notebook', q: 1, w: 50, h: 4, e: false },
+  { n: 'Máquina de lavar', q: 1, w: 500, h: 0.4, e: false },
+  { n: 'Micro-ondas', q: 1, w: 1200, h: 0.2, e: false },
+  { n: 'Ferro de passar', q: 1, w: 1000, h: 0.2, e: false },
+  { n: 'Chuveiro elétrico', q: 1, w: 5500, h: 0.5, e: false },
+  { n: 'Ar-condicionado 9.000 BTU (inverter)', q: 0, w: 800, h: 6, e: false },
+  { n: 'Concentrador de oxigênio', q: 0, w: 300, h: 24, e: true },
+  { n: 'CPAP (apneia do sono)', q: 0, w: 40, h: 8, e: true },
+];
+const HT = {
+  Li: { nome: 'Lítio', dod: 0.90, eff: 0.95, note: 'Usa ~90% da capacidade e devolve ~95% da energia. É o padrão das baterias residenciais.' },
+  Pb: { nome: 'Chumbo', dod: 0.50, eff: 0.89, note: 'Só ~50% da capacidade pode ser usada sem encurtar muito a vida, e devolve ~89% da energia.' },
+  V:  { nome: 'Vanádio', dod: 0.90, eff: 0.84, note: 'Usa ~90% da capacidade, mas devolve só ~84% (bombas e perdas). Raro em casas: costuma vir a partir de dezenas de kWh.' },
+};
+const INV_EFF = 0.94;
+const LOAD_SHAPE = (() => { const s = [.030,.026,.025,.025,.025,.030,.040,.045,.040,.036,.036,.040,.045,.040,.036,.036,.040,.055,.070,.075,.070,.060,.050,.040]; const t = s.reduce((a, b) => a + b, 0); return s.map(v => v / t); })();
+const SUN_SHAPE = (() => { const s = Array.from({ length: 24 }, (_, h) => (h >= 6 && h <= 17) ? Math.sin(Math.PI * (h - 5.5) / 12.5) : 0); const t = s.reduce((a, b) => a + b, 0); return s.map(v => v / t); })();
+let EQ = JSON.parse(JSON.stringify(EQ_DEFAULT)), HTECH = 'Li';
+
+function fmtH(h) {
+  if (!isFinite(h) || h > 24 * 7) return 'mais de 7 dias';
+  if (h >= 48) return num(h / 24, 1) + ' dias';
+  return num(h, h < 10 ? 1 : 0) + ' h';
+}
+function eqRender() {
+  const tb = document.querySelector('#eq tbody');
+  tb.innerHTML = EQ.map((it, i) => `<tr data-i="${i}">
+    <td><input type="checkbox" aria-label="${it.n}: manter na falta" data-f="e" ${it.e ? 'checked' : ''}></td>
+    <td><input type="text" class="eqn" aria-label="Nome do aparelho" data-f="n" value="${it.n.replace(/"/g, '&quot;')}"></td>
+    <td><input type="number" min="0" step="1" aria-label="${it.n}: quantidade" data-f="q" value="${it.q}"></td>
+    <td><input type="number" min="0" step="1" aria-label="${it.n}: watts" data-f="w" value="${it.w}"></td>
+    <td><input type="number" min="0" max="24" step="0.1" aria-label="${it.n}: horas por dia" data-f="h" value="${it.h}"></td>
+    <td class="kwh"></td>
+    <td><button type="button" class="eqdel" aria-label="Remover ${it.n}">×</button></td></tr>`).join('');
+  tb.querySelectorAll('input').forEach(inp => inp.addEventListener('input', e => {
+    const tr = e.target.closest('tr'), i = +tr.dataset.i, f = e.target.dataset.f;
+    EQ[i][f] = f === 'e' ? e.target.checked : f === 'n' ? e.target.value : Math.max(0, Number(e.target.value) || 0);
+    if (f === 'h') EQ[i].h = Math.min(24, EQ[i].h);
+    casaRun();
+  }));
+  tb.querySelectorAll('.eqdel').forEach(bt => bt.addEventListener('click', e => { EQ.splice(+e.target.closest('tr').dataset.i, 1); eqRender(); casaRun(); }));
+}
+function simulate(dailyWh, capWh, pvKwp, hsp, startHour, hours) {
+  // energia útil já descontadas profundidade de descarga e perdas; recarga com 90% de eficiência
+  let soc = capWh; const pts = [soc / capWh]; let empty = Infinity;
+  for (let t = 0; t < hours; t++) {
+    const h = (startHour + t) % 24;
+    const load = dailyWh * LOAD_SHAPE[h], gen = pvKwp * hsp * 1000 * SUN_SHAPE[h];
+    const direct = Math.min(load, gen);
+    soc -= (load - direct);
+    if (gen > load) soc = Math.min(capWh, soc + (gen - load) * 0.9);
+    if (soc <= 0 && empty === Infinity) { empty = t + (soc + (load - direct)) / Math.max(1e-9, load - direct); soc = 0; }
+    pts.push(Math.max(0, soc) / capWh);
+  }
+  return { pts, empty };
+}
+function casaRun() {
+  const cap = Math.max(0, Number($('hCap').value) || 0), inv = Math.max(0, Number($('hInv').value) || 0);
+  const pv = Math.max(0, Number($('hPv').value) || 0), hsp = Math.max(0, Number($('hHsp').value) || 0);
+  const t = HT[HTECH]; const usable = tc => cap * 1000 * HT[tc].dod * HT[tc].eff * INV_EFF;
+  document.querySelectorAll('#eq tbody tr').forEach(tr => { const it = EQ[+tr.dataset.i]; tr.querySelector('.kwh').textContent = num(it.q * it.w * it.h / 1000, 2); tr.classList.toggle('ess', it.e && it.q > 0); });
+  const Eess = EQ.filter(i => i.e).reduce((s, i) => s + i.q * i.w * i.h, 0), Eall = EQ.reduce((s, i) => s + i.q * i.w * i.h, 0);
+  const Pess = EQ.filter(i => i.e).reduce((s, i) => s + i.q * i.w, 0);
+  const H = 24 * 7;
+  const sE = simulate(Eess, usable(HTECH), pv, hsp, 18, H), sA = simulate(Eall, usable(HTECH), pv, hsp, 18, H);
+  const cE = simulate(Eess, usable(HTECH), pv, hsp / 3, 18, H);
+  const genDay = pv * hsp;
+  $('hEss').textContent = Eess > 0 ? fmtH(sE.empty) : '—';
+  $('hEssSub').textContent = Eess > 0 ? `${num(Eess / 1000, 1)} kWh por dia` + (pv > 0 ? ` · em dias nublados: ${fmtH(cE.empty)}` : '') : 'marque o que fica ligado na falta';
+  $('hAll').textContent = Eall > 0 ? fmtH(sA.empty) : '—';
+  $('hAllSub').textContent = `${num(Eall / 1000, 1)} kWh por dia` + (pv > 0 ? ` · o solar gera ~${num(genDay, 1)} kWh por dia de sol` : '');
+  $('hTechCmp').innerHTML = ['Li', 'Pb', 'V'].map(k => { const s = simulate(Eess, usable(k), pv, hsp, 18, H).empty; const w = Math.min(1, (isFinite(s) ? s : H) / H);
+    return `<div class="hc-row ${k === HTECH ? 'sel' : ''}"><span>${HT[k].nome}</span><div class="hc-track"><div class="hc-fill ${k}" data-w="${(w * 100).toFixed(1)}%" style="width:0"></div></div><b>${Eess > 0 ? fmtH(s) : '—'}</b></div>`; }).join('');
+  grow('#hTechCmp .hc-fill');
+  $('hTechNote').textContent = t.note + ` Com ${num(cap, 1)} kWh nominais, sobram ~${num(usable(HTECH) / 1000, 1)} kWh para a casa.`;
+  const warns = [];
+  if (Pess > inv * 1000) warns.push(`Se todo o essencial ligar ao mesmo tempo, são ${num(Pess / 1000, 1)} kW, acima dos ${num(inv, 1)} kW do inversor. Evite ligar a bomba e o micro-ondas juntos, ou escolha um inversor maior.`);
+  if (EQ.some(i => i.e && i.q > 0 && i.w >= 2000)) warns.push('Há um aparelho de mais de 2 kW marcado como essencial: ele sozinho esvazia a bateria muito rápido.');
+  if (pv > 0 && genDay * 1000 * 0.9 >= Eess && Eess > 0) warns.push('Em dias de sol, o painel gera mais do que o essencial consome: a casa segura o essencial indefinidamente enquanto houver sol.');
+  $('hWarn').innerHTML = warns.map(w => `<p>${w}</p>`).join('');
+  drawHCurve(sE.pts.slice(0, 73), sA.pts.slice(0, 73));
+  const items = EQ.filter(i => i.q > 0 && i.w * i.h > 0).map(i => ({ n: i.n, q: i.q, e: i.e, hrs: usable(HTECH) / (i.q * i.w * i.h / 24) })).sort((a, b) => a.hrs - b.hrs);
+  const mx = Math.log10(24 * 30), mn = Math.log10(0.5);
+  $('hEach').innerHTML = items.map(i => { const v = Math.min(24 * 30, Math.max(0.5, i.hrs)); const w = (Math.log10(v) - mn) / (mx - mn);
+    return `<div class="he-row"><span>${i.q > 1 ? i.q + '× ' : ''}${i.n}${i.e ? ' <em>essencial</em>' : ''}</span><div class="he-track"><div class="he-fill ${i.e ? 'ess' : ''}" data-w="${(w * 100).toFixed(1)}%" style="width:0"></div></div><b>${fmtH(i.hrs).replace('mais de 7 dias', i.hrs > 24 * 30 ? 'mais de 30 dias' : num(i.hrs / 24, 0) + ' dias')}</b></div>`; }).join('')
+    + `<p class="note" style="margin:10px 0 0">Escala das barras em logaritmo: de meia hora a 30 dias.</p>`;
+  grow('#hEach .he-fill');
+}
+function drawHCurve(pe, pa) {
+  const W = 1000, Hh = 250, x0 = 50, x1 = 980, y0 = 16, y1 = 210;
+  const X = t => x0 + t / 72 * (x1 - x0), Y = v => y1 - v * (y1 - y0);
+  let s = '';
+  for (let d = 0; d < 3; d++) { const a = X(d * 24), b = X(d * 24 + 12); s += `<rect x="${a}" y="${y0}" width="${b - a}" height="${y1 - y0}" fill="rgba(47,111,214,.10)"/>`; }
+  [0, .25, .5, .75, 1].forEach(v => { s += `<line x1="${x0}" x2="${x1}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--band-line)"/><text x="${x0 - 8}" y="${Y(v) + 4}" text-anchor="end" font-size="11" font-family="var(--mono)" fill="var(--band-muted)">${v * 100}%</text>`; });
+  for (let t = 0; t <= 72; t += 6) { const hr = (18 + t) % 24; s += `<text x="${X(t)}" y="${y1 + 18}" text-anchor="middle" font-size="11" font-family="var(--mono)" fill="var(--band-muted)">${hr}h</text>`; }
+  [24, 48].forEach(t => { s += `<text x="${X(t) + 4}" y="${y0 + 12}" font-size="11" fill="var(--band-muted)">+${t / 24}º dia</text><line x1="${X(t)}" x2="${X(t)}" y1="${y0}" y2="${y1}" stroke="var(--band-muted)" stroke-dasharray="3 4"/>`; });
+  const path = p => p.map((v, t) => `${t ? 'L' : 'M'}${X(t).toFixed(1)} ${Y(v).toFixed(1)}`).join(' ');
+  s += `<path class="draw" pathLength="1" d="${path(pa)}" fill="none" stroke="var(--band-muted)" stroke-width="2.4"/>`;
+  s += `<path class="draw" pathLength="1" d="${path(pe)}" fill="none" stroke="var(--accent)" stroke-width="3" style="animation-delay:.2s"/>`;
+  s += `<text x="${x0}" y="${Hh - 6}" font-size="12" fill="var(--accent)">━ só o essencial</text><text x="${x0 + 140}" y="${Hh - 6}" font-size="12" fill="var(--band-muted)">━ a casa toda</text><text x="${x0 + 270}" y="${Hh - 6}" font-size="12" fill="var(--band-muted)">faixas azuis = noite</text>`;
+  $('hCurve').innerHTML = `<svg viewBox="0 0 ${W} ${Hh}" role="img" aria-label="Carga da bateria durante a falta" font-family="var(--body)">${s}</svg>`;
+}
+function showTab() {
+  const casa = location.hash === '#casa';
+  $('tab-casa').hidden = !casa; $('tab-comunidade').hidden = casa;
+  $('tabbtn-casa').toggleAttribute('aria-current', casa); $('tabbtn-comunidade').toggleAttribute('aria-current', !casa);
+  if (casa) { $('tabbtn-casa').setAttribute('aria-current', 'page'); casaRun(); } else $('tabbtn-comunidade').setAttribute('aria-current', 'page');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  eqRender();
+  $('eqAdd').addEventListener('click', () => { EQ.push({ n: 'Novo aparelho', q: 1, w: 100, h: 1, e: false }); eqRender(); casaRun(); });
+  $('eqReset').addEventListener('click', () => { EQ = JSON.parse(JSON.stringify(EQ_DEFAULT)); eqRender(); casaRun(); });
+  document.querySelectorAll('#hTech button').forEach(b => b.addEventListener('click', () => { HTECH = b.dataset.k; document.querySelectorAll('#hTech button').forEach(x => x.setAttribute('aria-pressed', x === b)); casaRun(); }));
+  document.querySelectorAll('.chips-row button').forEach(b => b.addEventListener('click', () => { $('hCap').value = b.dataset.cap; casaRun(); }));
+  ['hCap', 'hInv', 'hPv', 'hHsp'].forEach(id => $(id).addEventListener('input', casaRun));
+  window.addEventListener('hashchange', showTab);
+  showTab();
+});
 
 </script>
 </body>

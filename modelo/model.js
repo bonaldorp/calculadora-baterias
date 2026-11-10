@@ -208,11 +208,19 @@ const PRESETS = {
     w: { custo: .18, recorrente: .22, ens: .27, co2: .05, tox: .13, acid: .05, comum: .10 } },
 };
 
+// emergência climática: energia que a reserva precisa guardar para segurar a carga crítica pelos dias pedidos
+function emgEnergy(s) { return s.carga_critica * 24 * (s.emg_dias || 0) * (1 - Math.min(0.9, Math.max(0, s.emg_solar || 0))); }
+// dimensiona a reserva longa pela meta de autonomia (só com rede; sem rede a reserva segue a noite)
+function sizeEmg(s) {
+  if (s.isolated || !((s.emg_dias || 0) > 0) || !(s.carga_critica > 0)) return false;
+  s.F.F2.E = Math.max(1, Math.round(emgEnergy(s))); s.F.F2.P = Math.max(1, Math.round(s.carga_critica)); return true;
+}
 // converte as escolhas da tela no contexto do modelo
 function buildCtx(s) {
   return {
     F: s.F, T: s.T, dT: s.dT || 0, costa: s.costa, isolated: s.isolated, core: s.core, alpha: s.alpha,
-    E_exp: s.horas_falta * s.carga_critica, night_kwh: s.night_kwh_dia * 365,
+    // energia crítica exposta por ano: faltas comuns + a emergência climática, na frequência esperada
+    E_exp: s.horas_falta * s.carga_critica + ((s.emg_dias || 0) > 0 ? emgEnergy(s) / Math.max(1, s.emg_ret || 10) : 0), night_kwh: s.night_kwh_dia * 365,
     mttr_mult: s.longe ? { Li: 5, Pb: 1.5, V: 8 } : { Li: 1, Pb: 1, V: 1.5 },
     leak: s.longe ? { Li: .40, Pb: .30, V: .05 } : { Li: .30, Pb: .05, V: .02 },
     p_delay: s.comunidade_paga ? 0.5 : 0.05, agentes: s.agentes, chumbo_lr: s.chumbo_lr, eletrolito: s.eletrolito,
@@ -220,4 +228,4 @@ function buildCtx(s) {
   };
 }
 
-if (typeof module !== 'undefined') module.exports = { BASE_TECH, PRESETS, buildCtx, smaa, label, asset, effCtx, techFor, KS, CRIT, aging, life, nonDominated };
+if (typeof module !== 'undefined') module.exports = { emgEnergy, sizeEmg, BASE_TECH, PRESETS, buildCtx, smaa, label, asset, effCtx, techFor, KS, CRIT, aging, life, nonDominated };

@@ -25,6 +25,16 @@ Lugares de exemplo, todos ajustáveis:
 - pequeno centro urbano;
 - hospital regional.
 
+**Aba "Emergência climática"** (https://bonaldorp.github.io/calculadora-baterias/#emergencia): dimensiona o sistema para a rede fora do ar por 1, 3, 7 ou 15 dias. As cargas entram em seis blocos (residências afetadas, saúde e hospitais, segurança e vigilância, defesa civil, indústria, refrigeração e mercado), e cada linha é marcada como essencial, adicional ou desligada. A aba mostra:
+
+- a energia que a bateria precisa entregar, com e sem solar funcionando durante a emergência;
+- a capacidade nominal e o investimento em lítio, chumbo e vanádio para cada duração;
+- a comparação com um gerador a diesel: litros, custo do combustível e CO₂;
+- um gráfico de dias sem rede × CO₂ acumulado em 30 anos (diesel, bateria e a combinação de bateria para 1 dia com gerador);
+- um botão que leva a carga essencial e a meta de dias para a aba de comunidades, onde a reserva passa a ser dimensionada por essa meta.
+
+Diesel: preço das pesquisas semanais da ANP (2026), consumo de tabelas de fabricantes de grupos geradores, preço do gerador pelo SINAPI. Manutenção do gerador, testes semanais e troca em 30 anos são hipóteses. A emissão conta só a queima do diesel.
+
 **Aba "Minha casa"** (https://bonaldorp.github.io/calculadora-baterias/#casa): você lista os aparelhos da residência, informa consumo e horas de uso e marca quais ficam ligados numa falta. A aba mostra:
 
 - quanto tempo a bateria aguenta, com e sem solar no telhado, para a hora em que a falta começa;
@@ -77,4 +87,4 @@ Fontes de contexto:
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.pt-br). O uso e a adaptação são livres, desde que a Teiu Energia seja citada.
 
-Versão 4.0, novembro de 2026.
+Versão 5.0, novembro de 2026.

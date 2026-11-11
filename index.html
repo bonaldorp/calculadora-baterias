@@ -448,6 +448,9 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
 .sect .eyebrow { color: var(--muted); margin-bottom: 8px; }
 .sect-h { font: 800 34px/1 var(--display); text-transform: uppercase; letter-spacing: .01em; margin: 0; color: var(--ink); }
 @media (max-width: 520px) { .sect-h { font-size: 26px; } }
+.e-meta { display: flex; gap: 10px 12px; flex-wrap: wrap; align-items: center; margin: 4px 0 12px; }
+.e-meta label { margin: 0; color: var(--band-ink); font-size: 13.5px; } .e-meta input { width: 84px; background: transparent; color: var(--band-ink); border-color: var(--band-line); }
+.chips-row.on-band { margin: 0; } .chips-row.on-band button { background: transparent; color: var(--band-ink); border-color: var(--band-line); } .chips-row.on-band button:hover { border-color: var(--accent); } .chips-row.on-band button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #111; }
 
 /* impressão e PDF: sempre claro, sem controles */
 @media print {
@@ -471,7 +474,7 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
       <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
       <h1>Qual bateria, para qual função e lugar</h1>
       <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 20 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
-      <p class="meta">Versão 5.3 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="meta">Versão 5.4 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
     </div>
     <div class="intro-side">
       <ul class="techkey" aria-label="As três tecnologias comparadas">
@@ -638,6 +641,8 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
   <div class="result-inner">
     <div class="rack-label"><h2 class="on-band">Com o sistema da aba "Comunidades e serviços", quanto tempo sem rede</h2></div>
       <p class="modetext" id="eComLead"></p>
+      <div class="e-meta"><label for="eComDias">Meta de dias sem rede para este sistema</label><input type="number" id="eComDias" min="0.5" max="30" step="0.5" value="3">
+        <div class="chips-row on-band" aria-label="Metas comuns"><button type="button" data-ecd="1">1 dia</button><button type="button" data-ecd="3">3 dias</button><button type="button" data-ecd="7">7 dias</button><button type="button" data-ecd="15">15 dias</button></div></div>
       <div class="e-com" id="eCom"></div>
       <p id="eComNote" style="font-size:13px;color:var(--band-muted);margin:10px 0 0;max-width:90ch"></p>
       <div style="margin-top:10px"><a class="btn ghost" href="#comunidade" style="text-decoration:none;display:inline-block">Ajustar o sistema na aba Comunidades e serviços</a></div>  </div>
@@ -655,7 +660,7 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
     <div class="panel">
       <h2><span class="num">02</span>A emergência e o sol</h2>
       <div class="row2">
-        <div><label for="eDias">Dias sem rede a aguentar</label><input type="number" id="eDias" min="0.5" max="30" step="0.5" value="3"></div>
+        <div><label for="eDias">Meta de dias sem rede (sistema isolado)</label><input type="number" id="eDias" min="0.5" max="30" step="0.5" value="3"></div>
         <div><label for="eRet">Uma emergência dessas a cada (anos)</label><input type="number" id="eRet" min="1" max="100" step="1" value="5"></div>
       </div>
       <div class="chips-row" aria-label="Metas comuns"><span>Metas comuns:</span><button type="button" data-ed="1">1 dia</button><button type="button" data-ed="3">3 dias</button><button type="button" data-ed="7">7 dias</button><button type="button" data-ed="15">15 dias</button></div>
@@ -1771,7 +1776,7 @@ const kwh = v => v >= 1e4 ? num(v / 1000, 1) + ' MWh' : num(v, v < 20 ? 1 : 0) +
 const tco = v => v >= 10 ? num(v) + ' t' : v >= 1 ? num(v, 1) + ' t' : num(v * 1000) + ' kg';
 const dd = d => (d === 1 ? '1 dia' : num(d, d % 1 ? 1 : 0) + ' dias');
 
-function emgSave() { try { localStorage.setItem(EMG_KEY, JSON.stringify({ EG, ETECH, ELEVEL, f: ['eDias', 'eRet', 'eKwp', 'eHsp', 'eFrac', 'eSfc', 'ePreco', 'eEf', 'eGen'].map(id => $(id).value) })); } catch (e) {} }
+function emgSave() { try { localStorage.setItem(EMG_KEY, JSON.stringify({ EG, ETECH, ELEVEL, f: ['eDias', 'eRet', 'eKwp', 'eHsp', 'eFrac', 'eSfc', 'ePreco', 'eEf', 'eGen', 'eComDias'].map(id => $(id).value) })); } catch (e) {} }
 function emgLoad() {
   try {
     const o = JSON.parse(localStorage.getItem(EMG_KEY) || 'null'); if (!o || !Array.isArray(o.EG) || o.EG.length !== EG_DEFAULT.length) return;
@@ -1779,7 +1784,7 @@ function emgLoad() {
     EG = EG_DEFAULT.map((g, i) => ({ id: g.id, nome: g.nome, un: g.un, m: n(o.EG[i].m, 0, 1e6, g.m),
       items: (Array.isArray(o.EG[i].items) ? o.EG[i].items : g.items).slice(0, 40).map(t => ({ n: String(t.n || '').slice(0, 70), q: n(t.q, 0, 9999, 0), w: n(t.w, 0, 1e6, 0), h: n(t.h, 0, 24, 0), l: ['e', 'a', 'x'].includes(t.l) ? t.l : 'x' })) }));
     if (HT[o.ETECH]) ETECH = o.ETECH; if (o.ELEVEL === 'a') ELEVEL = 'a';
-    if (Array.isArray(o.f)) ['eDias', 'eRet', 'eKwp', 'eHsp', 'eFrac', 'eSfc', 'ePreco', 'eEf', 'eGen'].forEach((id, i) => { const v = Number(o.f[i]); if (Number.isFinite(v) && v >= 0) $(id).value = v; });
+    if (Array.isArray(o.f)) ['eDias', 'eRet', 'eKwp', 'eHsp', 'eFrac', 'eSfc', 'ePreco', 'eEf', 'eGen', 'eComDias'].forEach((id, i) => { const v = Number(o.f[i]); if (Number.isFinite(v) && v >= 0) $(id).value = v; });
   } catch (e) {}
 }
 function egRender() {
@@ -1994,7 +1999,8 @@ function drawECap() {
 }
 // quanto tempo o sistema montado na aba de comunidades seguraria esta emergência
 function drawECom() {
-  const { D, lv, sun, ok, sunDay } = ELAST, wrap = $('eComWrap');
+  const { lv, sun, ok, sunDay } = ELAST, wrap = $('eComWrap'); const dv = Number($('eComDias').value), D = Math.max(0.5, Math.min(30, Number.isFinite(dv) && dv > 0 ? dv : 3));
+  document.querySelectorAll('[data-ecd]').forEach(x => x.setAttribute('aria-pressed', Number(x.dataset.ecd) === D));
   if (!ok || !S || !S.F) { wrap.hidden = true; return; } wrap.hidden = false;
   const combo = LASTCOMBO || (LAST && LAST.r.base[LAST.idx[0]].combo), sel = $('preset'), lugar = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : '';
   const E1 = S.F.F1.E, E2 = S.F.F2.E, P = Math.max(S.F.F1.P, S.F.F2.P), HMAX = 60 * 24;
@@ -2006,7 +2012,7 @@ function drawECom() {
   $('eComLead').innerHTML = `<b>${esc(lugar)}</b>${combo ? ' · ' + esc(label(combo)) : ''}: reserva longa de ${kwh(E2)} úteis e ciclo diário de ${kwh(E1)} úteis.`;
   $('eCom').innerHTML = card('Só a reserva · essencial', E2, 'e') + card('Reserva + ciclo diário cheio · essencial', E1 + E2, 'e')
     + (lv.a.day > lv.e.day + 1e-9 ? card('Só a reserva · essencial + adicional', E2, 'a') + card('Reserva + ciclo diário cheio · essencial + adicional', E1 + E2, 'a') : '');
-  const notes = [`Carga, solar e meta vêm dos painéis 01 e 02 logo abaixo: ${kwh(lv.e.day)} por dia de essencial` + (lv.a.day > lv.e.day + 1e-9 ? `, ${kwh(lv.a.day)} com o adicional` : '') + (sunDay > 0 ? `, ${kwh(sunDay)} de sol por dia na emergência` : ', sem solar') + '. A bateria é a da outra aba, começando cheia às 18 h. O no-break fica fora: ele é dedicado aos equipamentos que protege.',
+  const notes = [`A meta acima vale só para este bloco. Carga e solar vêm dos painéis 01 e 02 logo abaixo: ${kwh(lv.e.day)} por dia de essencial` + (lv.a.day > lv.e.day + 1e-9 ? `, ${kwh(lv.a.day)} com o adicional` : '') + (sunDay > 0 ? `, ${kwh(sunDay)} de sol por dia na emergência` : ', sem solar') + '. A bateria é a da outra aba, começando cheia às 18 h. O no-break fica fora: ele é dedicado aos equipamentos que protege.',
     'O tempo não muda com a tecnologia: o modelo dimensiona lítio, chumbo e vanádio para entregar a mesma energia útil. O que muda é a capacidade nominal, o custo e o risco de a bateria estar parada no dia da emergência.'];
   if (P < lv.e.P) notes.push(`Atenção à potência: o essencial desta aba chega a ${num(lv.e.P, 1)} kW e o sistema da outra aba entrega ${num(P)} kW.`);
   $('eComNote').textContent = notes.join(' ');
@@ -2027,7 +2033,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#eTech button').forEach(b => b.addEventListener('click', () => { ETECH = b.dataset.k; emgRun(); }));
   document.querySelectorAll('#eLevel button').forEach(b => b.addEventListener('click', () => { ELEVEL = b.dataset.l; emgRun(); }));
   document.querySelectorAll('[data-ed]').forEach(b => b.addEventListener('click', () => { $('eDias').value = b.dataset.ed; emgRun(); }));
-  ['eDias', 'eRet', 'eKwp', 'eHsp', 'eFrac', 'eSfc', 'ePreco', 'eEf', 'eGen'].forEach(id => $(id).addEventListener('input', emgRun));
+  ['eDias', 'eRet', 'eKwp', 'eHsp', 'eFrac', 'eSfc', 'ePreco', 'eEf', 'eGen', 'eComDias'].forEach(id => $(id).addEventListener('input', emgRun));
+  document.querySelectorAll('[data-ecd]').forEach(b => b.addEventListener('click', () => { $('eComDias').value = b.dataset.ecd; emgRun(); }));
   $('eBridge').addEventListener('click', emgBridge);
   emgRun();
 });

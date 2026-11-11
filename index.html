@@ -438,6 +438,11 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
 #eLevel { border-color: var(--band-line); margin: 0; } #eLevel button { color: var(--band-ink); } #eLevel button[aria-pressed="true"] { color: #111; } #eLevel button + button { border-left-color: var(--band-line); }
 .tabs-inner { overflow-x: auto; scrollbar-width: none; } .tabs-inner::-webkit-scrollbar { display: none; } .tab { white-space: nowrap; }
 @media (max-width: 520px) { .tabs-inner { padding: 0 8px; gap: 0; } .tabs .tab { font-size: 13px; padding: 12px 7px 10px; letter-spacing: 0; } }
+.e-com { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.e-com .h-card .h-num { font-size: 44px; } .e-com .h-card .h-num.long { font-size: 30px; }
+.e-com .h-card.okk { border-color: var(--v); } .e-com .h-card.short { border-color: var(--pb); }
+.e-com .tag { font: 600 11px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; } .e-com .okk .tag { color: var(--v); } .e-com .short .tag { color: var(--pb); }
+@media (max-width: 700px) { .e-com { grid-template-columns: 1fr; } }
 
 /* impressão e PDF: sempre claro, sem controles */
 @media print {
@@ -461,7 +466,7 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
       <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
       <h1>Qual bateria, para qual função e lugar</h1>
       <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 20 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
-      <p class="meta">Versão 5.1 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="meta">Versão 5.2 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
     </div>
     <div class="intro-side">
       <ul class="techkey" aria-label="As três tecnologias comparadas">
@@ -678,6 +683,11 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
       <div class="h-card"><div class="pos">Se fosse gerador a diesel</div><div class="h-num" id="eDie"></div><div class="obs" id="eDieSub"></div></div>
     </div>
     <div id="eWarn" class="h-warn" role="status"></div>
+    <div class="sys" id="eComWrap"><div class="rack-label"><span>Com o sistema da aba "Comunidades e serviços"</span></div>
+      <p class="modetext" id="eComLead"></p>
+      <div class="e-com" id="eCom"></div>
+      <p id="eComNote" style="font-size:13px;color:var(--band-muted);margin:10px 0 0;max-width:90ch"></p>
+      <div style="margin-top:10px"><a class="btn ghost" href="#comunidade" style="text-decoration:none;display:inline-block">Ajustar o sistema na aba Comunidades e serviços</a></div></div>
     <div class="sys"><div class="rack-label"><span>De onde vem o consumo, por bloco (kWh por dia)</span></div><div id="eBlocks" class="e-blocks"></div></div>
     <div class="sys"><div class="rack-label"><span id="eCurveTitle">Carga da bateria ao longo da emergência</span></div><p id="eCurveRead" class="chartread on-band" aria-live="off"></p><div id="eCurve"></div></div>
   </div>
@@ -1891,6 +1901,7 @@ function emgRun() {
     + opts.map(o => `<tr><td class="${o.k === ETECH ? 'sel' : ''}">${o.nome}<small>${o.obs}</small></td><td>${ok ? brs(o.cap) : '—'}</td><td>${ok ? brs(o.tot) : '—'}</td><td>${ok ? tco(o.co2(daysTot)) : '—'}</td></tr>`).join('') + '</tbody>';
   $('e30Note').textContent = `Conta para ${dd(D)} sem rede a cada ${num(R)} anos: ${num(nEv, 1)} emergências e ${num(daysTot)} dias sem rede em 30 anos. Reais de 2026, sem desconto. Bateria: mesma conta de custo e de carbono da aba "Comunidades e serviços" (trocas, manutenção e perdas; abrigo a 28 °C). Gerador: uma troca em 30 anos, manutenção de 3% ao ano e teste de 30 minutos por semana a meia carga; são hipóteses. Não entram o carbono de fabricar o gerador nem o risco de o diesel não chegar com a estrada fechada.`;
   ELAST = { D, R, cur, sun, main, tot, lv, opts, daysTot, ok, ctx, tech, sunDay };
+  drawECom();
   drawECurve(); drawECap();
   DOCK.emg = ok ? `<b>${kwh(b.En)}</b> <span>de ${tn.toLowerCase()} para ${dd(D)} · ${brs(b.capex)} · diesel: ${num(main.die.l)} L</span>` : '';
   dockUpdate(); emgSave();
@@ -1971,6 +1982,25 @@ function drawECap() {
   if (hasA && !flat) msg += ` Manter também o adicional multiplica a bateria por ${num(at(sA, D) / Math.max(1e-9, at(sE, D)), 1)} na meta de ${dd(D)}.`;
   if (s0 && !flat) msg += ` O solar atual tira ${num((1 - at(main, D) / at(s0, D)) * 100)}% da capacidade que seria necessária sem ele.`;
   $('eCapMsg').textContent = msg;
+}
+// quanto tempo o sistema montado na aba de comunidades seguraria esta emergência
+function drawECom() {
+  const { D, lv, sun, ok, sunDay } = ELAST, wrap = $('eComWrap');
+  if (!ok || !S || !S.F) { wrap.hidden = true; return; } wrap.hidden = false;
+  const combo = LASTCOMBO || (LAST && LAST.r.base[LAST.idx[0]].combo), sel = $('preset'), lugar = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : '';
+  const E1 = S.F.F1.E, E2 = S.F.F2.E, P = Math.max(S.F.F1.P, S.F.F2.P), HMAX = 60 * 24;
+  const days = (lvl, cap) => { const t = egSim(lv[lvl].prof, sun, cap, HMAX).empty; return isFinite(t) ? t / 24 : Infinity; };
+  const txt = d => !isFinite(d) ? 'sem limite' : d < 2 ? num(d * 24) + ' h' : num(d, 1) + ' dias';
+  const card = (titulo, cap, lvl) => { const d = days(lvl, cap), good = d >= D - 1e-6, need = egNeed(lv[lvl].prof, sun, D);
+    return `<div class="h-card ${good ? 'okk' : 'short'}"><div class="pos">${titulo}</div><div class="h-num ${txt(d).length > 8 ? 'long' : ''}">${txt(d)}</div>`
+      + `<div class="obs"><span class="tag">${good ? 'cobre a meta de ' + dd(D) : 'não cobre a meta de ' + dd(D)}</span>${good ? '' : ` · faltam ${kwh(need - cap)} úteis`}${!isFinite(d) ? ' · o sol repõe de dia o que a noite gasta' : ''}</div></div>`; };
+  $('eComLead').innerHTML = `<b>${esc(lugar)}</b>${combo ? ' · ' + esc(label(combo)) : ''}: reserva longa de ${kwh(E2)} úteis e ciclo diário de ${kwh(E1)} úteis.`;
+  $('eCom').innerHTML = card('Só a reserva · essencial', E2, 'e') + card('Reserva + ciclo diário cheio · essencial', E1 + E2, 'e')
+    + (lv.a.day > lv.e.day + 1e-9 ? card('Só a reserva · essencial + adicional', E2, 'a') + card('Reserva + ciclo diário cheio · essencial + adicional', E1 + E2, 'a') : '');
+  const notes = ['Carga e solar são os desta aba' + (sunDay > 0 ? ` (${kwh(sunDay)} de sol por dia na emergência)` : ' (sem solar)') + '; a bateria é a da outra aba, começando cheia às 18 h. O no-break fica fora: ele é dedicado aos equipamentos que protege.',
+    'O tempo não muda com a tecnologia: o modelo dimensiona lítio, chumbo e vanádio para entregar a mesma energia útil. O que muda é a capacidade nominal, o custo e o risco de a bateria estar parada no dia da emergência.'];
+  if (P < lv.e.P) notes.push(`Atenção à potência: o essencial desta aba chega a ${num(lv.e.P, 1)} kW e o sistema da outra aba entrega ${num(P)} kW.`);
+  $('eComNote').textContent = notes.join(' ');
 }
 // leva a carga essencial e a meta para a aba de comunidades
 function emgBridge() {

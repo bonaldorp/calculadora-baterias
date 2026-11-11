@@ -443,6 +443,11 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
 .e-com .h-card.okk { border-color: var(--v); } .e-com .h-card.short { border-color: var(--pb); }
 .e-com .tag { font: 600 11px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; } .e-com .okk .tag { color: var(--v); } .e-com .short .tag { color: var(--pb); }
 @media (max-width: 700px) { .e-com { grid-template-columns: 1fr; } }
+.e-top { border-top: 0; }
+.sect { margin: 4px 0 10px; padding-bottom: 10px; border-bottom: 3px solid var(--accent); }
+.sect .eyebrow { color: var(--muted); margin-bottom: 8px; }
+.sect-h { font: 800 34px/1 var(--display); text-transform: uppercase; letter-spacing: .01em; margin: 0; color: var(--ink); }
+@media (max-width: 520px) { .sect-h { font-size: 26px; } }
 
 /* impressão e PDF: sempre claro, sem controles */
 @media print {
@@ -466,7 +471,7 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
       <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
       <h1>Qual bateria, para qual função e lugar</h1>
       <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 20 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
-      <p class="meta">Versão 5.2 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="meta">Versão 5.3 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
     </div>
     <div class="intro-side">
       <ul class="techkey" aria-label="As três tecnologias comparadas">
@@ -629,7 +634,16 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
 </main>
 </div>
 <div id="tab-emergencia" hidden>
+<section class="band result-band e-top" id="eComWrap" aria-label="Autonomia do sistema da aba Comunidades e serviços">
+  <div class="result-inner">
+    <div class="rack-label"><h2 class="on-band">Com o sistema da aba "Comunidades e serviços", quanto tempo sem rede</h2></div>
+      <p class="modetext" id="eComLead"></p>
+      <div class="e-com" id="eCom"></div>
+      <p id="eComNote" style="font-size:13px;color:var(--band-muted);margin:10px 0 0;max-width:90ch"></p>
+      <div style="margin-top:10px"><a class="btn ghost" href="#comunidade" style="text-decoration:none;display:inline-block">Ajustar o sistema na aba Comunidades e serviços</a></div>  </div>
+</section>
 <main>
+  <div class="sect"><p class="eyebrow">Um sistema só para a emergência</p><h2 class="sect-h">Emergências isoladas</h2></div>
   <p class="step">Uma tempestade, enchente ou seca derruba a rede por dias. Diga quem é afetado, o que precisa continuar ligado em cada bloco e por quantos dias. A conta mostra a capacidade necessária conforme os dias sem rede e compara com um gerador a diesel, em custo e em carbono.</p>
   <section class="inputs casa-inputs" aria-label="Emergência climática">
     <div class="panel span2">
@@ -683,11 +697,6 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
       <div class="h-card"><div class="pos">Se fosse gerador a diesel</div><div class="h-num" id="eDie"></div><div class="obs" id="eDieSub"></div></div>
     </div>
     <div id="eWarn" class="h-warn" role="status"></div>
-    <div class="sys" id="eComWrap"><div class="rack-label"><span>Com o sistema da aba "Comunidades e serviços"</span></div>
-      <p class="modetext" id="eComLead"></p>
-      <div class="e-com" id="eCom"></div>
-      <p id="eComNote" style="font-size:13px;color:var(--band-muted);margin:10px 0 0;max-width:90ch"></p>
-      <div style="margin-top:10px"><a class="btn ghost" href="#comunidade" style="text-decoration:none;display:inline-block">Ajustar o sistema na aba Comunidades e serviços</a></div></div>
     <div class="sys"><div class="rack-label"><span>De onde vem o consumo, por bloco (kWh por dia)</span></div><div id="eBlocks" class="e-blocks"></div></div>
     <div class="sys"><div class="rack-label"><span id="eCurveTitle">Carga da bateria ao longo da emergência</span></div><p id="eCurveRead" class="chartread on-band" aria-live="off"></p><div id="eCurve"></div></div>
   </div>
@@ -1997,7 +2006,7 @@ function drawECom() {
   $('eComLead').innerHTML = `<b>${esc(lugar)}</b>${combo ? ' · ' + esc(label(combo)) : ''}: reserva longa de ${kwh(E2)} úteis e ciclo diário de ${kwh(E1)} úteis.`;
   $('eCom').innerHTML = card('Só a reserva · essencial', E2, 'e') + card('Reserva + ciclo diário cheio · essencial', E1 + E2, 'e')
     + (lv.a.day > lv.e.day + 1e-9 ? card('Só a reserva · essencial + adicional', E2, 'a') + card('Reserva + ciclo diário cheio · essencial + adicional', E1 + E2, 'a') : '');
-  const notes = ['Carga e solar são os desta aba' + (sunDay > 0 ? ` (${kwh(sunDay)} de sol por dia na emergência)` : ' (sem solar)') + '; a bateria é a da outra aba, começando cheia às 18 h. O no-break fica fora: ele é dedicado aos equipamentos que protege.',
+  const notes = [`Carga, solar e meta vêm dos painéis 01 e 02 logo abaixo: ${kwh(lv.e.day)} por dia de essencial` + (lv.a.day > lv.e.day + 1e-9 ? `, ${kwh(lv.a.day)} com o adicional` : '') + (sunDay > 0 ? `, ${kwh(sunDay)} de sol por dia na emergência` : ', sem solar') + '. A bateria é a da outra aba, começando cheia às 18 h. O no-break fica fora: ele é dedicado aos equipamentos que protege.',
     'O tempo não muda com a tecnologia: o modelo dimensiona lítio, chumbo e vanádio para entregar a mesma energia útil. O que muda é a capacidade nominal, o custo e o risco de a bateria estar parada no dia da emergência.'];
   if (P < lv.e.P) notes.push(`Atenção à potência: o essencial desta aba chega a ${num(lv.e.P, 1)} kW e o sistema da outra aba entrega ${num(P)} kW.`);
   $('eComNote').textContent = notes.join(' ');

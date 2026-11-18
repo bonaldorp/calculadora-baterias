@@ -451,12 +451,17 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
 .e-meta { display: flex; gap: 10px 12px; flex-wrap: wrap; align-items: center; margin: 4px 0 12px; }
 .e-meta label { margin: 0; color: var(--band-ink); font-size: 13.5px; } .e-meta input { width: 84px; background: transparent; color: var(--band-ink); border-color: var(--band-line); }
 .chips-row.on-band { margin: 0; } .chips-row.on-band button { background: transparent; color: var(--band-ink); border-color: var(--band-line); } .chips-row.on-band button:hover { border-color: var(--accent); } .chips-row.on-band button[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #111; }
+.themebtn { margin-left: auto; align-self: center; font: 600 11px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--band-muted); background: transparent; border: 1px solid var(--band-line); padding: 7px 10px; cursor: pointer; white-space: nowrap; transition: color .15s, border-color .15s; }
+.themebtn:hover { color: var(--accent); border-color: var(--accent); }
+@media (max-width: 520px) { .themebtn { padding: 6px 7px; font-size: 10px; margin-right: 4px; } }
+.t-short { display: none; }
+@media (max-width: 520px) { .t-long { display: none; } .t-short { display: inline; } .themebtn { font-size: 0; padding: 5px 8px; border: 0; } .themebtn::after { content: '\25D0'; font-size: 16px; line-height: 1; } }
 
 /* impressão e PDF: sempre claro, sem controles */
 @media print {
   :root:root:root { --paper: #fff; --surface: #fff; --ink: #111; --muted: #444; --line: #bbb; --accent: #c98a00; --band: #fff; --band-ink: #111; --band-muted: #444; --band-line: #bbb; --li: #1f55b0; --pb: #b9501f; --v: #157a5c; color-scheme: light; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  .tabs, .dock, .to-result, .copyrow, .play, .modes, .apply, .eqdel, #eqAdd, #eqReset, #eReset, #eBridge, .gadd, .chips-row, .chartread, .step { display: none !important; }
+  .tabs, .dock, .themebtn, .to-result, .copyrow, .play, .modes, .apply, .eqdel, #eqAdd, #eqReset, #eReset, #eBridge, .gadd, .chips-row, .chartread, .step { display: none !important; }
   body { font-size: 12px; }
   .band { border: 0; } .result-band { border-top: 2px solid #111; border-bottom: 2px solid #111; }
   main { padding: 12px 0; } .band-inner, .result-inner { padding: 14px 0; } footer { padding: 0; }
@@ -466,6 +471,7 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
   .inputs { grid-template-columns: 1fr 1fr; }
 }
 </style>
+<script>try{var t=localStorage.getItem('teiu-theme');if(t==='light'||t==='dark')document.documentElement.setAttribute('data-theme',t)}catch(e){}</script>
 </head>
 <body>
 <div class="band">
@@ -474,7 +480,8 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
       <p class="eyebrow">Teiu Energia · armazenamento para resiliência</p>
       <h1>Qual bateria, para qual função e lugar</h1>
       <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 20 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
-      <p class="meta">Versão 5.4 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="lede" style="margin-top:-6px">Mais duas abas: <b style="color:var(--band-ink)">emergência climática</b>, para saber quanta bateria segura uma comunidade por 1, 3, 7 ou 15 dias sem rede, e <b style="color:var(--band-ink)">minha casa</b>, para ver quanto tempo a bateria segura os aparelhos.</p>
+      <p class="meta">Versão 5.5 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
     </div>
     <div class="intro-side">
       <ul class="techkey" aria-label="As três tecnologias comparadas">
@@ -488,9 +495,10 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
 </div>
 <nav class="tabs" aria-label="Ferramentas">
   <div class="tabs-inner">
-    <a href="#comunidade" id="tabbtn-comunidade" class="tab" aria-current="page">Comunidades e serviços</a>
-    <a href="#emergencia" id="tabbtn-emergencia" class="tab">Emergência climática</a>
+    <a href="#comunidade" id="tabbtn-comunidade" class="tab" aria-current="page"><span class="t-long">Comunidades e serviços</span><span class="t-short">Comunidades</span></a>
+    <a href="#emergencia" id="tabbtn-emergencia" class="tab"><span class="t-long">Emergência climática</span><span class="t-short">Emergência</span></a>
     <a href="#casa" id="tabbtn-casa" class="tab">Minha casa</a>
+    <button type="button" id="themeBtn" class="themebtn" aria-label="Alternar entre tema claro e escuro"></button>
   </div>
 </nav>
 <div id="tab-comunidade">
@@ -1726,8 +1734,9 @@ function drawHCurve(pe, pa, start) {
 let CURTAB = null;
 function syncTech() { document.querySelectorAll('#hTech button').forEach(x => x.setAttribute('aria-pressed', x.dataset.k === HTECH)); }
 function showTab() {
-  const t = curTab(), changed = CURTAB !== t; CURTAB = t;
+  const t = curTab(), changed = CURTAB !== t, first = CURTAB === null; CURTAB = t;
   for (const k of ['comunidade', 'emergencia', 'casa']) { $('tab-' + k).hidden = k !== t; const b = $('tabbtn-' + k); if (k === t) b.setAttribute('aria-current', 'page'); else b.removeAttribute('aria-current'); }
+  if (changed && !first) { const y0 = document.querySelector('.band').offsetHeight; if (window.scrollY > y0) window.scrollTo(0, y0); }
   if (changed) { const shown = $('tab-' + t); shown.classList.remove('tabin'); void shown.offsetWidth; shown.classList.add('tabin'); redraw(); }
   dockUpdate();
 }
@@ -1738,6 +1747,9 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('#hTech button').forEach(b => b.addEventListener('click', () => { HTECH = b.dataset.k; syncTech(); casaRun(); }));
   document.querySelectorAll('#tab-casa .chips-row button[data-cap]').forEach(b => b.addEventListener('click', () => { $('hCap').value = b.dataset.cap; casaRun(); }));
   ['hCap', 'hInv', 'hPv', 'hHsp', 'hStart', 'hTarget'].forEach(id => $(id).addEventListener('input', casaRun));
+  const themeSync = () => { const forced = document.documentElement.getAttribute('data-theme'); const dark = forced ? forced === 'dark' : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches); $('themeBtn').textContent = dark ? 'Tema claro' : 'Tema escuro'; return dark; };
+  $('themeBtn').addEventListener('click', () => { const next = themeSync() ? 'light' : 'dark'; document.documentElement.setAttribute('data-theme', next); try { localStorage.setItem('teiu-theme', next); } catch (e) {} themeSync(); });
+  themeSync();
   window.addEventListener('hashchange', showTab);
   showTab();
 });

@@ -25,6 +25,8 @@ Lugares de exemplo, todos ajustáveis:
 - pequeno centro urbano;
 - hospital regional.
 
+**Dimensionar pelo tamanho da comunidade** (aba "Comunidades e serviços"): ao marcar essa opção, o tamanho das três baterias deixa de vir do lugar parecido e passa a ser calculado pelo número de residências e de unidades de saúde, segurança, defesa civil, indústria e refrigeração (os mesmos seis blocos da aba de emergência). Regras: ciclo diário = consumo da noite inteira (sem rede) ou das três horas de ponta (com rede); reserva longa = consumo essencial × dias de reserva; no-break = saúde e segurança por 12 horas. Desmarcada, a calculadora se comporta como antes.
+
 **Aba "Emergência climática"** (https://bonaldorp.github.io/calculadora-baterias/#emergencia): dimensiona o sistema para a rede fora do ar por 1, 3, 7 ou 15 dias. As cargas entram em seis blocos (residências afetadas, saúde e hospitais, segurança e vigilância, defesa civil, indústria, refrigeração e mercado), e cada linha é marcada como essencial, adicional ou desligada. A aba mostra:
 
 - a energia que a bateria precisa entregar, com e sem solar funcionando durante a emergência;
@@ -89,4 +91,4 @@ Fontes de contexto:
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.pt-br). O uso e a adaptação são livres, desde que a Teiu Energia seja citada.
 
-Versão 5.5, novembro de 2026.
+Versão 5.6, novembro de 2026.

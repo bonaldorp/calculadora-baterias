@@ -213,7 +213,7 @@ function emgEnergy(s) { return s.carga_critica * 24 * (s.emg_dias || 0) * (1 - M
 // dimensiona a reserva longa pela meta de autonomia (só com rede; sem rede a reserva segue a noite)
 function sizeEmg(s) {
   if (s.isolated || !((s.emg_dias || 0) > 0) || !(s.carga_critica > 0)) return false;
-  s.F.F2.E = Math.max(1, Math.round(emgEnergy(s))); s.F.F2.P = Math.max(1, Math.round(s.carga_critica)); return true;
+  s.F.F2.E = Math.max(1, Math.round(emgEnergy(s))); s.F.F2.P = Math.max(s.dm ? s.F.F2.P : 1, Math.round(s.carga_critica)); return true;
 }
 // converte as escolhas da tela no contexto do modelo
 function buildCtx(s) {

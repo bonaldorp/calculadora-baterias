@@ -456,6 +456,12 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
 @media (max-width: 520px) { .themebtn { padding: 6px 7px; font-size: 10px; margin-right: 4px; } }
 .t-short { display: none; }
 @media (max-width: 520px) { .t-long { display: none; } .t-short { display: inline; } .themebtn { font-size: 0; padding: 5px 8px; border: 0; } .themebtn::after { content: '\25D0'; font-size: 16px; line-height: 1; } }
+.dmbox { margin-top: 12px; padding: 10px 12px 12px; border: 1px solid var(--line); border-left: 3px solid var(--accent); background: var(--paper); }
+.dmgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 10px; margin-top: 10px; }
+.dmgrid label { min-height: 2.6em; display: flex; align-items: flex-end; }
+#dmNote b { font-family: var(--mono); font-weight: 600; color: var(--ink); }
+input:disabled { opacity: .6; cursor: not-allowed; }
+@media (max-width: 700px) { .dmgrid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 
 /* impressão e PDF: sempre claro, sem controles */
 @media print {
@@ -481,7 +487,7 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
       <h1>Qual bateria, para qual função e lugar</h1>
       <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 20 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
       <p class="lede" style="margin-top:-6px">Mais duas abas: <b style="color:var(--band-ink)">emergência climática</b>, para saber quanta bateria segura uma comunidade por 1, 3, 7 ou 15 dias sem rede, e <b style="color:var(--band-ink)">minha casa</b>, para ver quanto tempo a bateria segura os aparelhos.</p>
-      <p class="meta">Versão 5.5 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="meta">Versão 5.6 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
     </div>
     <div class="intro-side">
       <ul class="techkey" aria-label="As três tecnologias comparadas">
@@ -503,7 +509,7 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
 </nav>
 <div id="tab-comunidade">
 <main>
-  <p class="step">Ajuste o lugar, as políticas, o tamanho de cada função e os pesos. A recomendação aparece logo abaixo e se atualiza a cada mudança.</p>
+  <p class="step">Ajuste o lugar, as políticas, o tamanho de cada função e os pesos. Para dimensionar pelo número de residências e de serviços, marque "Dimensionar pelo tamanho da comunidade". A recomendação aparece logo abaixo e se atualiza a cada mudança.</p>
   <section class="inputs" aria-label="Escolhas">
     <div class="panel">
       <h2><span class="num">01</span>O lugar</h2>
@@ -525,6 +531,17 @@ table.eq tr.off .eqn, table.eq tr.off .kwh { color: var(--muted); text-decoratio
         </optgroup>
       </select>
       <p class="note" id="presetDesc" style="margin:8px 0 0"></p>
+      <div class="dmbox">
+        <div class="check" style="margin:0"><input type="checkbox" id="dmOn"><label for="dmOn"><b>Dimensionar pelo tamanho da comunidade</b></label></div>
+        <div id="dmFields" hidden>
+          <div class="dmgrid"><div><label for="dm0">Residências</label><input type="number" id="dm0" min="0" step="1"></div><div><label for="dm1">Unidades de saúde</label><input type="number" id="dm1" min="0" step="1"></div><div><label for="dm2">Segurança e vigilância (unidades)</label><input type="number" id="dm2" min="0" step="1"></div><div><label for="dm3">Defesa civil (unidades)</label><input type="number" id="dm3" min="0" step="1"></div><div><label for="dm4">Indústria (unidades)</label><input type="number" id="dm4" min="0" step="1"></div><div><label for="dm5">Refrigeração e mercado (unidades)</label><input type="number" id="dm5" min="0" step="1"></div></div>
+          <div class="row2" style="margin-top:10px">
+            <div><label for="dmDias">Dias que a reserva segura o essencial</label><input type="number" id="dmDias" min="0.5" max="30" step="0.5" value="1"></div>
+            <div class="note" style="align-self:end;margin:0 0 6px">Os aparelhos e serviços de cada bloco são os da aba <a href="#emergencia">Emergência climática</a>. Para mudar potência, horas ou o que é essencial, edite lá.</div>
+          </div>
+          <p class="note" id="dmNote" style="margin:10px 0 0"></p>
+        </div>
+      </div>
       <div class="check" style="margin-top:12px"><input type="checkbox" id="isolated"><label for="isolated">Sem rede (sistema isolado)</label></div>
       <div class="row2" id="gridFields">
         <div><label for="horas">Horas sem luz por ano</label><input type="number" id="horas" min="0" step="1"></div>
@@ -1021,7 +1038,7 @@ function emgEnergy(s) { return s.carga_critica * 24 * (s.emg_dias || 0) * (1 - M
 // dimensiona a reserva longa pela meta de autonomia (só com rede; sem rede a reserva segue a noite)
 function sizeEmg(s) {
   if (s.isolated || !((s.emg_dias || 0) > 0) || !(s.carga_critica > 0)) return false;
-  s.F.F2.E = Math.max(1, Math.round(emgEnergy(s))); s.F.F2.P = Math.max(1, Math.round(s.carga_critica)); return true;
+  s.F.F2.E = Math.max(1, Math.round(emgEnergy(s))); s.F.F2.P = Math.max(s.dm ? s.F.F2.P : 1, Math.round(s.carga_critica)); return true;
 }
 // converte as escolhas da tela no contexto do modelo
 function buildCtx(s) {
@@ -1055,7 +1072,7 @@ function load(key) {
   toForm(); run();
 }
 function emgSync() {
-  const on = sizeEmg(S); for (const id of ['F2P', 'F2E']) { $(id).disabled = on; $(id).title = on ? 'Dimensionado pela meta de emergência climática' : ''; }
+  const on = sizeEmg(S); for (const id of ['F2P', 'F2E']) { $(id).disabled = on || !!S.dm; $(id).title = on ? 'Dimensionado pela meta de emergência climática' : S.dm ? 'Dimensionado pelo tamanho da comunidade' : ''; }
   if (on) { $('F2P').value = S.F.F2.P; $('F2E').value = S.F.F2.E; }
   $('emgFields').style.display = S.isolated ? 'none' : '';
   $('emgNote').textContent = on ? `Reserva dimensionada: ${num(S.F.F2.E)} kWh úteis (${num(S.carga_critica)} kW × ${num(24 * S.emg_dias)} h${S.emg_solar > 0 ? `, menos ${Math.round(S.emg_solar * 100)}% do solar` : ''}).` : 'Sem meta: a reserva usa o tamanho informado em "Tamanho de cada função".';
@@ -1063,6 +1080,7 @@ function emgSync() {
 }
 function toForm() {
   $('emgd').value = S.emg_dias || 0; $('emgr').value = S.emg_ret || 10; $('emgs').value = Math.round((S.emg_solar || 0) * 100);
+  if (typeof comUI === 'function') comUI();
   $('isolated').checked = S.isolated; $('horas').value = S.horas_falta; $('carga').value = S.carga_critica;
   $('noite').value = S.night_kwh_dia; $('alpha').value = Math.round(S.alpha * 100); $('temp').value = S.T; $('dtemp').value = S.dT || 0; $('familias').value = S.familias;
   $('costa').checked = S.costa; $('agentes').checked = S.agentes; $('eletrolito').checked = S.eletrolito; $('chumbo_lr').checked = S.chumbo_lr;
@@ -1090,6 +1108,7 @@ function fromForm() {
   S.agentes = $('agentes').checked; S.eletrolito = $('eletrolito').checked; S.chumbo_lr = $('chumbo_lr').checked;
   S.rate = n('rate') / 100; $('rateOut').textContent = Math.round(S.rate * 100) + '%';
   for (const f of ['F1', 'F2', 'F3']) S.F[f] = { P: Math.max(0.1, n(f + 'P')), E: Math.max(0.1, n(f + 'E')), cyc: Math.max(0.1, n(f + 'c')) };
+  if (typeof comApply === 'function') comApply();
   S.emg_dias = Math.min(30, n('emgd')); S.emg_ret = Math.max(1, n('emgr') || 10); S.emg_solar = Math.min(0.9, n('emgs') / 100); emgSync();
   const tot = CRIT.reduce((s, c) => s + wv(c), 0) || 1;
   for (const c of CRIT) S.w[c] = wv(c) / tot;
@@ -1931,6 +1950,7 @@ function emgRun() {
   drawECurve(); drawECap();
   DOCK.emg = ok ? `<b>${kwh(b.En)}</b> <span>de ${tn.toLowerCase()} para ${dd(D)} · ${brs(b.capex)} · diesel: ${num(main.die.l)} L</span>` : '';
   dockUpdate(); emgSave();
+  if (S && S.dm) { comUI(); fromForm(); }
 }
 function drawECurve() {
   const { D, cur, sun, main, lv } = ELAST, el = $('eCurve'), W = chartW(el, 1000), small = W < 560, Hh = small ? 230 : 260;
@@ -2029,11 +2049,53 @@ function drawECom() {
   if (P < lv.e.P) notes.push(`Atenção à potência: o essencial desta aba chega a ${num(lv.e.P, 1)} kW e o sistema da outra aba entrega ${num(P)} kW.`);
   $('eComNote').textContent = notes.join(' ');
 }
+// ===== Dimensionamento da aba de comunidades pelo tamanho da comunidade (usa os mesmos seis blocos) =====
+function comSize(st) {
+  const all = new Array(24).fill(0), ess = new Array(24).fill(0), mxs = Math.max(...LOAD_SHAPE);
+  let Pall = 0, Pess = 0, E3 = 0, P3 = 0;
+  EG.forEach((g, gi) => { for (const it of g.items) { if (!(it.q > 0) || !(g.m > 0)) continue; if (st.isolated && it.l === 'x') continue; // sem rede, o que está marcado como desligado não entra no sistema
+    const E = g.m * it.q * it.w * it.h / 1000, P = gi === 0 ? E * mxs : g.m * it.q * it.w / 1000, e = it.l === 'e';
+    for (let h = 0; h < 24; h++) { const v = gi === 0 ? E * LOAD_SHAPE[h] : E / 24; all[h] += v; if (e) ess[h] += v; }
+    Pall += P; if (e) { Pess += P; if (g.id === 'sau' || g.id === 'seg') { E3 += E; P3 += P; } } } });
+  const sum = a => a.reduce((s, v) => s + v, 0), night = a => a.reduce((s, v, h) => s + ((h >= 18 || h < 6) ? v : 0), 0), peakHours = a => a[18] + a[19] + a[20];
+  const r1 = v => v >= 10 ? Math.round(v) : Math.max(0.1, Math.round(v * 10) / 10);
+  const Eall = sum(all), Eess = sum(ess), nAll = night(all), nEss = night(ess), dias = Math.max(0.5, Math.min(30, st.dm_dias || 1));
+  return { Eall, Eess, nAll, dias,
+    F: { F1: { P: r1(Pall), E: r1(st.isolated ? nAll : peakHours(all)), cyc: st.isolated ? 365 : 300 },
+         F2: { P: r1(Pess), E: r1(Eess * dias), cyc: st.isolated ? 10 : 5 },
+         F3: { P: r1(P3), E: r1(E3 / 2), cyc: st.isolated ? 12 : 6 } },
+    carga: Math.round(Eess / 24 * 10) / 10, noite: Math.round(nAll), alpha: nAll > 0 ? Math.min(1, nEss / nAll) : 0.3, familias: Math.round(EG[0].m) };
+}
+const DM_LOCK = ['F1P', 'F1E', 'F1c', 'F2P', 'F2E', 'F2c', 'F3P', 'F3E', 'F3c', 'carga', 'noite', 'alpha', 'familias'];
+// aplica o dimensionamento ao estado e aos campos; chamada pelo fromForm da aba de comunidades
+function comApply() {
+  if (!S) return;
+  for (const id of DM_LOCK) { $(id).disabled = !!S.dm; $(id).title = S.dm ? 'Dimensionado pelo tamanho da comunidade' : ''; }
+  $('dmFields').hidden = !S.dm;
+  if (!S.dm) return;
+  const d = comSize(S); if (!(d.Eall > 0)) { $('dmNote').textContent = 'Informe pelo menos um bloco com consumo.'; return; }
+  S.F = d.F; S.carga_critica = d.carga; S.night_kwh_dia = d.noite; S.alpha = d.alpha; S.familias = d.familias;
+  for (const f of ['F1', 'F2', 'F3']) { $(f + 'P').value = S.F[f].P; $(f + 'E').value = S.F[f].E; $(f + 'c').value = S.F[f].cyc; }
+  $('carga').value = S.carga_critica; $('noite').value = S.night_kwh_dia; $('alpha').value = Math.round(S.alpha * 100); $('familias').value = S.familias;
+  $('dmNote').innerHTML = `Consumo: <b>${kwh(d.Eall)}</b> por dia${S.isolated ? ' (sem os itens marcados como desligados)' : ''}, dos quais <b>${kwh(d.Eess)}</b> essenciais. `
+    + `Ciclo diário: <b>${kwh(d.F.F1.E)}</b> úteis e <b>${num(d.F.F1.P, d.F.F1.P < 10 ? 1 : 0)} kW</b> (${S.isolated ? 'o consumo da noite inteira' : 'as três horas de ponta, das 18 h às 21 h'}). `
+    + `Reserva longa: <b>${kwh(d.F.F2.E)}</b> (${dd(d.dias)} do essencial). `
+    + `No-break: <b>${kwh(d.F.F3.E)}</b> (saúde e segurança por 12 h).`;
+}
+// mostra as quantidades dos blocos nos campos da aba de comunidades
+function comUI() {
+  if (!S) return;
+  $('dmOn').checked = !!S.dm; $('dmDias').value = S.dm_dias || 1;
+  EG.forEach((g, i) => { const el = $('dm' + i); if (el && document.activeElement !== el) el.value = g.m; });
+  for (const id of DM_LOCK) { $(id).disabled = !!S.dm; $(id).title = S.dm ? 'Dimensionado pelo tamanho da comunidade' : ''; }
+  $('dmFields').hidden = !S.dm;
+}
 // leva a carga essencial e a meta para a aba de comunidades
 function emgBridge() {
   if (!ELAST || !ELAST.ok) return;
   const { D, R, lv, sun } = ELAST, e = lv.e, need = egNeed(e.prof, sun, D);
   if (S.isolated) { $('preset').value = 'quilombo_linha'; load('quilombo_linha'); }
+  S.dm = false;
   S.carga_critica = Math.max(1, Math.round(e.day / 24)); S.emg_dias = Math.min(30, Math.round(D)); S.emg_ret = Math.round(R);
   S.emg_solar = Math.max(0, Math.min(0.9, Math.round((1 - need / (e.day * D)) * 20) / 20));
   toForm(); run(); location.hash = '#comunidade';
@@ -2048,6 +2110,12 @@ document.addEventListener('DOMContentLoaded', () => {
   ['eDias', 'eRet', 'eKwp', 'eHsp', 'eFrac', 'eSfc', 'ePreco', 'eEf', 'eGen', 'eComDias'].forEach(id => $(id).addEventListener('input', emgRun));
   document.querySelectorAll('[data-ecd]').forEach(b => b.addEventListener('click', () => { $('eComDias').value = b.dataset.ecd; emgRun(); }));
   $('eBridge').addEventListener('click', emgBridge);
+  $('dmOn').addEventListener('change', () => { S.dm = $('dmOn').checked;
+    // ao ligar, parte do número de famílias do lugar escolhido
+    if (S.dm && S.familias > 0 && S.familias !== EG[0].m) { EG[0].m = S.familias; const o = $('egm0'); if (o) o.value = EG[0].m; comUI(); emgRun(); } else { comUI(); fromForm(); } });
+  $('dmDias').addEventListener('input', () => { S.dm_dias = Number($('dmDias').value) || 1; fromForm(); });
+  EG.forEach((g, i) => $('dm' + i).addEventListener('input', ev => { EG[i].m = Math.max(0, Number(ev.target.value) || 0); const o = $('egm' + i); if (o) o.value = EG[i].m; emgRun(); }));
+  comUI();
   emgRun();
 });
 

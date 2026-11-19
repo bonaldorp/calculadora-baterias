@@ -487,7 +487,7 @@ input:disabled { opacity: .6; cursor: not-allowed; }
       <h1>Qual bateria, para qual função e lugar</h1>
       <p class="lede">Lítio (LFP), chumbo-ácido e fluxo de vanádio disputam três posições: ciclo diário, reserva longa e no-break. A conta cobre 30 anos de custo, o tempo parado com a mão de obra do lugar, o resíduo tóxico e o risco de acidente. A chance de cada combinação ser a melhor sai de 20 mil simulações, cada uma com pesos e premissas incertas sorteados.</p>
       <p class="lede" style="margin-top:-6px">Mais duas abas: <b style="color:var(--band-ink)">emergência climática</b>, para saber quanta bateria segura uma comunidade por 1, 3, 7 ou 15 dias sem rede, e <b style="color:var(--band-ink)">minha casa</b>, para ver quanto tempo a bateria segura os aparelhos.</p>
-      <p class="meta">Versão 5.6 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a></p>
+      <p class="meta">Versão 5.7 · novembro de 2026 · licença <a href="https://creativecommons.org/licenses/by/4.0/deed.pt-br">CC BY 4.0</a> · <a href="https://github.com/bonaldorp/calculadora-baterias">código</a> · <a href="https://github.com/bonaldorp/calculadora-baterias/blob/main/VALIDACAO.md">como é validada</a></p>
     </div>
     <div class="intro-side">
       <ul class="techkey" aria-label="As três tecnologias comparadas">
@@ -626,7 +626,7 @@ input:disabled { opacity: .6; cursor: not-allowed; }
       <div class="sharelegend" id="bars"></div>
       <p id="shareMsg" class="whyfoot"></p>
       <p id="robMsg" class="whyfoot" aria-live="polite"></p>
-      <p class="note">São 20 mil simulações: 1.000 conjuntos de premissas (preços, falhas, tempo de conserto, acidentes, atraso na troca, resíduo que escapa e perda de capacidade; metade e dobro com a mesma chance) × 20 conjuntos de pesos em torno dos escolhidos. A barra soma 100%: cada simulação aponta uma única combinação vencedora. O ± mostra quanto o número oscila se a simulação for repetida; ele não cobre o erro das próprias premissas. A conta principal soma os critérios, cada um dividido pelo pior valor entre as 24 combinações. O teste de método troca a soma pelo produto ponderado, em que ficar duas vezes pior pesa o mesmo em qualquer critério e o resultado não depende da pior combinação.</p>
+      <p class="note">São 20 mil simulações: 2.500 conjuntos de premissas (preços, falhas, tempo de conserto, acidentes, atraso na troca, resíduo que escapa e perda de capacidade; metade e dobro com a mesma chance) × 8 conjuntos de pesos em torno dos escolhidos. A barra soma 100%: cada simulação aponta uma única combinação vencedora. O ± mostra quanto o número oscila se a simulação for repetida; ele não cobre o erro das próprias premissas. A conta principal soma os critérios, cada um dividido pelo pior valor entre as 24 combinações. O teste de método troca a soma pelo produto ponderado, em que ficar duas vezes pior pesa o mesmo em qualquer critério e o resultado não depende da pior combinação.</p>
     </div>
     <div class="panel">
       <h2><span class="num">07</span>Por que ela ganha da segunda opção</h2>
@@ -959,7 +959,7 @@ function nonDominated(P) {
 
 function smaa(ctxRaw, opts = {}) {
   const ctx = effCtx(ctxRaw), tech = techFor(ctxRaw), I = ctxRaw.rate;
-  const nP = opts.nP ?? 1000, nW = opts.nW ?? 20, conc = opts.conc ?? 15, r = rng(opts.seed ?? 7);
+  const nP = opts.nP ?? 2500, nW = opts.nW ?? 8, conc = opts.conc ?? 15, r = rng(opts.seed ?? 7);
   const base = allPortfolios(ctx, tech, I); const n = base.length, wins = new Array(n).fill(0);
   const NB = 10, bw = Array.from({ length: NB }, () => new Array(n).fill(0)), bn = new Array(NB).fill(0);
   const cw = Array.from({ length: n }, () => new Array(CRIT.length).fill(0));

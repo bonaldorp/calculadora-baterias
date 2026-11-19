@@ -11,7 +11,7 @@ Para cada combinação, a ferramenta calcula:
 - **Custo de ciclo de vida em 30 anos:** investimento, operação, trocas, perdas e valor residual. Mostra também o custo total dividido pelo investimento.
 - **Tempo parado:** falhas × tempo até o conserto com a mão de obra do lugar, mais o atraso na troca da bateria.
 - **Energia crítica perdida, carbono, resíduo tóxico em risco e risco de acidente.**
-- **Chance de cada combinação ser a melhor:** 20 mil simulações (1.000 conjuntos de premissas × 20 conjuntos de pesos, método SMAA), com a margem do sorteio ao lado de cada número.
+- **Chance de cada combinação ser a melhor:** 20 mil simulações (2.500 conjuntos de premissas × 8 conjuntos de pesos, método SMAA), com a margem do sorteio ao lado de cada número.
 - **Por que ela ganha da segunda opção:** critério por critério, com o confronto direto entre as duas e o aviso de empate técnico quando for o caso.
 
 Lugares de exemplo, todos ajustáveis:
@@ -91,4 +91,8 @@ Fontes de contexto:
 
 [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.pt-br). O uso e a adaptação são livres, desde que a Teiu Energia seja citada.
 
-Versão 5.6, novembro de 2026.
+Versão 5.7, novembro de 2026.
+
+## Validação
+
+O método de validação está em [VALIDACAO.md](VALIDACAO.md). Os testes automáticos rodam com `node modelo/validar.js` (32 testes: cálculo à mão, regras gerais, dimensionamento da aba de emergência por dois métodos, comparação entre as implementações em JavaScript e Python e repetição do sorteio nos oito lugares).

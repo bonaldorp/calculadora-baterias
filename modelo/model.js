@@ -134,7 +134,7 @@ function nonDominated(P) {
 
 function smaa(ctxRaw, opts = {}) {
   const ctx = effCtx(ctxRaw), tech = techFor(ctxRaw), I = ctxRaw.rate;
-  const nP = opts.nP ?? 1000, nW = opts.nW ?? 20, conc = opts.conc ?? 15, r = rng(opts.seed ?? 7);
+  const nP = opts.nP ?? 2500, nW = opts.nW ?? 8, conc = opts.conc ?? 15, r = rng(opts.seed ?? 7);
   const base = allPortfolios(ctx, tech, I); const n = base.length, wins = new Array(n).fill(0);
   const NB = 10, bw = Array.from({ length: NB }, () => new Array(n).fill(0)), bn = new Array(NB).fill(0);
   const cw = Array.from({ length: n }, () => new Array(CRIT.length).fill(0));
